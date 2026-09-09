@@ -68,6 +68,15 @@ export interface Student {
   notes?: string;
 }
 
+export interface PermRow {
+  role: string;
+  module: string;
+  view: boolean;
+  create: boolean;
+  edit: boolean;
+  approve: boolean;
+}
+
 export interface ModalField {
   key: string;
   placeholder: string;

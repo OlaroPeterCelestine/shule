@@ -1,4 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
+import type { PermRow } from './models';
+import { defaultPerms } from './nav';
 
 export type Mark = 'P' | 'A' | 'L' | 'E';
 export type ApplicantStage = 'inquiry' | 'applied' | 'review' | 'interview' | 'offered' | 'enrolled' | 'waitlist';
@@ -113,6 +115,9 @@ export interface Applicant {
   motherNin: string;
   guardianName: string;
   guardianPhone: string;
+  fatherSig?: string;
+  motherSig?: string;
+  guardianSig?: string;
   schoolpay: string;
   transport: string;
   photo: string;
@@ -120,14 +125,7 @@ export interface Applicant {
   meta: string;
 }
 
-export interface PermRow {
-  role: string;
-  module: string;
-  view: boolean;
-  create: boolean;
-  edit: boolean;
-  approve: boolean;
-}
+export type { PermRow } from './models';
 
 const today = '9 Sep 2026';
 
@@ -216,6 +214,7 @@ export class SchoolOsStore {
       fatherName: 'Kasumbakali Umar', fatherPhone: '07002304080', fatherNin: 'CM941011028AJL',
       motherName: 'Nahidah Kasumbakali Kellen', motherPhone: '0742871325', motherNin: 'CF930611068LPJ',
       guardianName: '', guardianPhone: '',
+      fatherSig: 'Kasumbakali Umar', motherSig: 'Nahidah Kellen', guardianSig: '',
       schoolpay: '1012331836', transport: 'Van — pick & drop',
       photo: 'application-form.jpg',
       stage: 'applied', meta: 'Paper form received',
@@ -228,20 +227,7 @@ export class SchoolOsStore {
     { id: 7, name: 'Ssali Peter', firstName: 'Peter', lastName: 'Ssali', dob: '', sex: 'Male', religion: '', location: '', lcZone: '', illness: '', cls: 'Primary One', lin: '', fatherName: '', fatherPhone: '', fatherNin: '', motherName: '', motherPhone: '', motherNin: '', guardianName: '', guardianPhone: '', schoolpay: '', transport: '', photo: '', stage: 'waitlist', meta: 'Waitlisted, no. 3' },
   ]);
 
-  readonly perms = signal<PermRow[]>([
-    { role: 'Teacher', module: 'Attendance', view: true, create: true, edit: true, approve: false },
-    { role: 'Teacher', module: 'Marks', view: true, create: true, edit: true, approve: false },
-    { role: 'Teacher', module: 'Students', view: true, create: false, edit: false, approve: false },
-    { role: 'Teacher', module: 'Finance', view: false, create: false, edit: false, approve: false },
-    { role: 'Accountant', module: 'Finance', view: true, create: true, edit: true, approve: true },
-    { role: 'Accountant', module: 'Payroll', view: true, create: true, edit: false, approve: false },
-    { role: 'Accountant', module: 'Students', view: true, create: false, edit: false, approve: false },
-    { role: 'Nurse', module: 'Health', view: true, create: true, edit: true, approve: false },
-    { role: 'Nurse', module: 'Students', view: true, create: false, edit: false, approve: false },
-    { role: 'Parent', module: 'Own children', view: true, create: false, edit: false, approve: false },
-    { role: 'Parent', module: 'Finance', view: true, create: false, edit: false, approve: false },
-    { role: 'Registrar', module: 'Admissions', view: true, create: true, edit: true, approve: true },
-  ]);
+  readonly perms = signal<PermRow[]>(defaultPerms());
 
   readonly presentCount = computed(() => this.register().filter((r) => r.status === 'P' || r.status === 'L').length);
   readonly absentCount = computed(() => this.register().filter((r) => r.status === 'A').length);

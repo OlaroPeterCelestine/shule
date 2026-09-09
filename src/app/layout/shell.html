@@ -18,94 +18,14 @@
     </div>
 
     <nav class="flex-1 overflow-y-auto px-3 pb-3 text-[13px]" (click)="closeMenu()">
-      <p class="px-3 pt-3 pb-1.5 text-[10.5px] font-medium tracking-[0.12em] text-slate-400">MAIN MENU</p>
-      <a routerLink="/dashboard" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-grid"/></svg> Dashboard
-      </a>
-      <a routerLink="/school" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-layers"/></svg> School setup
-      </a>
-      <a routerLink="/students" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-cap"/></svg> Students
-      </a>
-      <a routerLink="/admissions" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-clipboard"/></svg> Admissions
-      </a>
-      <a routerLink="/finance" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-coin"/></svg> Fees & Payroll
-      </a>
-      <a routerLink="/reports" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-bar-chart"/></svg> Reports & Analytics
-      </a>
-      <a routerLink="/comms" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-mail"/></svg> Communication
-      </a>
-      <a routerLink="/hr" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-users"/></svg> Staff & HR
-      </a>
-
-      <p class="px-3 pt-4 pb-1.5 text-[10.5px] font-medium tracking-[0.12em] text-slate-400">ACADEMICS</p>
-      <a routerLink="/curriculum" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-layers"/></svg> Curriculum
-      </a>
-      <a routerLink="/academics" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-book-open"/></svg> Timetable & Exams
-      </a>
-      <a routerLink="/assessments" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-list-check"/></svg> Assessments
-      </a>
-      <a routerLink="/attendance" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-clipboard"/></svg> Attendance
-      </a>
-
-      <p class="px-3 pt-4 pb-1.5 text-[10.5px] font-medium tracking-[0.12em] text-slate-400">CAMPUS</p>
-      <a routerLink="/transport" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-bus"/></svg> Transport
-      </a>
-      <a routerLink="/library" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-book"/></svg> Library
-      </a>
-      <a routerLink="/inventory" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-layers"/></svg> Inventory
-      </a>
-      <a routerLink="/hostel" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-bed"/></svg> Hostel
-      </a>
-      <a routerLink="/visitors" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-shield"/></svg> Visitors & Gate
-      </a>
-      <a routerLink="/meetings" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-calendar"/></svg> Meetings
-      </a>
-      <a routerLink="/calendar" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-calendar"/></svg> Calendar
-      </a>
-      <a routerLink="/welfare" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-heart-pulse"/></svg> Welfare
-      </a>
-      <a routerLink="/health" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-heart-pulse"/></svg> Health
-      </a>
-
-      <p class="px-3 pt-4 pb-1.5 text-[10.5px] font-medium tracking-[0.12em] text-slate-400">MANAGEMENT</p>
-      <a routerLink="/lifecycle" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-award"/></svg> Promotion & Alumni
-      </a>
-      <a routerLink="/documents" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-file"/></svg> Documents
-      </a>
-      <a routerLink="/website" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-apps"/></svg> Website
-      </a>
-      <a routerLink="/ai" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-bot"/></svg> AI Assistant
-      </a>
-      <a routerLink="/system" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-gear"/></svg> System & Audit
-      </a>
-      <a routerLink="/profile" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
-        <svg class="ic"><use href="#i-users"/></svg> My profile
-      </a>
+      @for (section of access.sections(); track section.title) {
+        <p class="px-3 pt-3 pb-1.5 text-[10.5px] font-medium tracking-[0.12em] text-slate-400">{{ section.title }}</p>
+        @for (item of section.items; track item.path) {
+          <a [routerLink]="'/' + item.path" routerLinkActive="active" class="navlink w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl">
+            <svg class="ic"><use [attr.href]="item.icon"/></svg> {{ item.label }}
+          </a>
+        }
+      }
     </nav>
 
     <div class="p-3">
@@ -124,6 +44,12 @@
       <button type="button" (click)="toggleMenu($event)" class="lg:hidden w-9 h-9 shrink-0 rounded-full border border-slate-200 bg-white text-slate-600 flex items-center justify-center" aria-label="Open menu">
         <svg class="ic"><use href="#i-menu"/></svg>
       </button>
+      @if (!isList()) {
+        <button type="button" (click)="goBack()" class="inline-flex h-8 px-3 text-xs border border-slate-200 bg-white rounded-full text-slate-600 hover:text-slate-900 items-center shrink-0 gap-1">
+          <svg class="ic w-3.5 h-3.5 -rotate-180"><use href="#i-arrow-right"/></svg>
+          Back
+        </button>
+      }
       <p class="hidden md:block text-[13px] text-slate-400 shrink-0">Dashboard <span class="text-slate-300 mx-1">›</span> <span class="text-slate-800 font-medium">{{ page() }}</span></p>
       @if (isList()) {
         <a [routerLink]="'/' + moduleKey() + '/report'" class="inline-flex h-8 px-3 text-xs border border-slate-200 bg-white rounded-full text-slate-600 hover:text-slate-900 items-center shrink-0">Report</a>
@@ -173,7 +99,7 @@
 
     <main class="px-4 lg:px-8 pb-10 flex-1 fade-in min-w-0">
       <router-outlet />
-      @if (isList() && moduleKey() !== 'students' && moduleKey() !== 'finance' && moduleKey() !== 'attendance' && moduleKey() !== 'reports') {
+      @if (isList() && moduleKey() !== 'students' && moduleKey() !== 'finance' && moduleKey() !== 'attendance' && moduleKey() !== 'reports' && moduleKey() !== 'admissions') {
         <div class="mt-6">
           <app-records-block [moduleKey]="moduleKey()" />
         </div>

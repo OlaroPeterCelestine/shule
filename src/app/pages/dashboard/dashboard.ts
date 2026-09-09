@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { DownloadService } from '../../core/download.service';
 import { ModalService } from '../../core/modal.service';
 import { AuthService } from '../../core/auth.service';
+import type { RoleKey } from '../../core/models';
 import { ToastService } from '../../core/toast.service';
 import { StatCards } from '../../shared/stat-cards';
 
@@ -114,7 +115,9 @@ export class DashboardPage {
   }
 
   setRole(role: string) {
-    this.role.set(role);
+    const next = role as RoleKey;
+    this.role.set(next);
+    this.auth.demoLogin(next);
   }
 
   setTrend(t: Trend) {

@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { AccessService } from '../core/access.service';
 import { AuthService } from '../core/auth.service';
 import { SearchService } from '../core/search.service';
 import { ToastService } from '../core/toast.service';
@@ -29,7 +30,7 @@ const LABELS: Record<string, string> = {
   reports: 'Reports',
   report: 'Report',
   ai: 'AI Assistant',
-  system: 'System',
+  system: 'Permissions',
   profile: 'My profile',
   school: 'School setup',
   attendance: 'Attendance',
@@ -46,6 +47,7 @@ const LABELS: Record<string, string> = {
 })
 export class ShellPage {
   protected auth = inject(AuthService);
+  protected access = inject(AccessService);
   private search = inject(SearchService);
   private toast = inject(ToastService);
   private router = inject(Router);
@@ -117,6 +119,10 @@ export class ShellPage {
       ev.preventDefault();
       this.searchBox()?.nativeElement.focus();
     }
+  }
+
+  goBack() {
+    this.router.navigate(['/', this.moduleKey()]);
   }
 
   onSearch() {

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './core/auth.guard';
+import { authGuard, guestGuard, permGuard } from './core/auth.guard';
 
 const report = () => import('./pages/entity/entity-report').then((m) => m.EntityReportPage);
 const detail = () => import('./pages/entity/entity-detail').then((m) => m.EntityDetailPage);
@@ -12,6 +12,7 @@ function moduleRoutes(
 ) {
   return {
     path,
+    canActivate: [permGuard],
     children: [
       { path: '', loadComponent: () => loadList().then((m) => m[exportName]) },
       { path: 'report', data: { module: path }, loadComponent: report },

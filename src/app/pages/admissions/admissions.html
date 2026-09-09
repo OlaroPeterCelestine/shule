@@ -1,234 +1,194 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
     <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Admissions</h1>
-    <p class="text-sm text-slate-400 mt-1">Official Little Royals application form — Seguku Entebbe Road</p>
+    <p class="text-sm text-slate-400 mt-1">The same APPLICATION FORM used at the school office</p>
   </div>
   <div class="flex flex-wrap gap-2">
-    <button type="button" (click)="previewOpen.set(true)" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full">View paper form</button>
-    <button type="button" (click)="openForm()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">+ New application</button>
+    <button type="button" (click)="previewOpen.set(true)" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full">View paper scan</button>
+    <button type="button" (click)="blankForm()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">New blank form</button>
   </div>
 </div>
 
 <app-stat-cards [items]="stats()" />
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
-  <button type="button" (click)="previewOpen.set(true)" class="lg:col-span-1 bg-white rounded-2xl border border-slate-100 overflow-hidden text-left hover:border-slate-200">
-    <img src="application-form.jpg" alt="Little Royals application form" class="w-full h-56 object-cover object-top" />
-    <div class="p-3">
-      <p class="text-sm font-medium text-slate-900">Official application form</p>
-      <p class="text-xs text-slate-400 mt-0.5">Scanned copy — click to enlarge</p>
+@if (viewing(); as a) {
+  <div class="max-w-[820px] mx-auto mb-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm">
+    <p class="text-amber-900">Viewing {{ a.name }} · {{ a.cls }} · {{ a.stage }}</p>
+    <div class="flex gap-2">
+      @if (a.stage !== 'enrolled' && a.stage !== 'waitlist') {
+        <button type="button" (click)="advance(a)" class="text-xs bg-slate-900 text-white rounded-full px-3 py-1.5">Advance</button>
+      }
+      @if (a.stage !== 'waitlist' && a.stage !== 'enrolled') {
+        <button type="button" (click)="waitlist(a)" class="text-xs text-rose-600">Waitlist</button>
+      }
+      <button type="button" (click)="blankForm()" class="text-xs text-slate-500">Clear</button>
     </div>
-  </button>
-  <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-5 text-sm">
-    <p class="text-[11px] tracking-wide text-slate-400 font-medium">LITTLE ROYALS KINDERGARTEN &amp; PRIMARY SCHOOL</p>
-    <p class="text-slate-800 mt-1">{{ os.school().motto }}</p>
-    <p class="text-slate-500 mt-3">{{ os.school().address }}</p>
-    <p class="text-slate-500">Tel {{ os.school().phone }}</p>
-    <p class="text-slate-500">{{ os.school().website }} · {{ os.school().email }}</p>
-    <p class="text-xs text-slate-400 mt-3">Same fields as the paper form: child particulars, home address, health, class / LIN, parents’ NINs and Schoolpay code.</p>
   </div>
-</div>
+}
 
+<form id="application-form" class="paper-form mb-8" (ngSubmit)="$event.preventDefault(); submit()">
+  <div class="paper-rail" aria-hidden="true">
+    @for (icon of rail; track $index) {
+      <span>{{ icon }}</span>
+    }
+  </div>
+
+  <div class="paper-sheet">
+    <input
+      name="transport"
+      class="paper-ink mb-2"
+      placeholder="van — pick & drop"
+      [ngModel]="form().transport"
+      (ngModelChange)="set('transport', $event)" />
+
+    <div class="flex items-start gap-3 mb-2">
+      <img src="logo.png" alt="Little Royals logo" class="w-16 h-16 rounded-full object-contain bg-white shrink-0" />
+      <div class="flex-1 text-center pr-2">
+        <p class="paper-school text-[15px] sm:text-[17px] uppercase">Little Royals Kindergarten &amp; Primary School</p>
+        <p class="text-[11px] sm:text-[12px] text-slate-800 mt-1">Seguku Entebbe Road P.O Box 15062, Kampala Uganda</p>
+        <p class="text-[11px] sm:text-[12px] text-slate-800">Tel: 0772435539, 0704626670, 0754301175</p>
+        <p class="text-[11px] sm:text-[12px] underline text-slate-800">www.littleroyalskindergarten.co.ug</p>
+        <p class="text-[10px] sm:text-[11px] underline text-slate-800 break-all">info@littleroyalskindergarten.co.ug / littleroyals@yahoo.com</p>
+      </div>
+    </div>
+
+    <h2 class="paper-title text-center my-3">APPLICATION FORM</h2>
+
+    <p class="paper-label mb-1">Particulars of the child</p>
+
+    <div class="paper-row">
+      <span class="paper-label">First name:</span>
+      <input name="firstName" class="paper-line" [class.border-rose-500]="errors().firstName" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">Last name:</span>
+      <input name="lastName" class="paper-line" [class.border-rose-500]="errors().lastName" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">Date of birth:</span>
+      <input type="date" name="dob" class="paper-line" [class.border-rose-500]="errors().dob" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">Sex:</span>
+      <select name="sex" class="paper-line" [ngModel]="form().sex" (ngModelChange)="set('sex', $event)">
+        <option>Female</option>
+        <option>Male</option>
+      </select>
+      <span class="paper-label">Religion:</span>
+      <input name="religion" class="paper-line" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" />
+    </div>
+
+    <p class="paper-label mt-4 mb-1">Home address</p>
+    <div class="paper-row">
+      <span class="paper-label">Location:</span>
+      <input name="location" class="paper-line" [ngModel]="form().location" (ngModelChange)="set('location', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">L C Area Zone:</span>
+      <input name="lcZone" class="paper-line" [ngModel]="form().lcZone" (ngModelChange)="set('lcZone', $event)" />
+    </div>
+
+    <p class="paper-label mt-4">Any peculiar illness (of the child should be disclosed)</p>
+    <textarea name="illness" rows="2" class="paper-line paper-area mt-1" [ngModel]="form().illness" (ngModelChange)="set('illness', $event)"></textarea>
+
+    <div class="paper-row mt-3">
+      <span class="paper-label">Class applied for:</span>
+      <select name="cls" class="paper-line" [class.border-rose-500]="errors().cls" [ngModel]="form().cls" (ngModelChange)="set('cls', $event)">
+        <option value=""> </option>
+        @for (c of classes; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">LIN:</span>
+      <input name="lin" class="paper-line" [ngModel]="form().lin" (ngModelChange)="set('lin', $event)" />
+    </div>
+
+    <div class="paper-row mt-5">
+      <span class="paper-label">Name of father:</span>
+      <input name="fatherName" class="paper-line" [class.border-rose-500]="errors().fatherName" [ngModel]="form().fatherName" (ngModelChange)="set('fatherName', $event)" />
+      <span class="paper-label">Signature:</span>
+      <input name="fatherSig" class="paper-line" [ngModel]="form().fatherSig" (ngModelChange)="set('fatherSig', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">Telephone No.</span>
+      <input name="fatherPhone" class="paper-line" [ngModel]="form().fatherPhone" (ngModelChange)="set('fatherPhone', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">NIN:</span>
+      <input name="fatherNin" class="paper-line" [ngModel]="form().fatherNin" (ngModelChange)="set('fatherNin', $event)" />
+    </div>
+
+    <div class="paper-row mt-4">
+      <span class="paper-label">Name of the mother:</span>
+      <input name="motherName" class="paper-line" [ngModel]="form().motherName" (ngModelChange)="set('motherName', $event)" />
+      <span class="paper-label">Signature:</span>
+      <input name="motherSig" class="paper-line" [ngModel]="form().motherSig" (ngModelChange)="set('motherSig', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">Telephone No.</span>
+      <input name="motherPhone" class="paper-line" [ngModel]="form().motherPhone" (ngModelChange)="set('motherPhone', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">NIN:</span>
+      <input name="motherNin" class="paper-line" [ngModel]="form().motherNin" (ngModelChange)="set('motherNin', $event)" />
+    </div>
+
+    <div class="paper-row mt-4">
+      <span class="paper-label">Name of guardian:</span>
+      <input name="guardianName" class="paper-line" [ngModel]="form().guardianName" (ngModelChange)="set('guardianName', $event)" />
+      <span class="paper-label">Signature:</span>
+      <input name="guardianSig" class="paper-line" [ngModel]="form().guardianSig" (ngModelChange)="set('guardianSig', $event)" />
+    </div>
+    <div class="paper-row">
+      <span class="paper-label">Telephone No.</span>
+      <input name="guardianPhone" class="paper-line" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" />
+    </div>
+
+    <div class="flex items-end justify-between gap-3 mt-8">
+      <div class="paper-row flex-1 mb-0">
+        <span class="paper-label">Schoolpay code:</span>
+        <input name="schoolpay" class="paper-line" [ngModel]="form().schoolpay" (ngModelChange)="set('schoolpay', $event)" />
+      </div>
+      <div class="flex items-end gap-2 shrink-0">
+        <span class="paper-sun" aria-hidden="true">☀</span>
+        <p class="paper-welcome">YOU ARE<br />WELCOME</p>
+      </div>
+    </div>
+
+    @if (!viewing()) {
+      <div class="mt-6 flex justify-center">
+        <button type="submit" [disabled]="saving()" class="h-10 px-6 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">
+          {{ saving() ? 'Saving…' : 'Submit application' }}
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="paper-rail" aria-hidden="true">
+    @for (icon of rail; track $index) {
+      <span>{{ icon }}</span>
+    }
+  </div>
+</form>
+
+<p class="text-[11px] tracking-wide text-slate-400 font-medium mb-2">APPLICATION PIPELINE</p>
 <div class="flex gap-3 overflow-x-auto pb-2">
   @for (col of stages; track col.key) {
     <div class="min-w-[200px] flex-1 bg-white rounded-2xl border border-slate-100 p-3">
       <p class="text-[11px] font-medium tracking-wide text-slate-400 mb-2">{{ col.label.toUpperCase() }} · {{ inStage(col.key).length }}</p>
       <div class="space-y-2 min-h-[80px]">
         @for (a of inStage(col.key); track a.id) {
-          <button type="button" (click)="openApplicant(a)" class="w-full text-left border border-slate-100 rounded-xl p-2.5 text-xs bg-slate-50 hover:bg-white">
+          <button type="button" (click)="openApplicant(a)" class="w-full text-left border rounded-xl p-2.5 text-xs bg-slate-50 hover:bg-white" [class.border-slate-900]="viewing()?.id === a.id" [class.border-slate-100]="viewing()?.id !== a.id">
             <p class="font-medium text-slate-900">{{ a.name }}</p>
             <p class="text-slate-400 mt-1">{{ a.cls }} · {{ a.meta }}</p>
-            @if (a.photo) {
-              <p class="text-emerald-600 mt-1">Form image attached</p>
-            }
           </button>
         }
       </div>
     </div>
   }
 </div>
-
-@if (drawerOpen()) {
-  <div class="fixed inset-0 z-50">
-    <div class="absolute inset-0 bg-slate-900/30" (click)="closeForm()"></div>
-    <aside class="absolute right-0 top-0 bottom-0 w-[760px] max-w-[100vw] bg-white shadow-2xl flex flex-col">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-start justify-between shrink-0">
-        <div class="flex items-start gap-3">
-          <img src="logo.png" alt="" class="w-10 h-10 rounded-full ring-1 ring-slate-100 object-contain" />
-          <div>
-            <p class="text-[11px] tracking-wide text-slate-400">APPLICATION FORM</p>
-            <h2 class="text-lg font-semibold text-slate-900">Little Royals Kindergarten &amp; Primary School</h2>
-            <p class="text-xs text-slate-400 mt-0.5">In God We Trust · Seguku Entebbe Road</p>
-          </div>
-        </div>
-        <button type="button" (click)="closeForm()" class="text-slate-400 hover:text-slate-800"><svg class="ic-lg"><use href="#i-x"/></svg></button>
-      </div>
-      <form class="flex-1 overflow-y-auto px-6 py-5 space-y-7" (ngSubmit)="$event.preventDefault(); submit()">
-        <section>
-          <h3 class="text-sm font-semibold text-slate-900 mb-3">Particulars of the child</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label class="text-xs text-slate-500">First name *
-              <input name="firstName" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().firstName" [class.border-slate-200]="!errors().firstName" />
-            </label>
-            <label class="text-xs text-slate-500">Last name *
-              <input name="lastName" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().lastName" [class.border-slate-200]="!errors().lastName" />
-            </label>
-            <label class="text-xs text-slate-500">Date of birth *
-              <input type="date" name="dob" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().dob" [class.border-slate-200]="!errors().dob" />
-            </label>
-            <label class="text-xs text-slate-500">Sex
-              <select name="sex" [ngModel]="form().sex" (ngModelChange)="set('sex', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
-                <option>Female</option><option>Male</option>
-              </select>
-            </label>
-            <label class="text-xs text-slate-500 sm:col-span-2">Religion
-              <input name="religion" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-          </div>
-        </section>
-
-        <section>
-          <h3 class="text-sm font-semibold text-slate-900 mb-3">Home address</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label class="text-xs text-slate-500">Location
-              <input name="location" [ngModel]="form().location" (ngModelChange)="set('location', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-            <label class="text-xs text-slate-500">L C Area Zone
-              <input name="lcZone" [ngModel]="form().lcZone" (ngModelChange)="set('lcZone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-          </div>
-        </section>
-
-        <section>
-          <h3 class="text-sm font-semibold text-slate-900 mb-3">Health information</h3>
-          <label class="text-xs text-slate-500">Any peculiar illness of the child should be disclosed
-            <textarea name="illness" [ngModel]="form().illness" (ngModelChange)="set('illness', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
-          </label>
-        </section>
-
-        <section>
-          <h3 class="text-sm font-semibold text-slate-900 mb-3">Academic information</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label class="text-xs text-slate-500">Class applied for *
-              <select name="cls" [ngModel]="form().cls" (ngModelChange)="set('cls', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm bg-white" [class.border-rose-400]="errors().cls" [class.border-slate-200]="!errors().cls">
-                <option value="">Select class</option>
-                @for (c of classes; track c) {
-                  <option [value]="c">{{ c }}</option>
-                }
-              </select>
-            </label>
-            <label class="text-xs text-slate-500">LIN (Learner Identification Number)
-              <input name="lin" [ngModel]="form().lin" (ngModelChange)="set('lin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
-            </label>
-          </div>
-        </section>
-
-        <section>
-          <h3 class="text-sm font-semibold text-slate-900 mb-3">Parents / guardians</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label class="text-xs text-slate-500">Name of father
-              <input name="fatherName" [ngModel]="form().fatherName" (ngModelChange)="set('fatherName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().fatherName" [class.border-slate-200]="!errors().fatherName" />
-            </label>
-            <label class="text-xs text-slate-500">Telephone no. (father)
-              <input name="fatherPhone" [ngModel]="form().fatherPhone" (ngModelChange)="set('fatherPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-            <label class="text-xs text-slate-500 sm:col-span-2">NIN of father
-              <input name="fatherNin" [ngModel]="form().fatherNin" (ngModelChange)="set('fatherNin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
-            </label>
-            <label class="text-xs text-slate-500">Name of the mother
-              <input name="motherName" [ngModel]="form().motherName" (ngModelChange)="set('motherName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-            <label class="text-xs text-slate-500">Telephone no. (mother)
-              <input name="motherPhone" [ngModel]="form().motherPhone" (ngModelChange)="set('motherPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-            <label class="text-xs text-slate-500 sm:col-span-2">NIN of mother
-              <input name="motherNin" [ngModel]="form().motherNin" (ngModelChange)="set('motherNin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
-            </label>
-            <label class="text-xs text-slate-500">Name of guardian
-              <input name="guardianName" [ngModel]="form().guardianName" (ngModelChange)="set('guardianName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-            <label class="text-xs text-slate-500">Telephone no. (guardian)
-              <input name="guardianPhone" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            </label>
-          </div>
-        </section>
-
-        <section>
-          <h3 class="text-sm font-semibold text-slate-900 mb-3">Schoolpay &amp; transport</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label class="text-xs text-slate-500">Schoolpay code
-              <input name="schoolpay" [ngModel]="form().schoolpay" (ngModelChange)="set('schoolpay', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
-            </label>
-            <label class="text-xs text-slate-500">Transport
-              <select name="transport" [ngModel]="form().transport" (ngModelChange)="set('transport', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
-                <option value="">None</option>
-                <option>Van — pick &amp; drop</option>
-                <option>Day scholar — own transport</option>
-              </select>
-            </label>
-            <label class="text-xs text-slate-500 sm:col-span-2">Attach scanned form or child’s photo
-              <input type="file" accept="image/*" (change)="onPhoto($event)" class="mt-1 w-full text-sm" />
-            </label>
-            @if (form().photo) {
-              <img [src]="form().photo" alt="Attached form" class="sm:col-span-2 max-h-40 rounded-xl border border-slate-100 object-contain" />
-            }
-          </div>
-        </section>
-        <div class="h-4"></div>
-      </form>
-      <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-2 shrink-0 bg-white">
-        <button type="button" (click)="closeForm()" class="text-sm border border-slate-200 rounded-full px-4 py-2">Cancel</button>
-        <button type="button" (click)="submit()" [disabled]="saving()" class="text-sm bg-slate-900 text-white rounded-full px-5 py-2 disabled:opacity-60">{{ saving() ? 'Saving…' : 'Submit application' }}</button>
-      </div>
-    </aside>
-  </div>
-}
-
-@if (selected(); as a) {
-  <div class="fixed inset-0 z-40">
-    <div class="absolute inset-0 bg-slate-900/30" (click)="closeApplicant()"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-[560px] max-w-[100vw] bg-white shadow-2xl overflow-y-auto">
-      <div class="p-6 border-b border-slate-100 flex items-start justify-between">
-        <div>
-          <p class="text-xs text-slate-400">{{ a.cls }} · {{ a.stage }}</p>
-          <h2 class="text-2xl font-semibold text-slate-900 mt-1">{{ a.name }}</h2>
-          <p class="text-sm text-slate-500 mt-1">{{ a.meta }}</p>
-        </div>
-        <button type="button" (click)="closeApplicant()" class="text-slate-400 hover:text-slate-800"><svg class="ic-lg"><use href="#i-x"/></svg></button>
-      </div>
-      @if (a.photo) {
-        <img [src]="a.photo" alt="Application form for {{ a.name }}" class="w-full max-h-72 object-cover object-top border-b border-slate-100" />
-      }
-      <div class="p-6 space-y-4 text-sm">
-        <div class="grid grid-cols-2 gap-3">
-          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Date of birth</p><p class="font-medium mt-1">{{ a.dob || '—' }}</p></div>
-          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Sex</p><p class="font-medium mt-1">{{ a.sex || '—' }}</p></div>
-          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Religion</p><p class="font-medium mt-1">{{ a.religion || '—' }}</p></div>
-          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">LIN</p><p class="font-mono text-xs mt-1">{{ a.lin || '—' }}</p></div>
-        </div>
-        <p><span class="text-slate-400">Home:</span> {{ a.location || '—' }}@if (a.lcZone) { · LC {{ a.lcZone }} }</p>
-        <p><span class="text-slate-400">Illness:</span> {{ a.illness || 'None disclosed' }}</p>
-        <p><span class="text-slate-400">Father:</span> {{ a.fatherName || '—' }} · {{ a.fatherPhone || '—' }}</p>
-        <p class="font-mono text-xs text-slate-500">NIN {{ a.fatherNin || '—' }}</p>
-        <p><span class="text-slate-400">Mother:</span> {{ a.motherName || '—' }} · {{ a.motherPhone || '—' }}</p>
-        <p class="font-mono text-xs text-slate-500">NIN {{ a.motherNin || '—' }}</p>
-        @if (a.guardianName) {
-          <p><span class="text-slate-400">Guardian:</span> {{ a.guardianName }} · {{ a.guardianPhone }}</p>
-        }
-        <p><span class="text-slate-400">Schoolpay:</span> <span class="font-mono">{{ a.schoolpay || '—' }}</span></p>
-        <p><span class="text-slate-400">Transport:</span> {{ a.transport || '—' }}</p>
-        <div class="flex gap-3 pt-2">
-          @if (a.stage !== 'enrolled' && a.stage !== 'waitlist') {
-            <button type="button" (click)="advance(a)" class="text-sm bg-slate-900 text-white rounded-full px-4 py-2">Advance →</button>
-          }
-          @if (a.stage !== 'waitlist' && a.stage !== 'enrolled') {
-            <button type="button" (click)="waitlist(a)" class="text-sm text-rose-600">Waitlist</button>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-}
 
 @if (previewOpen()) {
   <div class="fixed inset-0 z-[60] bg-slate-900/70 flex items-center justify-center p-4" (click)="previewOpen.set(false)">

@@ -1,6 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { SchoolOsStore, type Applicant, type ApplicantStage } from '../../core/school-os.store';
 import { ToastService } from '../../core/toast.service';
 import { StatCards } from '../../shared/stat-cards';
@@ -40,6 +39,9 @@ export interface ApplicationForm {
   motherNin: string;
   guardianName: string;
   guardianPhone: string;
+  fatherSig: string;
+  motherSig: string;
+  guardianSig: string;
   schoolpay: string;
   transport: string;
   photo: string;
@@ -51,24 +53,25 @@ const EMPTY: ApplicationForm = {
   fatherName: '', fatherPhone: '', fatherNin: '',
   motherName: '', motherPhone: '', motherNin: '',
   guardianName: '', guardianPhone: '',
-  schoolpay: '', transport: '', photo: '',
+  fatherSig: '', motherSig: '', guardianSig: '',
+  schoolpay: '', transport: 'Van — pick & drop', photo: '',
 };
 
 @Component({
   selector: 'app-admissions',
   imports: [FormsModule, StatCards],
   templateUrl: './admissions.html',
+  styleUrl: './admissions.css',
 })
 export class AdmissionsPage {
   protected os = inject(SchoolOsStore);
   private toast = inject(ToastService);
-  private router = inject(Router);
   protected readonly stages = STAGES;
   protected readonly classes = ['Baby class', 'Middle class', 'Top class', 'Primary One', 'Primary Two', 'Primary Three', 'Primary Four', 'Primary Five', 'Primary Six', 'Primary Seven'];
+  protected readonly rail = ['😊', '⭐', '😃', '🌞', '😊', '⭐', '😃', '🌞', '😊', '⭐', '😃', '🌞', '😊', '⭐', '😃', '🌞'];
   protected readonly form = signal<ApplicationForm>({ ...EMPTY });
   protected readonly errors = signal<Partial<Record<keyof ApplicationForm, boolean>>>({});
-  protected readonly drawerOpen = signal(false);
-  protected readonly selected = signal<Applicant | null>(null);
+  protected readonly viewing = signal<Applicant | null>(null);
   protected readonly previewOpen = signal(false);
   protected readonly saving = signal(false);
 
@@ -88,33 +91,46 @@ export class AdmissionsPage {
     if (this.errors()[key]) this.errors.update((e) => ({ ...e, [key]: false }));
   }
 
-  openForm() {
+  blankForm() {
     this.form.set({ ...EMPTY });
     this.errors.set({});
-    this.drawerOpen.set(true);
-  }
-
-  closeForm() {
-    this.drawerOpen.set(false);
+    this.viewing.set(null);
   }
 
   openApplicant(a: Applicant) {
-    this.router.navigate(['/admissions', String(a.id)]);
-  }
-
-  closeApplicant() {
-    this.selected.set(null);
-  }
-
-  onPhoto(ev: Event) {
-    const file = (ev.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => this.set('photo', String(reader.result || ''));
-    reader.readAsDataURL(file);
+    this.viewing.set(a);
+    this.errors.set({});
+    this.form.set({
+      firstName: a.firstName,
+      lastName: a.lastName,
+      dob: a.dob,
+      sex: a.sex || 'Female',
+      religion: a.religion,
+      location: a.location,
+      lcZone: a.lcZone,
+      illness: a.illness,
+      cls: a.cls,
+      lin: a.lin,
+      fatherName: a.fatherName,
+      fatherPhone: a.fatherPhone,
+      fatherNin: a.fatherNin,
+      motherName: a.motherName,
+      motherPhone: a.motherPhone,
+      motherNin: a.motherNin,
+      guardianName: a.guardianName,
+      guardianPhone: a.guardianPhone,
+      fatherSig: a.fatherSig ?? '',
+      motherSig: a.motherSig ?? '',
+      guardianSig: a.guardianSig ?? '',
+      schoolpay: a.schoolpay,
+      transport: a.transport || 'Van — pick & drop',
+      photo: a.photo,
+    });
+    document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   submit() {
+    if (this.viewing()) return;
     const f = this.form();
     const invalid: Partial<Record<keyof ApplicationForm, boolean>> = {};
     if (!f.firstName.trim()) invalid.firstName = true;
@@ -135,7 +151,7 @@ export class AdmissionsPage {
       lastName: f.lastName.trim(),
     });
     this.saving.set(false);
-    this.drawerOpen.set(false);
+    this.blankForm();
     this.toast.show(f.firstName.trim() + ' ' + f.lastName.trim() + ' — application received');
   }
 
@@ -152,14 +168,12 @@ export class AdmissionsPage {
       'Adm. no. LR-' + Math.floor(1000 + Math.random() * 8999);
     this.os.moveApplicant(a.id, next, meta);
     this.toast.show(a.name + ' moved to ' + next);
-    if (this.selected()?.id === a.id) {
-      this.selected.set({ ...a, stage: next, meta });
-    }
+    if (this.viewing()?.id === a.id) this.viewing.set({ ...a, stage: next, meta });
   }
 
   waitlist(a: Applicant) {
     this.os.moveApplicant(a.id, 'waitlist', 'Waitlisted today');
     this.toast.show(a.name + ' waitlisted');
-    if (this.selected()?.id === a.id) this.selected.set({ ...a, stage: 'waitlist', meta: 'Waitlisted today' });
+    if (this.viewing()?.id === a.id) this.viewing.set({ ...a, stage: 'waitlist', meta: 'Waitlisted today' });
   }
 }
