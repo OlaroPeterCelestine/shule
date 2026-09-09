@@ -8,7 +8,7 @@ import { ModalService } from '../core/modal.service';
   template: `
     @if (modal.options(); as opts) {
       <div class="modal-overlay open fixed inset-0 z-50 items-center justify-center bg-ink/40" (click)="onOverlay($event)">
-        <div class="bg-white rounded-sm shadow-2xl w-[440px] max-w-[90vw]">
+        <div class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[90vw]">
           <div class="px-5 py-4 border-b border-line flex items-center justify-between">
             <h3 class="font-display text-lg text-ink">{{ opts.title }}</h3>
             <button type="button" (click)="modal.close()" class="text-slate2/50 hover:text-ink"><svg class="ic-lg"><use href="#i-x"/></svg></button>

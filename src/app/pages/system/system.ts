@@ -3,9 +3,12 @@ import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
 import { DownloadService } from '../../core/download.service';
 import { StudentsStore } from '../../core/students.store';
+import { SchoolOsStore } from '../../core/school-os.store';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-system',
+  imports: [StatCards],
   templateUrl: './system.html',
 })
 export class SystemPage {
@@ -13,6 +16,19 @@ export class SystemPage {
   private modal = inject(ModalService);
   private download = inject(DownloadService);
   private students = inject(StudentsStore);
+  protected os = inject(SchoolOsStore);
+
+  protected readonly stats = [
+    { label: 'Users', value: '142', change: 'Staff & parents', bars: [6, 7, 7, 8, 8, 9, 9] },
+    { label: 'Roles', value: '12', change: 'Fine-grained RBAC', bars: [4, 4, 5, 5, 6, 6, 7] },
+    { label: 'Audit events', value: '4', change: 'Shown on this page', bars: [3, 4, 3, 5, 4, 5, 4] },
+    { label: 'Last backup', value: '04:00', change: 'Nightly job', bars: [8, 8, 9, 8, 9, 9, 10] },
+  ];
+
+  toggle(role: string, module: string, key: 'view' | 'create' | 'edit' | 'approve') {
+    this.os.togglePerm(role, module, key);
+    this.toast.show(role + ' · ' + module + ' · ' + key + ' updated');
+  }
 
   runBackup() {
     this.toast.show('Backup started — you will be notified when complete');

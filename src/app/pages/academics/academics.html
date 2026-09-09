@@ -1,5 +1,6 @@
 <h1 class="font-display text-2xl text-ink mb-1">Timetable & Exams</h1>
         <p class="text-sm text-slate2/60 mb-5">S4 East · Term 2, Week 8</p>
+        <app-stat-cards [items]="stats()" />
 
         <div class="bg-white border border-line rounded-sm overflow-hidden mb-6">
           <table class="w-full text-xs text-center">
@@ -39,4 +40,24 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="bg-white border border-line rounded-sm p-5 mt-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display text-lg text-ink">Exam rooms & seating</h3>
+            <button type="button" (click)="addRoom()" class="text-xs bg-ink text-white rounded-sm px-3 py-1.5">+ Room</button>
+          </div>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate2/50 text-left border-b border-line"><tr><th class="pb-2 font-normal">Room</th><th class="pb-2 font-normal">Paper</th><th class="pb-2 font-normal">Seated</th><th class="pb-2 font-normal">Invigilator</th></tr></thead>
+            <tbody class="divide-y divide-line">
+              @for (r of os.examRooms(); track r.id) {
+                <tr>
+                  <td class="py-2">{{ r.room }}</td>
+                  <td class="py-2">{{ r.exam }}</td>
+                  <td class="py-2">{{ r.seated }} / {{ r.capacity }}</td>
+                  <td class="py-2">{{ r.invigilator }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>

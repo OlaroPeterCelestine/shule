@@ -1,118 +1,339 @@
-<div class="flex items-center justify-between mb-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
-    <h1 class="font-display text-2xl text-ink">Students</h1>
-    <p class="text-sm text-slate2/60 mt-1">1,284 enrolled across 14 classes</p>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Students</h1>
+    <p class="text-sm text-slate-400 mt-1">{{ storeCount() }} enrolled · {{ filtered().length }} showing</p>
   </div>
-  <button type="button" (click)="addStudent()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep">
+  <button type="button" (click)="openAdd()" class="bg-slate-900 text-white text-sm px-4 py-2.5 rounded-full flex items-center justify-center gap-1.5 hover:bg-slate-800 shrink-0">
     <svg class="ic text-white"><use href="#i-plus"/></svg> Add student
   </button>
 </div>
 
-<div class="flex gap-3 mb-4">
-  <input [ngModel]="q()" (ngModelChange)="q.set($event)" name="studentSearch" class="border border-line rounded-sm px-3 py-2 text-sm w-64 bg-white" placeholder="Search by name or admission no.">
-  <select [ngModel]="classFilter()" (ngModelChange)="classFilter.set($event)" name="classFilter" class="border border-line rounded-sm px-3 py-2 text-sm bg-white">
+<app-stat-cards [items]="stats()" />
+
+<div class="flex flex-wrap gap-3 mb-4">
+  <input [ngModel]="q()" (ngModelChange)="q.set($event)" name="studentSearch" class="border border-slate-200 rounded-full px-4 py-2 text-sm w-full sm:w-64 bg-white" placeholder="Search by name or admission no.">
+  <select [ngModel]="classFilter()" (ngModelChange)="classFilter.set($event)" name="classFilter" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
     <option value="">All classes</option>
     @for (c of classes(); track c) {
       <option [value]="c">{{ c }}</option>
     }
   </select>
-  <select [ngModel]="feeFilter()" (ngModelChange)="feeFilter.set($event)" name="feeFilter" class="border border-line rounded-sm px-3 py-2 text-sm bg-white">
+  <select [ngModel]="feeFilter()" (ngModelChange)="feeFilter.set($event)" name="feeFilter" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
     <option value="">Fee status: All</option>
     <option value="due">Balance due</option>
     <option value="cleared">Cleared</option>
   </select>
 </div>
 
-<div class="bg-white border border-line rounded-sm overflow-hidden">
+<div class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
   <table class="w-full text-sm">
-    <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left">
-      <th class="px-4 py-3 font-normal">Adm. No.</th><th class="px-4 py-3 font-normal">Name</th><th class="px-4 py-3 font-normal">Class</th><th class="px-4 py-3 font-normal">Guardian</th><th class="px-4 py-3 font-normal">Attendance</th><th class="px-4 py-3 font-normal">Fees</th><th class="px-4 py-3 font-normal"></th>
+    <thead class="bg-slate-50 text-xs text-slate-400"><tr class="text-left">
+      <th class="px-4 py-3 font-medium">Adm. No.</th><th class="px-4 py-3 font-medium">Name</th><th class="px-4 py-3 font-medium">Class</th><th class="px-4 py-3 font-medium">Guardian</th><th class="px-4 py-3 font-medium">Attendance</th><th class="px-4 py-3 font-medium">Fees</th><th class="px-4 py-3 font-medium"></th>
     </tr></thead>
-    <tbody class="divide-y divide-line">
+    <tbody class="divide-y divide-slate-50">
       @for (s of filtered(); track s.adm) {
-        <tr class="student-row hover:bg-canvas cursor-pointer" (click)="openStudent(s)">
-          <td class="px-4 py-3 font-mono text-xs">{{ s.adm }}</td>
-          <td class="px-4 py-3 font-medium text-ink">{{ s.name }}</td>
-          <td class="px-4 py-3">{{ s.cls }}</td>
-          <td class="px-4 py-3">{{ s.guardian }}</td>
-          <td class="px-4 py-3">{{ s.attendance }}</td>
-          <td class="px-4 py-3" [class.text-primary]="s.fee === 'cleared'" [class.text-maroon]="s.fee === 'due'">{{ s.feeLabel }}</td>
-          <td class="px-4 py-3 text-primary text-xs flex items-center gap-1">View <svg class="ic w-3.5 h-3.5"><use href="#i-arrow-right"/></svg></td>
+        <tr class="hover:bg-slate-50 cursor-pointer" (click)="openStudent(s)">
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">{{ s.adm }}</td>
+          <td class="px-4 py-3 font-medium text-slate-900">{{ s.name }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ s.cls }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ s.guardian }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ s.attendance }}</td>
+          <td class="px-4 py-3" [class.text-emerald-600]="s.fee === 'cleared'" [class.text-rose-600]="s.fee === 'due'">{{ s.feeLabel }}</td>
+          <td class="px-4 py-3 text-slate-700 text-xs flex items-center gap-1">View <svg class="ic w-3.5 h-3.5"><use href="#i-arrow-right"/></svg></td>
         </tr>
       }
     </tbody>
   </table>
   @if (filtered().length === 0) {
-    <p class="text-sm text-slate2/50 text-center py-8">No students match those filters.</p>
+    <p class="text-sm text-slate-400 text-center py-8">No students match those filters.</p>
   }
 </div>
 
-<div class="fixed inset-0 z-40" [class.hidden]="!panelOpen()">
-        <div class="absolute inset-0 bg-ink/40" (click)="close()"></div>
-        <div class="absolute right-0 top-0 bottom-0 w-[560px] bg-white shadow-2xl overflow-y-auto">
-          <div class="p-6 border-b border-line flex items-start justify-between">
-            <div>
-              <p class="text-xs text-slate2/50 font-mono">{{ selected()?.adm }}</p>
-              <h2 class="font-display text-2xl text-ink mt-1">{{ selected()?.name }}</h2>
-              <p class="text-sm text-slate2/60 mt-1">{{ selected()?.cls }} · Admitted Feb 2023</p>
-            </div>
-            <button (click)="close()" class="text-slate2/50 hover:text-ink"><svg class="ic-lg"><use href="#i-x"/></svg></button>
-          </div>
-          <div class="flex text-xs border-b border-line px-6">
-            <button type="button" (click)="pane.set('overview')" class="panel-tab active px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'overview'">Overview</button>
-            <button type="button" (click)="pane.set('academics')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'academics'">Academics</button>
-            <button type="button" (click)="pane.set('fees')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'fees'">Fees</button>
-            <button type="button" (click)="pane.set('attendance')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'attendance'">Attendance</button>
-            <button type="button" (click)="pane.set('documents')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'documents'">Documents</button>
-          </div>
+<!-- Profile drawer -->
+@if (panelOpen()) {
+  <div class="fixed inset-0 z-40">
+    <div class="absolute inset-0 bg-slate-900/30" (click)="close()"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-[560px] max-w-[100vw] bg-white shadow-2xl overflow-y-auto">
+      <div class="p-6 border-b border-slate-100 flex items-start justify-between">
+        <div>
+          <p class="text-xs text-slate-400 font-mono">{{ selected()?.adm }}</p>
+          <h2 class="text-2xl font-semibold text-slate-900 mt-1">{{ selected()?.name }}</h2>
+          <p class="text-sm text-slate-500 mt-1">{{ selected()?.cls }}@if (selected()?.admissionDate) { · Admitted {{ selected()?.admissionDate }} }</p>
+        </div>
+        <button type="button" (click)="close()" class="text-slate-400 hover:text-slate-800"><svg class="ic-lg"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="flex text-xs border-b border-slate-100 px-6 overflow-x-auto">
+        <button type="button" (click)="pane.set('overview')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate-400" [class.active]="pane() === 'overview'">Overview</button>
+        <button type="button" (click)="pane.set('guardian')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate-400" [class.active]="pane() === 'guardian'">Guardian</button>
+        <button type="button" (click)="pane.set('medical')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate-400" [class.active]="pane() === 'medical'">Medical</button>
+        <button type="button" (click)="pane.set('campus')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate-400" [class.active]="pane() === 'campus'">Campus</button>
+        <button type="button" (click)="pane.set('fees')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate-400" [class.active]="pane() === 'fees'">Fees</button>
+        <button type="button" (click)="pane.set('attendance')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate-400" [class.active]="pane() === 'attendance'">Attendance</button>
+        <button type="button" (click)="pane.set('health')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate-400" [class.active]="pane() === 'health'">Health</button>
+      </div>
 
-          <div class="panel-pane active p-6 space-y-5 text-sm" [class.active]="pane() === 'overview'">
-            <div>
-              <p class="text-xs text-slate2/50 mb-2">Guardian</p>
-              <p class="text-ink font-medium">Rose Nakiwala — Mother</p>
-              <p class="text-slate2/60">+256 772 445 210 · rose.nakiwala@gmail.com</p>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="border border-line rounded-sm p-3"><p class="text-xs text-slate2/50">Term average</p><p class="font-display text-xl text-ink">78%</p></div>
-              <div class="border border-line rounded-sm p-3"><p class="text-xs text-slate2/50">Class position</p><p class="font-display text-xl text-ink">4th / 58</p></div>
-            </div>
-            <div>
-              <p class="text-xs text-slate2/50 mb-2">Recent notes</p>
-              <p class="text-slate2/70">Selected for national science fair — awaiting parent consent form.</p>
-            </div>
+      <div class="p-6 space-y-5 text-sm" [class.hidden]="pane() !== 'overview'">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Gender</p><p class="font-medium text-slate-800 mt-1">{{ selected()?.gender || '—' }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Date of birth</p><p class="font-medium text-slate-800 mt-1">{{ selected()?.dob || '—' }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Nationality</p><p class="font-medium text-slate-800 mt-1">{{ selected()?.nationality || '—' }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Admission type</p><p class="font-medium text-slate-800 mt-1">{{ selected()?.admissionType || '—' }}</p></div>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 mb-1">Previous school</p>
+          <p class="text-slate-700">{{ selected()?.previousSchool || '—' }}</p>
+        </div>
+        @if (selected()?.notes) {
+          <div>
+            <p class="text-xs text-slate-400 mb-1">Notes</p>
+            <p class="text-slate-700">{{ selected()?.notes }}</p>
           </div>
+        }
+      </div>
 
-          <div class="panel-pane p-6 text-sm space-y-3" [class.active]="pane() === 'academics'">
-            <table class="w-full">
-              <thead><tr class="text-left text-xs text-slate2/50 border-b border-line"><th class="pb-2 font-normal">Subject</th><th class="pb-2 font-normal">Score</th><th class="pb-2 font-normal">Grade</th></tr></thead>
-              <tbody class="divide-y divide-line">
-                <tr><td class="py-2">Physics</td><td class="py-2">74%</td><td class="py-2">B</td></tr>
-                <tr><td class="py-2">Mathematics</td><td class="py-2">81%</td><td class="py-2">A</td></tr>
-                <tr><td class="py-2">English</td><td class="py-2">79%</td><td class="py-2">B+</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="panel-pane p-6 text-sm space-y-3" [class.active]="pane() === 'fees'">
-            <div class="border border-line rounded-sm p-3 flex justify-between items-center">
-              <span>Term 2 balance</span><span class="text-primary font-medium">Cleared</span>
-            </div>
-            <div class="border border-line rounded-sm p-3 flex justify-between items-center">
-              <span>Last payment</span><span>1,020,000 · 3 Sep 2026</span>
-            </div>
-          </div>
-
-          <div class="panel-pane p-6 text-sm space-y-3" [class.active]="pane() === 'attendance'">
-            <div class="flex items-center gap-4">
-              <div class="w-20 h-20 rounded-full" style="background: conic-gradient(#0E7C61 0% 96%, #E1E5EA 96% 100%)"></div>
-              <div><p class="font-display text-2xl text-ink">96%</p><p class="text-slate2/60 text-xs">Present this term</p></div>
-            </div>
-          </div>
-
-          <div class="panel-pane p-6 text-sm space-y-2" [class.active]="pane() === 'documents'">
-            <div class="border border-line rounded-sm p-3 flex items-center gap-2"><svg class="ic text-slate2/50"><use href="#i-file"/></svg> Birth certificate.pdf</div>
-            <div class="border border-line rounded-sm p-3 flex items-center gap-2"><svg class="ic text-slate2/50"><use href="#i-file"/></svg> Admission form.pdf</div>
-            <div class="border border-line rounded-sm p-3 flex items-center gap-2"><svg class="ic text-slate2/50"><use href="#i-file"/></svg> Science fair consent.pdf</div>
-          </div>
+      <div class="p-6 space-y-4 text-sm" [class.hidden]="pane() !== 'guardian'">
+        <div>
+          <p class="text-xs text-slate-400 mb-1">Primary guardian</p>
+          <p class="font-medium text-slate-900">{{ selected()?.guardian }}@if (selected()?.guardianRelation) { — {{ selected()?.guardianRelation }} }</p>
+          <p class="text-slate-500 mt-1">{{ selected()?.guardianPhone || '—' }}@if (selected()?.guardianEmail) { · {{ selected()?.guardianEmail }} }</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 mb-1">Home address</p>
+          <p class="text-slate-700">{{ selected()?.address || '—' }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 mb-1">Emergency contact</p>
+          <p class="text-slate-700">{{ selected()?.emergencyName || '—' }}@if (selected()?.emergencyPhone) { · {{ selected()?.emergencyPhone }} }</p>
         </div>
       </div>
+
+      <div class="p-6 space-y-4 text-sm" [class.hidden]="pane() !== 'medical'">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Blood group</p><p class="font-medium text-slate-800 mt-1">{{ selected()?.bloodGroup || '—' }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Allergies</p><p class="font-medium text-slate-800 mt-1">{{ selected()?.allergies || 'None recorded' }}</p></div>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 mb-1">Medical notes</p>
+          <p class="text-slate-700">{{ selected()?.medicalNotes || 'None' }}</p>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-4 text-sm" [class.hidden]="pane() !== 'campus'">
+        <p><span class="text-slate-400">Resident type:</span> <span class="font-medium text-slate-800">{{ selected()?.residentType || '—' }}</span></p>
+        <p><span class="text-slate-400">Transport:</span> <span class="text-slate-800">{{ selected()?.transportRoute || 'Not assigned' }}</span></p>
+        <p><span class="text-slate-400">Hostel:</span> <span class="text-slate-800">{{ selected()?.hostel || '—' }}</span></p>
+        <p><span class="text-slate-400">Attendance:</span> <span class="text-slate-800">{{ selected()?.attendance }}</span></p>
+      </div>
+
+      <div class="p-6 space-y-3 text-sm" [class.hidden]="pane() !== 'fees'">
+        <div class="border border-slate-100 rounded-xl p-3 flex justify-between items-center">
+          <span>Fee status</span><span [class.text-emerald-600]="selected()?.fee === 'cleared'" [class.text-rose-600]="selected()?.fee === 'due'" class="font-medium">{{ selected()?.feeLabel }}</span>
+        </div>
+        <p class="text-xs text-slate-400">Same student ledger as Fees & Payroll — not a second account.</p>
+      </div>
+
+      <div class="p-6 space-y-3 text-sm" [class.hidden]="pane() !== 'attendance'">
+        @if (selected(); as s) {
+          @if (marksFor(s.adm); as m) {
+            <div class="border border-slate-100 rounded-xl p-3">
+              <p class="text-xs text-slate-400">Today’s mark</p>
+              <p class="text-lg font-semibold text-slate-900 mt-1">{{ m.status === 'P' ? 'Present' : m.status === 'A' ? 'Absent' : m.status === 'L' ? 'Late' : 'Excused' }}</p>
+            </div>
+          } @else {
+            <p class="text-slate-400">No register mark yet today.</p>
+          }
+          <p class="text-xs text-slate-400">Term rate on file: {{ s.attendance }}</p>
+        }
+      </div>
+
+      <div class="p-6 space-y-3 text-sm" [class.hidden]="pane() !== 'health'">
+        @if (selected(); as s) {
+          <p class="text-xs text-slate-400">Allergies: <span class="text-slate-800">{{ s.allergies || 'None' }}</span></p>
+          @for (v of visitsFor(s.adm); track v.id) {
+            <div class="border border-slate-100 rounded-xl p-3">
+              <p class="font-medium text-slate-800">{{ v.reason }}</p>
+              <p class="text-xs text-slate-400 mt-1">{{ v.action }} · {{ v.time }}</p>
+            </div>
+          }
+          @if (!visitsFor(s.adm).length) {
+            <p class="text-slate-400">No sickbay visits on this record.</p>
+          }
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Add student side drawer -->
+@if (drawerOpen()) {
+  <div class="fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-slate-900/30" (click)="closeDrawer()"></div>
+    <aside class="absolute right-0 top-0 bottom-0 w-[720px] max-w-[100vw] bg-white shadow-2xl flex flex-col">
+      <div class="px-6 py-5 border-b border-slate-100 flex items-start justify-between shrink-0">
+        <div>
+          <p class="text-xs text-slate-400">Enrollment</p>
+          <h2 class="text-xl font-semibold text-slate-900 mt-0.5">Add student</h2>
+          <p class="text-xs text-slate-400 mt-1">Complete the record. Required fields are marked.</p>
+        </div>
+        <button type="button" (click)="closeDrawer()" class="text-slate-400 hover:text-slate-800"><svg class="ic-lg"><use href="#i-x"/></svg></button>
+      </div>
+      <form class="flex-1 overflow-y-auto px-6 py-5 space-y-7" (ngSubmit)="$event.preventDefault(); submit()">
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Personal details</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">First name *
+              <input name="firstName" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().firstName" [class.border-slate-200]="!errors().firstName" />
+            </label>
+            <label class="text-xs text-slate-500">Last name *
+              <input name="lastName" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().lastName" [class.border-slate-200]="!errors().lastName" />
+            </label>
+            <label class="text-xs text-slate-500">Gender
+              <select name="gender" [ngModel]="form().gender" (ngModelChange)="set('gender', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                <option>Female</option><option>Male</option><option>Other</option>
+              </select>
+            </label>
+            <label class="text-xs text-slate-500">Date of birth *
+              <input type="date" name="dob" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().dob" [class.border-slate-200]="!errors().dob" />
+            </label>
+            <label class="text-xs text-slate-500">Nationality
+              <input name="nationality" [ngModel]="form().nationality" (ngModelChange)="set('nationality', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500">Religion
+              <input name="religion" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Optional" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Admission</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Class *
+              <select name="cls" [ngModel]="form().cls" (ngModelChange)="set('cls', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm bg-white" [class.border-rose-400]="errors().cls" [class.border-slate-200]="!errors().cls">
+                <option value="">Select class</option>
+                @for (c of classOptions; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </label>
+            <label class="text-xs text-slate-500">Admission date *
+              <input type="date" name="admissionDate" [ngModel]="form().admissionDate" (ngModelChange)="set('admissionDate', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().admissionDate" [class.border-slate-200]="!errors().admissionDate" />
+            </label>
+            <label class="text-xs text-slate-500">Admission type
+              <select name="admissionType" [ngModel]="form().admissionType" (ngModelChange)="set('admissionType', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                <option>New</option><option>Transfer</option><option>Continuing</option>
+              </select>
+            </label>
+            <label class="text-xs text-slate-500">Previous school
+              <input name="previousSchool" [ngModel]="form().previousSchool" (ngModelChange)="set('previousSchool', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="If transferring" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Guardian & emergency</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Guardian name *
+              <input name="guardian" [ngModel]="form().guardian" (ngModelChange)="set('guardian', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().guardian" [class.border-slate-200]="!errors().guardian" />
+            </label>
+            <label class="text-xs text-slate-500">Relationship
+              <select name="guardianRelation" [ngModel]="form().guardianRelation" (ngModelChange)="set('guardianRelation', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                <option>Mother</option><option>Father</option><option>Aunt</option><option>Uncle</option><option>Grandparent</option><option>Guardian</option>
+              </select>
+            </label>
+            <label class="text-xs text-slate-500">Phone *
+              <input name="guardianPhone" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" placeholder="+256 …" [class.border-rose-400]="errors().guardianPhone" [class.border-slate-200]="!errors().guardianPhone" />
+            </label>
+            <label class="text-xs text-slate-500">Email
+              <input type="email" name="guardianEmail" [ngModel]="form().guardianEmail" (ngModelChange)="set('guardianEmail', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().guardianEmail" [class.border-slate-200]="!errors().guardianEmail" />
+            </label>
+            <label class="text-xs text-slate-500 col-span-2">Home address
+              <input name="address" [ngModel]="form().address" (ngModelChange)="set('address', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500">Emergency contact
+              <input name="emergencyName" [ngModel]="form().emergencyName" (ngModelChange)="set('emergencyName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500">Emergency phone
+              <input name="emergencyPhone" [ngModel]="form().emergencyPhone" (ngModelChange)="set('emergencyPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Medical</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Blood group
+              <select name="bloodGroup" [ngModel]="form().bloodGroup" (ngModelChange)="set('bloodGroup', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                <option value="">Not recorded</option>
+                <option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+              </select>
+            </label>
+            <label class="text-xs text-slate-500">Allergies
+              <input name="allergies" [ngModel]="form().allergies" (ngModelChange)="set('allergies', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="e.g. Peanuts, dust" />
+            </label>
+            <label class="text-xs text-slate-500 col-span-2">Medical notes
+              <textarea name="medicalNotes" [ngModel]="form().medicalNotes" (ngModelChange)="set('medicalNotes', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Asthma, medication, nurse instructions…"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Campus</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Resident type
+              <select name="residentType" [ngModel]="form().residentType" (ngModelChange)="set('residentType', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                <option>Day</option><option>Boarder</option>
+              </select>
+            </label>
+            @if (form().residentType === 'Day') {
+              <label class="text-xs text-slate-500">Transport route
+                <select name="transportRoute" [ngModel]="form().transportRoute" (ngModelChange)="set('transportRoute', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                  <option value="">Not assigned</option>
+                  @for (r of routes; track r) {
+                    @if (r) { <option [value]="r">{{ r }}</option> }
+                  }
+                </select>
+              </label>
+            } @else {
+              <label class="text-xs text-slate-500">Hostel block
+                <select name="hostel" [ngModel]="form().hostel" (ngModelChange)="set('hostel', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                  <option value="">Select block</option>
+                  @for (h of hostels; track h) {
+                    @if (h) { <option [value]="h">{{ h }}</option> }
+                  }
+                </select>
+              </label>
+            }
+            <label class="text-xs text-slate-500 col-span-2">Staff notes
+              <textarea name="notes" [ngModel]="form().notes" (ngModelChange)="set('notes', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Any extra enrollment notes"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <div class="h-16"></div>
+      </form>
+      <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-2 shrink-0 bg-white">
+        <button type="button" (click)="closeDrawer()" class="text-sm border border-slate-200 rounded-full px-4 py-2 hover:bg-slate-50">Cancel</button>
+        <button type="button" (click)="submit()" [disabled]="saving()" class="text-sm bg-slate-900 text-white rounded-full px-5 py-2 hover:bg-slate-800 disabled:opacity-60">{{ saving() ? 'Saving…' : 'Enroll student' }}</button>
+      </div>
+    </aside>
+  </div>
+}
+
+<!-- Success modal -->
+@if (successOpen()) {
+  <div class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/40" (click)="closeSuccess()">
+    <div class="bg-white rounded-2xl shadow-2xl w-[420px] max-w-[92vw] p-7 text-center" (click)="$event.stopPropagation()">
+      <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
+        <svg class="ic-lg"><use href="#i-check"/></svg>
+      </div>
+      <h3 class="text-xl font-semibold text-slate-900 mt-4">Student enrolled</h3>
+      <p class="text-sm text-slate-500 mt-2">{{ created()?.name }} has been added to {{ created()?.cls }}.</p>
+      <p class="mt-3 inline-block font-mono text-sm bg-slate-50 border border-slate-100 rounded-full px-3 py-1 text-slate-700">{{ created()?.adm }}</p>
+      <div class="mt-6 grid grid-cols-2 gap-2">
+        <button type="button" (click)="viewCreated()" class="text-sm border border-slate-200 rounded-full py-2.5 hover:bg-slate-50">View profile</button>
+        <button type="button" (click)="addAnother()" class="text-sm bg-slate-900 text-white rounded-full py-2.5 hover:bg-slate-800">Add another</button>
+      </div>
+      <button type="button" (click)="closeSuccess()" class="mt-3 text-xs text-slate-400 hover:text-slate-700">Done</button>
+    </div>
+  </div>
+}

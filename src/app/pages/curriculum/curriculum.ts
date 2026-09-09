@@ -1,9 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-curriculum',
+  imports: [StatCards],
   templateUrl: './curriculum.html',
 })
 export class CurriculumPage {
@@ -18,6 +20,12 @@ export class CurriculumPage {
   protected readonly reviews = signal([
     { id: 1, title: 'S2 Mathematics — Term 2 plan', meta: 'Submitted by Ssentongo B. · Behind schedule flag' },
     { id: 2, title: 'S1 English — Term 2 plan', meta: 'Submitted by Namutebi J. · On schedule' },
+  ]);
+  protected readonly stats = computed(() => [
+    { label: 'Lesson plans', value: String(this.plans().length), change: 'This week', bars: [4, 5, 5, 6, 7, 7, 8] },
+    { label: 'HOD queue', value: String(this.reviews().length), change: 'Awaiting review', bars: [6, 5, 5, 4, 4, 3, 2] },
+    { label: 'On schedule', value: '2 / 3', change: 'Subjects tracked', bars: [5, 6, 6, 7, 7, 8, 8] },
+    { label: 'Behind', value: '8 pts', change: 'S2 Mathematics', bars: [8, 7, 7, 6, 6, 5, 5] },
   ]);
 
   newLesson() {

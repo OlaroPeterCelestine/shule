@@ -32,7 +32,7 @@ export class AuthService {
       user = { name, email, role: 'admin', label: 'Admin' };
     }
     this.setUser(user, remember);
-    return user;
+    return this.session()!;
   }
 
   logout() {
@@ -41,19 +41,89 @@ export class AuthService {
     localStorage.removeItem(KEY);
   }
 
+  updateProfile(patch: Partial<SessionUser>) {
+    const current = this.session();
+    if (!current) return;
+    this.setUser({ ...current, ...patch }, localStorage.getItem(KEY) !== null);
+  }
+
   private setUser(user: SessionUser, remember: boolean) {
-    this.session.set(user);
+    const next = withDefaults(user);
+    this.session.set(next);
     sessionStorage.removeItem(KEY);
     localStorage.removeItem(KEY);
     const store = remember ? localStorage : sessionStorage;
-    store.setItem(KEY, JSON.stringify(user));
+    store.setItem(KEY, JSON.stringify(next));
   }
+}
+
+const PROFILE_DEFAULTS: Record<RoleKey, Partial<SessionUser>> = {
+  admin: {
+    phone: '+256 772 441 190',
+    title: 'School Administrator',
+    department: 'Administration',
+    staffId: 'LR-STF-001',
+    campus: 'Main campus — Ntinda',
+    bio: 'Oversees school operations, admissions and staff at Little Royals.',
+    language: 'English',
+    dateFormat: '9 Sep 2026',
+    notifyEmail: true,
+    notifySms: true,
+    notifyPush: true,
+    twoFactor: false,
+  },
+  teacher: {
+    phone: '+256 701 228 441',
+    title: 'Physics Teacher',
+    department: 'Sciences',
+    staffId: 'LR-STF-018',
+    campus: 'Main campus — Ntinda',
+    bio: 'Teaches S4 and S6 Physics and supervises mock examinations.',
+    language: 'English',
+    dateFormat: '9 Sep 2026',
+    notifyEmail: true,
+    notifySms: false,
+    notifyPush: true,
+    twoFactor: false,
+  },
+  accountant: {
+    phone: '+256 754 110 902',
+    title: 'School Accountant',
+    department: 'Finance',
+    staffId: 'LR-STF-007',
+    campus: 'Main campus — Ntinda',
+    bio: 'Manages fee collection, payroll and supplier payments.',
+    language: 'English',
+    dateFormat: '9 Sep 2026',
+    notifyEmail: true,
+    notifySms: true,
+    notifyPush: false,
+    twoFactor: true,
+  },
+  parent: {
+    phone: '+256 778 334 210',
+    title: 'Parent / Guardian',
+    department: 'S4 East — Nakiwala Faith',
+    staffId: 'LR-PAR-2291',
+    campus: 'Day scholar',
+    bio: 'Guardian of Nakiwala Faith, S4 East.',
+    language: 'English',
+    dateFormat: '9 Sep 2026',
+    notifyEmail: true,
+    notifySms: true,
+    notifyPush: true,
+    twoFactor: false,
+  },
+};
+
+function withDefaults(user: SessionUser): SessionUser {
+  return { ...PROFILE_DEFAULTS[user.role], ...user };
 }
 
 function readSession(): SessionUser | null {
   try {
     const raw = localStorage.getItem(KEY) ?? sessionStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as SessionUser) : null;
+    return raw ? withDefaults(JSON.parse(raw) as SessionUser) : null;
   } catch {
     return null;
   }

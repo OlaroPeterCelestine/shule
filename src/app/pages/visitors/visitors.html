@@ -1,10 +1,11 @@
-<div class="flex items-center justify-between mb-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div>
             <h1 class="font-display text-2xl text-ink">Visitors & Gate</h1>
             <p class="text-sm text-slate2/60 mt-1">{{ visitors().filter(v => v.status === 'On campus').length }} visitors on campus now</p>
           </div>
-          <button type="button" (click)="checkIn()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep"><svg class="ic text-white"><use href="#i-plus"/></svg> Check in visitor</button>
+          <button type="button" (click)="checkIn()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center justify-center gap-1.5 hover:bg-inkdeep shrink-0"><svg class="ic text-white"><use href="#i-plus"/></svg> Check in visitor</button>
         </div>
+        <app-stat-cards [items]="stats()" />
         <div class="bg-white border border-line rounded-sm overflow-hidden">
           <table class="w-full text-sm">
             <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Visitor</th><th class="px-4 py-3 font-normal">Purpose</th><th class="px-4 py-3 font-normal">Host</th><th class="px-4 py-3 font-normal">Badge</th><th class="px-4 py-3 font-normal">Status</th><th class="px-4 py-3 font-normal"></th></tr></thead>

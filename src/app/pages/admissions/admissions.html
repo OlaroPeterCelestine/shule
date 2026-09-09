@@ -1,48 +1,237 @@
-<div class="flex items-center justify-between mb-5">
-          <div>
-            <h1 class="font-display text-2xl text-ink">Admissions</h1>
-            <p class="text-sm text-slate2/60 mt-1">{{ applied().length + 18 }} active applications for Term 3, 2026 intake</p>
-          </div>
-          <button type="button" (click)="addApplication()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep">
-            <svg class="ic text-white"><use href="#i-plus"/></svg> New application
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Admissions</h1>
+    <p class="text-sm text-slate-400 mt-1">Official Little Royals application form — Seguku Entebbe Road</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" (click)="previewOpen.set(true)" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full">View paper form</button>
+    <button type="button" (click)="openForm()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">+ New application</button>
+  </div>
+</div>
+
+<app-stat-cards [items]="stats()" />
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
+  <button type="button" (click)="previewOpen.set(true)" class="lg:col-span-1 bg-white rounded-2xl border border-slate-100 overflow-hidden text-left hover:border-slate-200">
+    <img src="application-form.jpg" alt="Little Royals application form" class="w-full h-56 object-cover object-top" />
+    <div class="p-3">
+      <p class="text-sm font-medium text-slate-900">Official application form</p>
+      <p class="text-xs text-slate-400 mt-0.5">Scanned copy — click to enlarge</p>
+    </div>
+  </button>
+  <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-5 text-sm">
+    <p class="text-[11px] tracking-wide text-slate-400 font-medium">LITTLE ROYALS KINDERGARTEN &amp; PRIMARY SCHOOL</p>
+    <p class="text-slate-800 mt-1">{{ os.school().motto }}</p>
+    <p class="text-slate-500 mt-3">{{ os.school().address }}</p>
+    <p class="text-slate-500">Tel {{ os.school().phone }}</p>
+    <p class="text-slate-500">{{ os.school().website }} · {{ os.school().email }}</p>
+    <p class="text-xs text-slate-400 mt-3">Same fields as the paper form: child particulars, home address, health, class / LIN, parents’ NINs and Schoolpay code.</p>
+  </div>
+</div>
+
+<div class="flex gap-3 overflow-x-auto pb-2">
+  @for (col of stages; track col.key) {
+    <div class="min-w-[200px] flex-1 bg-white rounded-2xl border border-slate-100 p-3">
+      <p class="text-[11px] font-medium tracking-wide text-slate-400 mb-2">{{ col.label.toUpperCase() }} · {{ inStage(col.key).length }}</p>
+      <div class="space-y-2 min-h-[80px]">
+        @for (a of inStage(col.key); track a.id) {
+          <button type="button" (click)="openApplicant(a)" class="w-full text-left border border-slate-100 rounded-xl p-2.5 text-xs bg-slate-50 hover:bg-white">
+            <p class="font-medium text-slate-900">{{ a.name }}</p>
+            <p class="text-slate-400 mt-1">{{ a.cls }} · {{ a.meta }}</p>
+            @if (a.photo) {
+              <p class="text-emerald-600 mt-1">Form image attached</p>
+            }
           </button>
-        </div>
-        <div class="grid grid-cols-5 gap-3">
-          <div class="bg-white border border-line rounded-sm">
-            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">APPLIED · {{ applied().length }}</p>
-            <div class="p-2 space-y-2 min-h-[40px]">
-              @for (a of applied(); track a.name + a.meta) {
-                <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant(a.name, a.cls)">
-                  <p class="font-medium text-ink">{{ a.name }}</p>
-                  <p class="text-slate2/50 mt-1">{{ a.cls }} · {{ a.meta }}</p>
-                </div>
-              }
-            </div>
-          </div>
-          <div class="bg-white border border-line rounded-sm">
-            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">UNDER REVIEW · 9</p>
-            <div class="p-2 space-y-2 min-h-[40px]">
-              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Mugisha Ruth','S1')"><p class="font-medium text-ink">Mugisha Ruth</p><p class="text-slate2/50 mt-1">S1 · Docs complete</p></div>
-              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Ojok Simon','P6')"><p class="font-medium text-ink">Ojok Simon</p><p class="text-slate2/50 mt-1">P6 · Awaiting transcript</p></div>
-            </div>
-          </div>
-          <div class="bg-white border border-line rounded-sm">
-            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">INTERVIEW · 6</p>
-            <div class="p-2 space-y-2 min-h-[40px]">
-              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Namuli Grace','S1')"><p class="font-medium text-ink">Namuli Grace</p><p class="text-slate2/50 mt-1">S1 · 11 Sep, 10am</p></div>
-              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Byaruhanga Eli','S3')"><p class="font-medium text-ink">Byaruhanga Eli</p><p class="text-slate2/50 mt-1">S3 · 12 Sep, 2pm</p></div>
-            </div>
-          </div>
-          <div class="bg-white border border-line rounded-sm">
-            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">ADMITTED · 6</p>
-            <div class="p-2 space-y-2 min-h-[40px]">
-              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" style="border-left:3px solid #0E7C61" (click)="openApplicant('Kato Brian','P2')"><p class="font-medium text-ink">Kato Brian</p><p class="text-slate2/50 mt-1">P2 · Adm. no. issued</p></div>
-            </div>
-          </div>
-          <div class="bg-white border border-line rounded-sm">
-            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">WAITLIST / DECLINED · 2</p>
-            <div class="p-2 space-y-2 min-h-[40px]">
-              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Ssali Peter','S1')"><p class="font-medium text-ink">Ssali Peter</p><p class="text-slate2/50 mt-1">S1 · Waitlisted, no. 3</p></div>
-            </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+@if (drawerOpen()) {
+  <div class="fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-slate-900/30" (click)="closeForm()"></div>
+    <aside class="absolute right-0 top-0 bottom-0 w-[760px] max-w-[100vw] bg-white shadow-2xl flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-start justify-between shrink-0">
+        <div class="flex items-start gap-3">
+          <img src="logo.png" alt="" class="w-10 h-10 rounded-full ring-1 ring-slate-100 object-contain" />
+          <div>
+            <p class="text-[11px] tracking-wide text-slate-400">APPLICATION FORM</p>
+            <h2 class="text-lg font-semibold text-slate-900">Little Royals Kindergarten &amp; Primary School</h2>
+            <p class="text-xs text-slate-400 mt-0.5">In God We Trust · Seguku Entebbe Road</p>
           </div>
         </div>
+        <button type="button" (click)="closeForm()" class="text-slate-400 hover:text-slate-800"><svg class="ic-lg"><use href="#i-x"/></svg></button>
+      </div>
+      <form class="flex-1 overflow-y-auto px-6 py-5 space-y-7" (ngSubmit)="$event.preventDefault(); submit()">
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Particulars of the child</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">First name *
+              <input name="firstName" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().firstName" [class.border-slate-200]="!errors().firstName" />
+            </label>
+            <label class="text-xs text-slate-500">Last name *
+              <input name="lastName" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().lastName" [class.border-slate-200]="!errors().lastName" />
+            </label>
+            <label class="text-xs text-slate-500">Date of birth *
+              <input type="date" name="dob" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().dob" [class.border-slate-200]="!errors().dob" />
+            </label>
+            <label class="text-xs text-slate-500">Sex
+              <select name="sex" [ngModel]="form().sex" (ngModelChange)="set('sex', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                <option>Female</option><option>Male</option>
+              </select>
+            </label>
+            <label class="text-xs text-slate-500 sm:col-span-2">Religion
+              <input name="religion" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Home address</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Location
+              <input name="location" [ngModel]="form().location" (ngModelChange)="set('location', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500">L C Area Zone
+              <input name="lcZone" [ngModel]="form().lcZone" (ngModelChange)="set('lcZone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Health information</h3>
+          <label class="text-xs text-slate-500">Any peculiar illness of the child should be disclosed
+            <textarea name="illness" [ngModel]="form().illness" (ngModelChange)="set('illness', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
+          </label>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Academic information</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Class applied for *
+              <select name="cls" [ngModel]="form().cls" (ngModelChange)="set('cls', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm bg-white" [class.border-rose-400]="errors().cls" [class.border-slate-200]="!errors().cls">
+                <option value="">Select class</option>
+                @for (c of classes; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </label>
+            <label class="text-xs text-slate-500">LIN (Learner Identification Number)
+              <input name="lin" [ngModel]="form().lin" (ngModelChange)="set('lin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Parents / guardians</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Name of father
+              <input name="fatherName" [ngModel]="form().fatherName" (ngModelChange)="set('fatherName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().fatherName" [class.border-slate-200]="!errors().fatherName" />
+            </label>
+            <label class="text-xs text-slate-500">Telephone no. (father)
+              <input name="fatherPhone" [ngModel]="form().fatherPhone" (ngModelChange)="set('fatherPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500 sm:col-span-2">NIN of father
+              <input name="fatherNin" [ngModel]="form().fatherNin" (ngModelChange)="set('fatherNin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+            </label>
+            <label class="text-xs text-slate-500">Name of the mother
+              <input name="motherName" [ngModel]="form().motherName" (ngModelChange)="set('motherName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500">Telephone no. (mother)
+              <input name="motherPhone" [ngModel]="form().motherPhone" (ngModelChange)="set('motherPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500 sm:col-span-2">NIN of mother
+              <input name="motherNin" [ngModel]="form().motherNin" (ngModelChange)="set('motherNin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+            </label>
+            <label class="text-xs text-slate-500">Name of guardian
+              <input name="guardianName" [ngModel]="form().guardianName" (ngModelChange)="set('guardianName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500">Telephone no. (guardian)
+              <input name="guardianPhone" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Schoolpay &amp; transport</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="text-xs text-slate-500">Schoolpay code
+              <input name="schoolpay" [ngModel]="form().schoolpay" (ngModelChange)="set('schoolpay', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+            </label>
+            <label class="text-xs text-slate-500">Transport
+              <select name="transport" [ngModel]="form().transport" (ngModelChange)="set('transport', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+                <option value="">None</option>
+                <option>Van — pick &amp; drop</option>
+                <option>Day scholar — own transport</option>
+              </select>
+            </label>
+            <label class="text-xs text-slate-500 sm:col-span-2">Attach scanned form or child’s photo
+              <input type="file" accept="image/*" (change)="onPhoto($event)" class="mt-1 w-full text-sm" />
+            </label>
+            @if (form().photo) {
+              <img [src]="form().photo" alt="Attached form" class="sm:col-span-2 max-h-40 rounded-xl border border-slate-100 object-contain" />
+            }
+          </div>
+        </section>
+        <div class="h-4"></div>
+      </form>
+      <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-2 shrink-0 bg-white">
+        <button type="button" (click)="closeForm()" class="text-sm border border-slate-200 rounded-full px-4 py-2">Cancel</button>
+        <button type="button" (click)="submit()" [disabled]="saving()" class="text-sm bg-slate-900 text-white rounded-full px-5 py-2 disabled:opacity-60">{{ saving() ? 'Saving…' : 'Submit application' }}</button>
+      </div>
+    </aside>
+  </div>
+}
+
+@if (selected(); as a) {
+  <div class="fixed inset-0 z-40">
+    <div class="absolute inset-0 bg-slate-900/30" (click)="closeApplicant()"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-[560px] max-w-[100vw] bg-white shadow-2xl overflow-y-auto">
+      <div class="p-6 border-b border-slate-100 flex items-start justify-between">
+        <div>
+          <p class="text-xs text-slate-400">{{ a.cls }} · {{ a.stage }}</p>
+          <h2 class="text-2xl font-semibold text-slate-900 mt-1">{{ a.name }}</h2>
+          <p class="text-sm text-slate-500 mt-1">{{ a.meta }}</p>
+        </div>
+        <button type="button" (click)="closeApplicant()" class="text-slate-400 hover:text-slate-800"><svg class="ic-lg"><use href="#i-x"/></svg></button>
+      </div>
+      @if (a.photo) {
+        <img [src]="a.photo" alt="Application form for {{ a.name }}" class="w-full max-h-72 object-cover object-top border-b border-slate-100" />
+      }
+      <div class="p-6 space-y-4 text-sm">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Date of birth</p><p class="font-medium mt-1">{{ a.dob || '—' }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Sex</p><p class="font-medium mt-1">{{ a.sex || '—' }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Religion</p><p class="font-medium mt-1">{{ a.religion || '—' }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">LIN</p><p class="font-mono text-xs mt-1">{{ a.lin || '—' }}</p></div>
+        </div>
+        <p><span class="text-slate-400">Home:</span> {{ a.location || '—' }}@if (a.lcZone) { · LC {{ a.lcZone }} }</p>
+        <p><span class="text-slate-400">Illness:</span> {{ a.illness || 'None disclosed' }}</p>
+        <p><span class="text-slate-400">Father:</span> {{ a.fatherName || '—' }} · {{ a.fatherPhone || '—' }}</p>
+        <p class="font-mono text-xs text-slate-500">NIN {{ a.fatherNin || '—' }}</p>
+        <p><span class="text-slate-400">Mother:</span> {{ a.motherName || '—' }} · {{ a.motherPhone || '—' }}</p>
+        <p class="font-mono text-xs text-slate-500">NIN {{ a.motherNin || '—' }}</p>
+        @if (a.guardianName) {
+          <p><span class="text-slate-400">Guardian:</span> {{ a.guardianName }} · {{ a.guardianPhone }}</p>
+        }
+        <p><span class="text-slate-400">Schoolpay:</span> <span class="font-mono">{{ a.schoolpay || '—' }}</span></p>
+        <p><span class="text-slate-400">Transport:</span> {{ a.transport || '—' }}</p>
+        <div class="flex gap-3 pt-2">
+          @if (a.stage !== 'enrolled' && a.stage !== 'waitlist') {
+            <button type="button" (click)="advance(a)" class="text-sm bg-slate-900 text-white rounded-full px-4 py-2">Advance →</button>
+          }
+          @if (a.stage !== 'waitlist' && a.stage !== 'enrolled') {
+            <button type="button" (click)="waitlist(a)" class="text-sm text-rose-600">Waitlist</button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (previewOpen()) {
+  <div class="fixed inset-0 z-[60] bg-slate-900/70 flex items-center justify-center p-4" (click)="previewOpen.set(false)">
+    <img src="application-form.jpg" alt="Little Royals application form" class="max-h-[92vh] max-w-[96vw] rounded-xl shadow-2xl object-contain" (click)="$event.stopPropagation()" />
+  </div>
+}

@@ -1,7 +1,8 @@
 <h1 class="font-display text-2xl text-ink mb-1">Assessments & Question Bank</h1>
         <p class="text-sm text-slate2/60 mb-5">Continuous assessment, reusable questions and online tests</p>
+        <app-stat-cards [items]="stats()" />
 
-        <div class="flex gap-2 mb-4 text-sm border-b border-line">
+        <div class="flex gap-2 mb-4 text-sm border-b border-line overflow-x-auto">
           <button type="button" (click)="tab.set('ca')" class="asm-tab tab-btn active px-4 py-2 border-b-2 border-transparent" [class.active]="tab() === 'ca'">Continuous assessment</button>
           <button type="button" (click)="tab.set('bank')" class="asm-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="tab() === 'bank'">Question bank</button>
           <button type="button" (click)="tab.set('online')" class="asm-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="tab() === 'online'">Online exams</button>
@@ -22,8 +23,11 @@
 
         <div class="asm-view hidden" [class.hidden]="tab() !== 'bank'">
           <div class="flex justify-between items-center mb-3">
-            <p class="text-sm text-slate2/60">1,860 questions tagged across 9 subjects</p>
-            <button type="button" (click)="generateTest()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm hover:bg-inkdeep">Generate test from bank</button>
+            <p class="text-sm text-slate2/60">{{ os.questions().length }} reusable questions</p>
+            <div class="flex gap-2">
+              <button type="button" (click)="addQuestion()" class="text-sm border border-line px-3 py-2 rounded-sm hover:bg-canvas">+ Question</button>
+              <button type="button" (click)="generateTest()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm hover:bg-inkdeep">Generate test from bank</button>
+            </div>
           </div>
           @if (generated()) {
             <p class="text-sm text-primary mb-3">{{ generated() }}</p>
@@ -32,9 +36,14 @@
             <table class="w-full text-sm">
               <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Question</th><th class="px-4 py-3 font-normal">Subject</th><th class="px-4 py-3 font-normal">Difficulty</th><th class="px-4 py-3 font-normal">Marks</th></tr></thead>
               <tbody class="divide-y divide-line">
-                <tr><td class="px-4 py-3">Solve x² − 5x + 6 = 0</td><td class="px-4 py-3">Mathematics</td><td class="px-4 py-3">Medium</td><td class="px-4 py-3">3</td></tr>
-                <tr><td class="px-4 py-3">Define Newton's second law</td><td class="px-4 py-3">Physics</td><td class="px-4 py-3">Easy</td><td class="px-4 py-3">2</td></tr>
-                <tr><td class="px-4 py-3">Analyse tone in a persuasive text</td><td class="px-4 py-3">English</td><td class="px-4 py-3">Hard</td><td class="px-4 py-3">5</td></tr>
+                @for (q of os.questions(); track q.id) {
+                  <tr>
+                    <td class="px-4 py-3">{{ q.text }}</td>
+                    <td class="px-4 py-3">{{ q.subject }}</td>
+                    <td class="px-4 py-3">{{ q.difficulty }}</td>
+                    <td class="px-4 py-3">{{ q.marks }}</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>

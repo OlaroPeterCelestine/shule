@@ -1,0 +1,53 @@
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Attendance</h1>
+    <p class="text-sm text-slate-400 mt-1">Mark the register, then notify parents of absences</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" (click)="markAllPresent()" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full">Mark all present</button>
+    <button type="button" (click)="submit()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">Submit register</button>
+  </div>
+</div>
+
+<app-stat-cards [items]="stats()" />
+
+<div class="flex flex-wrap gap-3 mb-4">
+  <select name="attClass" [ngModel]="cls()" (ngModelChange)="cls.set($event)" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
+    <option value="">All classes</option>
+    @for (c of classes(); track c) {
+      <option [value]="c">{{ c }}</option>
+    }
+  </select>
+  <select name="lesson" [ngModel]="lesson()" (ngModelChange)="lesson.set($event)" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
+    <option>Morning roll call</option>
+    <option>Period 1</option>
+    <option>Period 2</option>
+    <option>After lunch</option>
+  </select>
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-xs text-slate-400"><tr class="text-left">
+      <th class="px-4 py-3 font-medium">Adm.</th><th class="px-4 py-3 font-medium">Student</th><th class="px-4 py-3 font-medium">Class</th><th class="px-4 py-3 font-medium">Mark</th>
+    </tr></thead>
+    <tbody class="divide-y divide-slate-50">
+      @for (r of rows(); track r.adm) {
+        <tr>
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">{{ r.adm }}</td>
+          <td class="px-4 py-3 font-medium text-slate-900">{{ r.name }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ r.cls }}</td>
+          <td class="px-4 py-3">
+            <div class="flex gap-1">
+              <button type="button" (click)="mark(r.adm, 'P')" class="w-8 h-8 rounded-full text-xs" [class.bg-emerald-600]="r.status === 'P'" [class.text-white]="r.status === 'P'" [class.bg-slate-100]="r.status !== 'P'">P</button>
+              <button type="button" (click)="mark(r.adm, 'A')" class="w-8 h-8 rounded-full text-xs" [class.bg-rose-600]="r.status === 'A'" [class.text-white]="r.status === 'A'" [class.bg-slate-100]="r.status !== 'A'">A</button>
+              <button type="button" (click)="mark(r.adm, 'L')" class="w-8 h-8 rounded-full text-xs" [class.bg-amber-500]="r.status === 'L'" [class.text-white]="r.status === 'L'" [class.bg-slate-100]="r.status !== 'L'">L</button>
+              <button type="button" (click)="mark(r.adm, 'E')" class="w-8 h-8 rounded-full text-xs" [class.bg-slate-800]="r.status === 'E'" [class.text-white]="r.status === 'E'" [class.bg-slate-100]="r.status !== 'E'">E</button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<p class="text-[11px] text-slate-400 mt-3">P present · A absent (parent SMS) · L late · E excused</p>

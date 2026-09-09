@@ -1,9 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-meetings',
+  imports: [StatCards],
   templateUrl: './meetings.html',
 })
 export class MeetingsPage {
@@ -18,6 +20,12 @@ export class MeetingsPage {
   protected readonly visits = signal([
     { id: 1, title: 'P. Okello — wants to discuss fee balance', meta: 'Requested: Fri 11 Sep, 2:00pm · With Accountant' },
     { id: 2, title: 'S. Achieng — counseling follow-up', meta: 'Requested: Mon 14 Sep, 11:00am · With Counselor' },
+  ]);
+  protected readonly stats = computed(() => [
+    { label: 'PTM slots', value: String(this.slots().length), change: 'Sat 12 Sep', bars: [3, 4, 4, 5, 5, 6, 5] },
+    { label: 'Open slots', value: String(this.slots().filter((s) => s.booked === 'Open').length), change: 'Still available', bars: [4, 3, 3, 2, 2, 2, 1] },
+    { label: 'Visit requests', value: String(this.visits().length), change: 'Awaiting decision', bars: [2, 2, 3, 3, 2, 3, 2] },
+    { label: 'Booked', value: String(this.slots().filter((s) => s.booked !== 'Open').length), change: 'Parents confirmed', bars: [2, 3, 3, 4, 4, 5, 5] },
   ]);
 
   newPtm() {

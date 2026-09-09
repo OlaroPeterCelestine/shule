@@ -1,7 +1,8 @@
 <h1 class="font-display text-2xl text-ink mb-1">Fees & Payroll</h1>
         <p class="text-sm text-slate2/60 mb-5">Term 2, 2026</p>
+        <app-stat-cards [items]="stats()" />
 
-        <div class="flex gap-2 mb-4 text-sm border-b border-line">
+        <div class="flex gap-2 mb-4 text-sm border-b border-line overflow-x-auto">
           <button type="button" (click)="fin.set('invoices')" class="fin-tab tab-btn active px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'invoices'">Invoices</button>
           <button type="button" (click)="fin.set('expenses')" class="fin-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'expenses'">Expenses</button>
           <button type="button" (click)="fin.set('payroll')" class="fin-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'payroll'">Payroll</button>

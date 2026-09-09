@@ -1,0 +1,71 @@
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">School setup</h1>
+    <p class="text-sm text-slate-400 mt-1">Institution profile, campuses, houses and academic year</p>
+  </div>
+  <button type="button" (click)="save()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800 shrink-0">{{ saving() ? 'Saving…' : 'Save school' }}</button>
+</div>
+
+<app-stat-cards [items]="stats()" />
+
+<div class="flex text-sm border-b border-slate-100 mb-4 overflow-x-auto">
+  <button type="button" (click)="tab.set('profile')" class="panel-tab px-3 py-2.5 border-b-2 border-transparent text-slate-400" [class.active]="tab() === 'profile'">School profile</button>
+  <button type="button" (click)="tab.set('campuses')" class="panel-tab px-3 py-2.5 border-b-2 border-transparent text-slate-400" [class.active]="tab() === 'campuses'">Campuses</button>
+  <button type="button" (click)="tab.set('houses')" class="panel-tab px-3 py-2.5 border-b-2 border-transparent text-slate-400" [class.active]="tab() === 'houses'">Houses</button>
+</div>
+
+@if (tab() === 'profile') {
+  <form class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4" (ngSubmit)="$event.preventDefault(); save()">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <label class="text-xs text-slate-500">School name<input name="name" [ngModel]="os.school().name" (ngModelChange)="set('name', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Motto<input name="motto" [ngModel]="os.school().motto" (ngModelChange)="set('motto', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Address<input name="address" [ngModel]="os.school().address" (ngModelChange)="set('address', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Phone<input name="phone" [ngModel]="os.school().phone" (ngModelChange)="set('phone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Email<input name="email" [ngModel]="os.school().email" (ngModelChange)="set('email', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Website<input name="website" [ngModel]="os.school().website" (ngModelChange)="set('website', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Academic year<input name="year" [ngModel]="os.school().year" (ngModelChange)="set('year', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Current term<input name="term" [ngModel]="os.school().term" (ngModelChange)="set('term', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Timezone<input name="timezone" [ngModel]="os.school().timezone" (ngModelChange)="set('timezone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Currency<input name="currency" [ngModel]="os.school().currency" (ngModelChange)="set('currency', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Day / boarding<input name="dayBoarding" [ngModel]="os.school().dayBoarding" (ngModelChange)="set('dayBoarding', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+      <label class="text-xs text-slate-500">Levels<input name="levels" [ngModel]="os.school().levels" (ngModelChange)="set('levels', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" /></label>
+    </div>
+    <div class="flex justify-end"><button type="submit" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full">Save profile</button></div>
+  </form>
+}
+
+@if (tab() === 'campuses') {
+  <div class="bg-white rounded-2xl border border-slate-100 p-5">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-[15px] font-semibold text-slate-900">Campuses</h3>
+      <button type="button" (click)="addCampus()" class="text-xs bg-slate-900 text-white rounded-full px-3 py-1.5">+ Add campus</button>
+    </div>
+    <div class="space-y-2">
+      @for (c of os.campuses(); track c.id) {
+        <div class="border border-slate-100 rounded-xl p-3 flex justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-slate-900">{{ c.name }}</p>
+            <p class="text-xs text-slate-400 mt-0.5">{{ c.city }} · {{ c.focus }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+@if (tab() === 'houses') {
+  <div class="bg-white rounded-2xl border border-slate-100 p-5">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-[15px] font-semibold text-slate-900">Houses</h3>
+      <button type="button" (click)="addHouse()" class="text-xs bg-slate-900 text-white rounded-full px-3 py-1.5">+ Add house</button>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      @for (h of os.houses(); track h.id) {
+        <div class="border border-slate-100 rounded-xl p-4">
+          <p class="text-sm font-medium text-slate-900">{{ h.name }}</p>
+          <p class="text-xs text-slate-400 mt-1">{{ h.colour }} · {{ h.members }} students</p>
+        </div>
+      }
+    </div>
+  </div>
+}

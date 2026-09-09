@@ -2,14 +2,23 @@ import { Component, inject } from '@angular/core';
 import { SINGLE_REPORT } from './report-card';
 import { ReportService } from '../../core/report.service';
 import { DownloadService } from '../../core/download.service';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-reports',
+  imports: [StatCards],
   templateUrl: './reports.html',
 })
 export class ReportsPage {
   private report = inject(ReportService);
   private download = inject(DownloadService);
+
+  protected readonly stats = [
+    { label: 'Students', value: '1,284', change: '+11% year-on-year', bars: [6, 7, 7, 8, 8, 9, 10] },
+    { label: 'Fees collected', value: '76%', change: '+3pp last term', bars: [5, 6, 6, 7, 7, 8, 8] },
+    { label: 'Attendance', value: '94.2%', change: '+0.4 this week', bars: [8, 9, 8, 9, 9, 10, 9] },
+    { label: 'Report cards', value: '58', change: 'S4 East ready', bars: [3, 4, 5, 6, 7, 8, 9] },
+  ];
 
   genBatch() {
     const rows: string[][] = [['Admission No.', 'Name', 'Average (%)', 'Grade', 'Position']];

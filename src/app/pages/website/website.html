@@ -1,0 +1,45 @@
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">School website</h1>
+    <p class="text-sm text-slate-400 mt-1">Home, about, admissions, news and apply-online — managed here</p>
+  </div>
+  <button type="button" (click)="addPage()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ New page</button>
+</div>
+
+<app-stat-cards [items]="stats()" />
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+  <div class="bg-white rounded-2xl border border-slate-100 p-5">
+    <p class="text-xs text-slate-400">Public site</p>
+    <p class="text-lg font-semibold text-slate-900 mt-1">{{ os.school().website }}</p>
+    <p class="text-sm text-slate-500 mt-2">{{ os.school().motto }}</p>
+  </div>
+  <div class="bg-white rounded-2xl border border-slate-100 p-5">
+    <p class="text-xs text-slate-400">Apply online</p>
+    <p class="text-sm text-slate-700 mt-2">New families can submit an inquiry that lands in Admissions — same student record after enrollment.</p>
+  </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-xs text-slate-400"><tr class="text-left">
+      <th class="px-4 py-3 font-medium">Page</th><th class="px-4 py-3 font-medium">Status</th><th class="px-4 py-3 font-medium">Updated</th><th class="px-4 py-3 font-medium"></th>
+    </tr></thead>
+    <tbody class="divide-y divide-slate-50">
+      @for (p of os.cms(); track p.id) {
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">{{ p.title }}</td>
+          <td class="px-4 py-3">
+            <span class="text-[11px] px-2 py-0.5 rounded-full" [class.bg-emerald-50]="p.status === 'Published'" [class.text-emerald-700]="p.status === 'Published'" [class.bg-slate-100]="p.status === 'Draft'" [class.text-slate-600]="p.status === 'Draft'">{{ p.status }}</span>
+          </td>
+          <td class="px-4 py-3 text-slate-500">{{ p.updated }}</td>
+          <td class="px-4 py-3 text-right">
+            @if (p.status === 'Draft') {
+              <button type="button" (click)="publish(p.id, p.title)" class="text-xs text-slate-700 hover:underline">Publish</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

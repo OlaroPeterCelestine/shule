@@ -1,10 +1,11 @@
 <h1 class="font-display text-2xl text-ink mb-1">Communication</h1>
         <p class="text-sm text-slate2/60 mb-5">Bulk SMS, email and announcements</p>
+        <app-stat-cards [items]="stats()" />
         <div class="grid grid-cols-3 gap-5">
           <div class="col-span-2 bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-4">New campaign</h3>
             <form class="space-y-3 text-sm" (ngSubmit)="$event.preventDefault(); sendCampaign()">
-              <div class="flex gap-3">
+              <div class="flex flex-wrap gap-3">
                 <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel() === 'SMS'"><input type="radio" name="ch" value="SMS" [ngModel]="channel()" (ngModelChange)="channel.set($event)"> SMS</label>
                 <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel() === 'Email'"><input type="radio" name="ch" value="Email" [ngModel]="channel()" (ngModelChange)="channel.set($event)"> Email</label>
                 <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel() === 'Push'"><input type="radio" name="ch" value="Push" [ngModel]="channel()" (ngModelChange)="channel.set($event)"> Push</label>

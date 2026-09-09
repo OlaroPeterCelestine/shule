@@ -1,0 +1,27 @@
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">School calendar</h1>
+    <p class="text-sm text-slate-400 mt-1">Terms, exams, PTMs, sports days and holidays</p>
+  </div>
+  <button type="button" (click)="addEvent()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ Add event</button>
+</div>
+
+<app-stat-cards [items]="stats()" />
+
+<div class="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-xs text-slate-400"><tr class="text-left">
+      <th class="px-4 py-3 font-medium">Date</th><th class="px-4 py-3 font-medium">Event</th><th class="px-4 py-3 font-medium">Type</th><th class="px-4 py-3 font-medium">Audience</th>
+    </tr></thead>
+    <tbody class="divide-y divide-slate-50">
+      @for (e of os.events(); track e.id) {
+        <tr>
+          <td class="px-4 py-3 text-slate-500">{{ e.date }}</td>
+          <td class="px-4 py-3 font-medium text-slate-900">{{ e.title }}</td>
+          <td class="px-4 py-3"><span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ e.type }}</span></td>
+          <td class="px-4 py-3 text-slate-600">{{ e.audience }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

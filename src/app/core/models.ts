@@ -15,6 +15,18 @@ export interface SessionUser {
   email: string;
   role: RoleKey;
   label: string;
+  phone?: string;
+  title?: string;
+  department?: string;
+  staffId?: string;
+  campus?: string;
+  bio?: string;
+  language?: string;
+  dateFormat?: string;
+  notifyEmail?: boolean;
+  notifySms?: boolean;
+  notifyPush?: boolean;
+  twoFactor?: boolean;
 }
 
 export const DEMO_ACCOUNTS: Record<RoleKey, DemoAccount> = {
@@ -27,11 +39,33 @@ export const DEMO_ACCOUNTS: Record<RoleKey, DemoAccount> = {
 export interface Student {
   adm: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   cls: string;
+  gender?: string;
+  dob?: string;
+  nationality?: string;
+  religion?: string;
+  admissionDate?: string;
+  admissionType?: string;
+  previousSchool?: string;
   guardian: string;
+  guardianRelation?: string;
+  guardianPhone?: string;
+  guardianEmail?: string;
+  address?: string;
+  emergencyName?: string;
+  emergencyPhone?: string;
+  bloodGroup?: string;
+  allergies?: string;
+  medicalNotes?: string;
+  residentType?: string;
+  transportRoute?: string;
+  hostel?: string;
   attendance: string;
   fee: 'cleared' | 'due';
   feeLabel: string;
+  notes?: string;
 }
 
 export interface ModalField {

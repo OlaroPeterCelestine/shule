@@ -1,9 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-visitors',
+  imports: [StatCards],
   templateUrl: './visitors.html',
 })
 export class VisitorsPage {
@@ -15,6 +17,15 @@ export class VisitorsPage {
     { id: 2, name: 'Rose Nakiwala', purpose: 'Parent meeting', host: 'Class Teacher, S4 East', badge: 'V-0232', status: 'On campus' },
     { id: 3, name: 'Umeme Technician', purpose: 'Meter inspection', host: "Bursar's office", badge: 'V-0230', status: 'Checked out' },
   ]);
+  protected readonly stats = computed(() => {
+    const on = this.visitors().filter((v) => v.status === 'On campus').length;
+    return [
+      { label: 'On campus', value: String(on), change: 'Live at the gate', bars: [3, 4, 4, 5, 4, 5, 4] },
+      { label: 'Checked out', value: String(this.visitors().length - on), change: 'Today', bars: [5, 4, 5, 6, 5, 6, 7] },
+      { label: 'Badges issued', value: String(this.visitors().length), change: 'This session', bars: [2, 3, 3, 4, 4, 5, 5] },
+      { label: 'Parent visits', value: '1', change: 'Scheduled today', bars: [1, 2, 1, 2, 2, 1, 2] },
+    ];
+  });
 
   checkIn() {
     this.modal.open({

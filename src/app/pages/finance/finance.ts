@@ -1,10 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
 import { DownloadService } from '../../core/download.service';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-finance',
+  imports: [StatCards],
   templateUrl: './finance.html',
 })
 export class FinancePage {
@@ -19,6 +21,12 @@ export class FinancePage {
     { ref: 'PR-115', item: 'Printer toner ×6', by: 'Front office', cost: '420,000', stage: 'Goods received', pending: false },
   ]);
   protected readonly payrollDone = signal(false);
+  protected readonly stats = computed(() => [
+    { label: 'Collected', value: 'UGX 812M', change: '76% of billed', bars: [5, 6, 7, 8, 8, 9, 11] },
+    { label: 'Outstanding', value: 'UGX 258M', change: '24% still due', bars: [9, 8, 7, 7, 6, 6, 5] },
+    { label: 'Purchase requests', value: String(this.prs().length), change: this.prs().filter((p) => p.pending).length + ' awaiting approval', bars: [3, 4, 3, 5, 4, 6, 5] },
+    { label: 'Payroll', value: this.payrollDone() ? 'Done' : '3 days', change: this.payrollDone() ? 'September posted' : 'Until September run', bars: [4, 4, 5, 5, 6, 6, 7] },
+  ]);
 
   runPayroll() {
     this.modal.open({

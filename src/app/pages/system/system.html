@@ -1,5 +1,6 @@
 <h1 class="font-display text-2xl text-ink mb-1">System & Audit</h1>
         <p class="text-sm text-slate2/60 mb-5">Users, roles, integrations and activity history</p>
+        <app-stat-cards [items]="stats" />
         <div class="grid grid-cols-2 gap-5">
           <div class="bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-3">Audit log</h3>
@@ -42,4 +43,24 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="bg-white border border-line rounded-sm p-5 mt-5">
+          <h3 class="font-display text-lg text-ink mb-3">Fine-grained permissions</h3>
+          <p class="text-xs text-slate2/50 mb-3">View · Create · Edit · Approve — click a cell to toggle. Finance stays off for teachers.</p>
+          <table class="w-full text-xs">
+            <thead class="text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Role</th><th class="pb-2 font-normal">Module</th><th class="pb-2 font-normal">View</th><th class="pb-2 font-normal">Create</th><th class="pb-2 font-normal">Edit</th><th class="pb-2 font-normal">Approve</th></tr></thead>
+            <tbody class="divide-y divide-line">
+              @for (p of os.perms(); track p.role + p.module) {
+                <tr>
+                  <td class="py-2">{{ p.role }}</td>
+                  <td class="py-2">{{ p.module }}</td>
+                  <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'view')" class="text-left">{{ p.view ? 'Yes' : 'No' }}</button></td>
+                  <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'create')" class="text-left">{{ p.create ? 'Yes' : 'No' }}</button></td>
+                  <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'edit')" class="text-left">{{ p.edit ? 'Yes' : 'No' }}</button></td>
+                  <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'approve')" class="text-left">{{ p.approve ? 'Yes' : 'No' }}</button></td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>

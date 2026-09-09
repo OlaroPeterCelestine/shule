@@ -1,9 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-lifecycle',
+  imports: [StatCards],
   templateUrl: './lifecycle.html',
 })
 export class LifecyclePage {
@@ -17,6 +19,12 @@ export class LifecyclePage {
   protected readonly alumni = signal([
     { name: 'Namara Diana', year: '2022', cls: 'S6 Sciences', now: 'Medical student, Makerere' },
     { name: 'Ocen Bright', year: '2021', cls: 'S6 Arts', now: 'Journalist, NBS TV' },
+  ]);
+  protected readonly stats = computed(() => [
+    { label: 'Pending', value: String(this.promos().filter((p) => p.decision === 'pending').length), change: 'Need a decision', bars: [3, 3, 4, 3, 2, 2, 2] },
+    { label: 'Graduating', value: String(this.promos().filter((p) => p.decision === 'graduated').length), change: 'Class of 2026', bars: [1, 1, 2, 2, 3, 4, 4] },
+    { label: 'Held back', value: String(this.promos().filter((p) => p.decision === 'held').length), change: 'Clearance first', bars: [1, 2, 1, 1, 2, 1, 1] },
+    { label: 'Alumni', value: String(this.alumni().length), change: 'In the directory', bars: [5, 6, 6, 7, 7, 8, 8] },
   ]);
 
   promote(id: number) {

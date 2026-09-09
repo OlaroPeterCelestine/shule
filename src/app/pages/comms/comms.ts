@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../core/toast.service';
+import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-comms',
-  imports: [FormsModule],
+  imports: [FormsModule, StatCards],
   templateUrl: './comms.html',
 })
 export class CommsPage {
@@ -17,6 +18,12 @@ export class CommsPage {
     { title: 'Fee reminder — S5 Arts', meta: 'Sent to 58 · Delivered 56' },
     { title: 'Mid-term reports released', meta: 'Sent to 1,284 · Delivered 1,271' },
     { title: 'Sports day — transport update', meta: 'Sent to 312 · Delivered 308' },
+  ]);
+  protected readonly stats = computed(() => [
+    { label: 'Campaigns', value: String(this.campaigns().length), change: 'This term', bars: [3, 4, 4, 5, 5, 6, 6] },
+    { label: 'SMS sent', value: '1,654', change: 'Delivered 98%', bars: [6, 7, 7, 8, 8, 9, 10] },
+    { label: 'Email', value: '1,284', change: 'Reports blast', bars: [5, 5, 6, 7, 6, 8, 8] },
+    { label: 'Push', value: '312', change: 'Transport alerts', bars: [2, 3, 3, 4, 4, 5, 4] },
   ]);
 
   sendCampaign() {
