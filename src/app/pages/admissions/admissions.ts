@@ -1,43 +1,33 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
-import { ReportService } from '../../core/report.service';
-import { DownloadService } from '../../core/download.service';
-import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-admissions',
-  imports: [],
   templateUrl: './admissions.html',
 })
 export class AdmissionsPage {
-  protected toast = inject(ToastService);
-  protected modal = inject(ModalService);
-  protected report = inject(ReportService);
-  protected download = inject(DownloadService);
-  protected router = inject(Router);
-  protected auth = inject(AuthService);
+  private toast = inject(ToastService);
+  private modal = inject(ModalService);
+
+  protected readonly applied = signal([
+    { name: 'Kirabo Alex', cls: 'P1', meta: 'Submitted 2 Sep' },
+    { name: 'Tumwine Ivan', cls: 'S1', meta: 'Submitted 3 Sep' },
+    { name: 'Nabatanzi Joy', cls: 'P4', meta: 'Submitted 4 Sep' },
+  ]);
 
   addApplication() {
     this.modal.open({
       title: 'New application',
       fields: [
         { key: 'name', placeholder: 'Applicant full name *', required: true },
-        { key: 'cls', placeholder: 'Applying for class (e.g. S1) *', required: true },
+        { key: 'cls', placeholder: 'Applying for class (e.g. P1) *', required: true },
       ],
       onConfirm: (v) => {
-        const col = document.getElementById('col-applied');
-        if (col) {
-          const card = document.createElement('div');
-          card.className = 'kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer';
-          card.innerHTML = '<p class="font-medium text-ink">' + v['name'] + '</p><p class="text-slate2/50 mt-1">' + v['cls'] + ' · Submitted today</p>';
-          card.addEventListener('click', () => this.openApplicant(String(v['name']), String(v['cls'])));
-          col.prepend(card);
-        }
-        this.toast.show(v['name'] + ' added to Admissions — Applied');
-        return true;
+        const name = String(v['name']);
+        const cls = String(v['cls']);
+        this.applied.update((list) => [{ name, cls, meta: 'Submitted today' }, ...list]);
+        this.toast.show(name + ' added to Admissions — Applied');
       },
     });
   }
@@ -49,22 +39,7 @@ export class AdmissionsPage {
       confirmLabel: 'Schedule interview',
       onConfirm: () => {
         this.toast.show('Interview scheduling opened for ' + name);
-        return true;
       },
     });
-  }
-
-  go(path: string) { this.router.navigate(['/', path]); }
-
-  fade(ev: Event, msg: string) {
-    this.toast.show(msg);
-    const row = (ev.target as HTMLElement).closest('.btn-fade, .leave-item');
-    if (!row) return;
-    row.classList.add('gone');
-    setTimeout(() => {
-      row.remove();
-      const el = document.getElementById('leaveCount');
-      if (el) el.textContent = String(document.querySelectorAll('#leaveList .leave-item').length);
-    }, 320);
   }
 }

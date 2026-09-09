@@ -66,7 +66,7 @@
       <div class="flex md:hidden flex-col items-center mb-6">
         <img src="logo.png" alt="Little Royals Kindergarten & Primary School logo" class="w-14 h-14 rounded-full bg-white object-contain shadow mb-2" />
         <p class="font-display text-ink text-lg text-center leading-tight">Little Royals</p>
-        <p class="text-slate2/50 text-xs text-center mt-1">Kindergarten &amp; Primary School · School OS</p>
+        <p class="text-slate2/50 text-xs text-center mt-1">Kindergarten &amp; Primary School</p>
       </div>
 
       <h2 class="font-display text-2xl text-ink mb-1">Welcome back</h2>
@@ -100,18 +100,18 @@
 
       <form (ngSubmit)="submit()" novalidate>
         <label class="text-xs text-slate2/60">Email</label>
-        <input type="email" [(ngModel)]="email" name="email" [class.border-maroon]="emailError()" autocomplete="username" class="w-full border border-line rounded-sm px-3 py-2 mt-1 mb-1 text-sm bg-white" placeholder="you@littleroyals.ac.ug" />
+        <input type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" [class.border-maroon]="emailError()" autocomplete="username" class="w-full border border-line rounded-sm px-3 py-2 mt-1 mb-1 text-sm bg-white" placeholder="you@littleroyals.ac.ug" />
         <p class="text-xs text-maroon mb-2" [class.hidden]="!emailError()">Enter a valid email address.</p>
 
         <label class="text-xs text-slate2/60 mt-2 block">Password</label>
         <div class="relative">
-          <input [type]="showPw() ? 'text' : 'password'" [(ngModel)]="password" name="password" [class.border-maroon]="pwError()" autocomplete="current-password" class="w-full border border-line rounded-sm px-3 py-2 mt-1 mb-1 text-sm pr-16 bg-white" placeholder="••••••••" />
+          <input [type]="showPw() ? 'text' : 'password'" [ngModel]="password()" (ngModelChange)="password.set($event)" name="password" [class.border-maroon]="pwError()" autocomplete="current-password" class="w-full border border-line rounded-sm px-3 py-2 mt-1 mb-1 text-sm pr-16 bg-white" placeholder="••••••••" />
           <button type="button" (click)="showPw.set(!showPw())" class="absolute right-2 top-2.5 text-xs text-primary">{{ showPw() ? 'Hide' : 'Show' }}</button>
         </div>
         <p class="text-xs text-maroon mb-2" [class.hidden]="!pwError()">Enter your password.</p>
 
         <div class="flex items-center justify-between mt-3 mb-4 text-xs">
-          <label class="flex items-center gap-1.5 text-slate2/60"><input type="checkbox" name="remember" [(ngModel)]="remember"> Remember me</label>
+          <label class="flex items-center gap-1.5 text-slate2/60"><input type="checkbox" name="remember" [ngModel]="remember()" (ngModelChange)="remember.set($event)"> Remember me</label>
           <button type="button" (click)="toast.show('Password reset link sent — check your email')" class="text-primary hover:underline">Forgot password?</button>
         </div>
 

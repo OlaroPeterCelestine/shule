@@ -1,7 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { DEMO_ACCOUNTS, type RoleKey, type SessionUser } from './models';
 
-const KEY = 'shule.session';
+const KEY = 'littleroyals.session';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

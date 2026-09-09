@@ -12,10 +12,9 @@
   <input [ngModel]="q()" (ngModelChange)="q.set($event)" name="studentSearch" class="border border-line rounded-sm px-3 py-2 text-sm w-64 bg-white" placeholder="Search by name or admission no.">
   <select [ngModel]="classFilter()" (ngModelChange)="classFilter.set($event)" name="classFilter" class="border border-line rounded-sm px-3 py-2 text-sm bg-white">
     <option value="">All classes</option>
-    <option value="S4 East">S4 East</option>
-    <option value="S5 Arts">S5 Arts</option>
-    <option value="S2 East">S2 East</option>
-    <option value="P7 Blue">P7 Blue</option>
+    @for (c of classes(); track c) {
+      <option [value]="c">{{ c }}</option>
+    }
   </select>
   <select [ngModel]="feeFilter()" (ngModelChange)="feeFilter.set($event)" name="feeFilter" class="border border-line rounded-sm px-3 py-2 text-sm bg-white">
     <option value="">Fee status: All</option>

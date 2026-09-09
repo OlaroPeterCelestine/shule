@@ -5,9 +5,26 @@
           <h3 class="font-display text-lg text-ink mb-3">S6 Sciences — promotion decisions (2026 → graduation)</h3>
           <table class="w-full text-sm">
             <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Student</th><th class="pb-2 font-normal">Final average</th><th class="pb-2 font-normal">Clearance</th><th class="pb-2 font-normal">Decision</th></tr></thead>
-            <tbody id="promotionRows" class="divide-y divide-line">
-              <tr class="promo-row"><td class="py-2">Kwikiriza M.</td><td class="py-2">74%</td><td class="py-2 text-primary">Cleared</td><td class="py-2 flex gap-2"><button (click)="promote($event)" class="promote-btn text-xs bg-primary text-white px-2.5 py-1 rounded-sm">Graduate</button><button (click)="hold($event)" class="hold-btn text-xs border border-line px-2.5 py-1 rounded-sm">Hold</button></td></tr>
-              <tr class="promo-row"><td class="py-2">Achen R.</td><td class="py-2">58%</td><td class="py-2 text-maroon">Fees outstanding</td><td class="py-2 flex gap-2"><button (click)="promote($event)" class="promote-btn text-xs bg-primary text-white px-2.5 py-1 rounded-sm">Graduate</button><button (click)="hold($event)" class="hold-btn text-xs border border-line px-2.5 py-1 rounded-sm">Hold</button></td></tr>
+            <tbody class="divide-y divide-line">
+              @for (p of promos(); track p.id) {
+                <tr [class.opacity-40]="p.decision !== 'pending'">
+                  <td class="py-2">{{ p.name }}</td>
+                  <td class="py-2">{{ p.avg }}</td>
+                  <td class="py-2" [class.text-primary]="p.clearance === 'Cleared'" [class.text-maroon]="p.clearance !== 'Cleared'">{{ p.clearance }}</td>
+                  <td class="py-2">
+                    @if (p.decision === 'pending') {
+                      <div class="flex gap-2">
+                        <button type="button" (click)="promote(p.id)" class="text-xs bg-primary text-white px-2.5 py-1 rounded-sm">Graduate</button>
+                        <button type="button" (click)="hold(p.id)" class="text-xs border border-line px-2.5 py-1 rounded-sm">Hold</button>
+                      </div>
+                    } @else if (p.decision === 'graduated') {
+                      <span class="text-xs text-primary">Graduating</span>
+                    } @else {
+                      <span class="text-xs text-gold">Held for clearance</span>
+                    }
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -19,9 +36,15 @@
           </div>
           <table class="w-full text-sm">
             <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Name</th><th class="pb-2 font-normal">Graduated</th><th class="pb-2 font-normal">Class</th><th class="pb-2 font-normal">Now</th></tr></thead>
-            <tbody id="alumniRows" class="divide-y divide-line">
-              <tr><td class="py-2">Namara Diana</td><td class="py-2">2022</td><td class="py-2">S6 Sciences</td><td class="py-2 text-slate2/60">Medical student, Makerere</td></tr>
-              <tr><td class="py-2">Ocen Bright</td><td class="py-2">2021</td><td class="py-2">S6 Arts</td><td class="py-2 text-slate2/60">Journalist, NBS TV</td></tr>
+            <tbody class="divide-y divide-line">
+              @for (a of alumni(); track a.name + a.year) {
+                <tr>
+                  <td class="py-2">{{ a.name }}</td>
+                  <td class="py-2">{{ a.year }}</td>
+                  <td class="py-2">{{ a.cls }}</td>
+                  <td class="py-2 text-slate2/60">{{ a.now }}</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>

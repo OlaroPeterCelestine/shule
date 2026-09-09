@@ -1,57 +1,41 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
-import { ReportService } from '../../core/report.service';
-import { DownloadService } from '../../core/download.service';
-import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-curriculum',
-  imports: [],
   templateUrl: './curriculum.html',
 })
 export class CurriculumPage {
-  protected toast = inject(ToastService);
-  protected modal = inject(ModalService);
-  protected report = inject(ReportService);
-  protected download = inject(DownloadService);
-  protected router = inject(Router);
-  protected auth = inject(AuthService);
+  private toast = inject(ToastService);
+  private modal = inject(ModalService);
+
+  protected readonly plans = signal([
+    { topic: 'Quadratic equations — Topic 4.2', meta: 'S2 Mathematics · Ssentongo B. · Mon 08:00' },
+    { topic: 'Wave properties — Topic 6.1', meta: 'S4 Physics · Ssentongo B. · Wed 08:00' },
+    { topic: 'Comprehension: persuasive texts', meta: 'S1 English · Namutebi J. · Thu 09:40' },
+  ]);
+  protected readonly reviews = signal([
+    { id: 1, title: 'S2 Mathematics — Term 2 plan', meta: 'Submitted by Ssentongo B. · Behind schedule flag' },
+    { id: 2, title: 'S1 English — Term 2 plan', meta: 'Submitted by Namutebi J. · On schedule' },
+  ]);
 
   newLesson() {
     this.modal.open({
       title: 'New lesson plan',
       fields: [
         { key: 'topic', placeholder: 'Topic (e.g. Cell division — Topic 5.1) *', required: true },
-        { key: 'cls', placeholder: 'Class & subject (e.g. S3 Biology) *', required: true },
+        { key: 'cls', placeholder: 'Class & subject (e.g. P5 Science) *', required: true },
       ],
       onConfirm: (v) => {
-        const list = document.getElementById('lessonPlanList');
-        if (list) {
-          const li = document.createElement('li');
-          li.className = 'py-2.5';
-          li.innerHTML = '<p class="text-ink font-medium">' + v['topic'] + '</p><p class="text-xs text-slate2/50 mt-0.5">' + v['cls'] + ' · Draft</p>';
-          list.prepend(li);
-        }
+        this.plans.update((list) => [{ topic: String(v['topic']), meta: String(v['cls']) + ' · Draft' }, ...list]);
         this.toast.show('Lesson plan saved as draft');
-        return true;
       },
     });
   }
 
-  go(path: string) { this.router.navigate(['/', path]); }
-
-  fade(ev: Event, msg: string) {
+  decide(id: number, msg: string) {
+    this.reviews.update((list) => list.filter((r) => r.id !== id));
     this.toast.show(msg);
-    const row = (ev.target as HTMLElement).closest('.btn-fade, .leave-item');
-    if (!row) return;
-    row.classList.add('gone');
-    setTimeout(() => {
-      row.remove();
-      const el = document.getElementById('leaveCount');
-      if (el) el.textContent = String(document.querySelectorAll('#leaveList .leave-item').length);
-    }, 320);
   }
 }

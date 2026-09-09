@@ -23,8 +23,11 @@
         <div class="asm-view hidden" [class.hidden]="tab() !== 'bank'">
           <div class="flex justify-between items-center mb-3">
             <p class="text-sm text-slate2/60">1,860 questions tagged across 9 subjects</p>
-            <button type="button" (click)="toast.show('Test generated from 15 questions — ready to review')" class="bg-ink text-white text-sm px-4 py-2 rounded-sm hover:bg-inkdeep">Generate test from bank</button>
+            <button type="button" (click)="generateTest()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm hover:bg-inkdeep">Generate test from bank</button>
           </div>
+          @if (generated()) {
+            <p class="text-sm text-primary mb-3">{{ generated() }}</p>
+          }
           <div class="bg-white border border-line rounded-sm overflow-hidden">
             <table class="w-full text-sm">
               <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Question</th><th class="px-4 py-3 font-normal">Subject</th><th class="px-4 py-3 font-normal">Difficulty</th><th class="px-4 py-3 font-normal">Marks</th></tr></thead>
@@ -42,10 +45,11 @@
             <div class="bg-white border border-line rounded-sm p-5">
               <h3 class="font-display text-lg text-ink mb-3">Scheduled online tests</h3>
               <ul class="text-sm space-y-2.5">
-                <li class="flex justify-between"><span>S4 Physics — Waves quiz</span><span class="text-xs text-slate2/50">20 min · Opens 10 Sep</span></li>
-                <li class="flex justify-between"><span>S6 Math — Calculus MCQ</span><span class="text-xs text-slate2/50">30 min · Opens 12 Sep</span></li>
+                @for (t of online(); track t.title) {
+                  <li class="flex justify-between"><span>{{ t.title }}</span><span class="text-xs text-slate2/50">{{ t.meta }}</span></li>
+                }
               </ul>
-              <button type="button" (click)="toast.show('Online test scheduling opened')" class="w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5">+ Schedule online test</button>
+              <button type="button" (click)="scheduleTest()" class="w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5">+ Schedule online test</button>
             </div>
             <div class="bg-white border border-line rounded-sm p-5">
               <h3 class="font-display text-lg text-ink mb-3">Settings</h3>

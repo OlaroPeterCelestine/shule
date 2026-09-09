@@ -3,19 +3,19 @@
         <div class="grid grid-cols-3 gap-5">
           <div class="col-span-2 bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-4">New campaign</h3>
-            <form class="space-y-3 text-sm" (ngSubmit)="sendCampaign()">
+            <form class="space-y-3 text-sm" (ngSubmit)="$event.preventDefault(); sendCampaign()">
               <div class="flex gap-3">
-                <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel === 'SMS'"><input type="radio" name="ch" value="SMS" [(ngModel)]="channel"> SMS</label>
-                <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel === 'Email'"><input type="radio" name="ch" value="Email" [(ngModel)]="channel"> Email</label>
-                <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel === 'Push'"><input type="radio" name="ch" value="Push" [(ngModel)]="channel"> Push</label>
+                <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel() === 'SMS'"><input type="radio" name="ch" value="SMS" [ngModel]="channel()" (ngModelChange)="channel.set($event)"> SMS</label>
+                <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel() === 'Email'"><input type="radio" name="ch" value="Email" [ngModel]="channel()" (ngModelChange)="channel.set($event)"> Email</label>
+                <label class="flex items-center gap-1.5 border border-line rounded-sm px-3 py-1.5" [class.bg-canvas]="channel() === 'Push'"><input type="radio" name="ch" value="Push" [ngModel]="channel()" (ngModelChange)="channel.set($event)"> Push</label>
               </div>
               <div>
                 <label class="text-xs text-slate2/60">Audience</label>
-                <select name="audience" [(ngModel)]="audience" class="w-full border border-line rounded-sm px-3 py-2 mt-1 bg-white"><option>All parents</option><option>S4 East parents</option><option>Fee balance &gt; 400,000</option><option>Staff</option></select>
+                <select name="audience" [ngModel]="audience()" (ngModelChange)="audience.set($event)" class="w-full border border-line rounded-sm px-3 py-2 mt-1 bg-white"><option>All parents</option><option>S4 East parents</option><option>Fee balance &gt; 400,000</option><option>Staff</option></select>
               </div>
               <div>
                 <label class="text-xs text-slate2/60">Message</label>
-                <textarea name="msg" [(ngModel)]="msg" class="w-full border border-line rounded-sm px-3 py-2 mt-1 h-24 bg-white" placeholder="Dear parent, this is a reminder that Term 2 fees balance is due on 20 Sep…"></textarea>
+                <textarea name="msg" [ngModel]="msg()" (ngModelChange)="msg.set($event)" class="w-full border border-line rounded-sm px-3 py-2 mt-1 h-24 bg-white" placeholder="Dear parent, this is a reminder that Term 2 fees balance is due on 20 Sep…"></textarea>
               </div>
               <div class="flex justify-between items-center pt-1">
                 <span class="text-xs text-slate2/50">Estimated recipients: 1,240 · Cost: UGX 62,000</span>

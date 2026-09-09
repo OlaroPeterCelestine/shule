@@ -2,13 +2,20 @@
         <p class="text-sm text-slate2/60 mb-5">4,820 titles · 214 loans out · 96 school-owned assets tracked</p>
         <div class="grid grid-cols-2 gap-5">
           <div class="bg-white border border-line rounded-sm p-5">
-            <h3 class="font-display text-lg text-ink mb-3">Active loans</h3>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-display text-lg text-ink">Active loans</h3>
+              <button type="button" (click)="checkout()" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">+ Check out</button>
+            </div>
             <table class="w-full text-sm">
               <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Book</th><th class="pb-2 font-normal">Borrower</th><th class="pb-2 font-normal">Due</th></tr></thead>
               <tbody class="divide-y divide-line">
-                <tr><td class="py-2.5">A Grain of Wheat</td><td class="py-2.5">Nakiwala F.</td><td class="py-2.5">14 Sep</td></tr>
-                <tr><td class="py-2.5">Advanced Physics Vol. 2</td><td class="py-2.5">Byaruhanga T.</td><td class="py-2.5 text-maroon">Overdue 3 days</td></tr>
-                <tr><td class="py-2.5">Things Fall Apart</td><td class="py-2.5">Okello D.</td><td class="py-2.5">18 Sep</td></tr>
+                @for (l of loans(); track l.book + l.borrower) {
+                  <tr>
+                    <td class="py-2.5">{{ l.book }}</td>
+                    <td class="py-2.5">{{ l.borrower }}</td>
+                    <td class="py-2.5" [class.text-maroon]="l.late">{{ l.due }}</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>

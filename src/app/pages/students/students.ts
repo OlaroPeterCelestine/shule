@@ -31,6 +31,8 @@ export class StudentsPage {
     });
   }
 
+  protected readonly classes = computed(() => [...new Set(this.store.students().map((s) => s.cls))].sort());
+
   protected readonly filtered = computed(() => {
     const q = this.q().trim().toLowerCase();
     const cls = this.classFilter();

@@ -1,17 +1,30 @@
 <div class="flex items-center justify-between mb-5">
           <div>
             <h1 class="font-display text-2xl text-ink">Visitors & Gate</h1>
-            <p class="text-sm text-slate2/60 mt-1">4 visitors on campus now</p>
+            <p class="text-sm text-slate2/60 mt-1">{{ visitors().filter(v => v.status === 'On campus').length }} visitors on campus now</p>
           </div>
           <button type="button" (click)="checkIn()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep"><svg class="ic text-white"><use href="#i-plus"/></svg> Check in visitor</button>
         </div>
         <div class="bg-white border border-line rounded-sm overflow-hidden">
           <table class="w-full text-sm">
             <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Visitor</th><th class="px-4 py-3 font-normal">Purpose</th><th class="px-4 py-3 font-normal">Host</th><th class="px-4 py-3 font-normal">Badge</th><th class="px-4 py-3 font-normal">Status</th><th class="px-4 py-3 font-normal"></th></tr></thead>
-            <tbody id="visitorRows" class="divide-y divide-line">
-              <tr class="visitor-row"><td class="px-4 py-3">John Mukasa</td><td class="px-4 py-3">Textbook delivery</td><td class="px-4 py-3">Librarian</td><td class="px-4 py-3 font-mono text-xs">V-0231</td><td class="px-4 py-3 text-primary">On campus</td><td class="px-4 py-3"><button (click)="checkout($event)" class="checkout-visitor text-xs text-maroon hover:underline">Check out</button></td></tr>
-              <tr class="visitor-row"><td class="px-4 py-3">Rose Nakiwala</td><td class="px-4 py-3">Parent meeting</td><td class="px-4 py-3">Class Teacher, S4 East</td><td class="px-4 py-3 font-mono text-xs">V-0232</td><td class="px-4 py-3 text-primary">On campus</td><td class="px-4 py-3"><button (click)="checkout($event)" class="checkout-visitor text-xs text-maroon hover:underline">Check out</button></td></tr>
-              <tr class="visitor-row"><td class="px-4 py-3">Umeme Technician</td><td class="px-4 py-3">Meter inspection</td><td class="px-4 py-3">Bursar's office</td><td class="px-4 py-3 font-mono text-xs">V-0230</td><td class="px-4 py-3 text-slate2/50">Checked out</td><td class="px-4 py-3 text-xs text-slate2/30">—</td></tr>
+            <tbody class="divide-y divide-line">
+              @for (v of visitors(); track v.id) {
+                <tr>
+                  <td class="px-4 py-3">{{ v.name }}</td>
+                  <td class="px-4 py-3">{{ v.purpose }}</td>
+                  <td class="px-4 py-3">{{ v.host }}</td>
+                  <td class="px-4 py-3 font-mono text-xs">{{ v.badge }}</td>
+                  <td class="px-4 py-3" [class.text-primary]="v.status === 'On campus'" [class.text-slate2/50]="v.status !== 'On campus'">{{ v.status }}</td>
+                  <td class="px-4 py-3">
+                    @if (v.status === 'On campus') {
+                      <button type="button" (click)="checkout(v.id)" class="text-xs text-maroon hover:underline">Check out</button>
+                    } @else {
+                      <span class="text-xs text-slate2/30">—</span>
+                    }
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>

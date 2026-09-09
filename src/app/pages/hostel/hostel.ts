@@ -1,36 +1,36 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
-import { ReportService } from '../../core/report.service';
-import { DownloadService } from '../../core/download.service';
-import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-hostel',
-  imports: [],
   templateUrl: './hostel.html',
 })
 export class HostelPage {
-  protected toast = inject(ToastService);
-  protected modal = inject(ModalService);
-  protected report = inject(ReportService);
-  protected download = inject(DownloadService);
-  protected router = inject(Router);
-  protected auth = inject(AuthService);
+  private toast = inject(ToastService);
+  private modal = inject(ModalService);
 
-  go(path: string) { this.router.navigate(['/', path]); }
+  protected readonly events = signal([
+    { student: 'Nakiwala Faith', room: "St. Mary's — B14", event: 'Checked in', time: 'Sun, 6:40pm', in: true },
+    { student: 'Byaruhanga T.', room: "St. Peter's — A03", event: 'Checked out — home visit', time: 'Today, 7:10am', in: false },
+  ]);
 
-  fade(ev: Event, msg: string) {
-    this.toast.show(msg);
-    const row = (ev.target as HTMLElement).closest('.btn-fade, .leave-item');
-    if (!row) return;
-    row.classList.add('gone');
-    setTimeout(() => {
-      row.remove();
-      const el = document.getElementById('leaveCount');
-      if (el) el.textContent = String(document.querySelectorAll('#leaveList .leave-item').length);
-    }, 320);
+  record() {
+    this.modal.open({
+      title: 'Record check-in / check-out',
+      fields: [
+        { key: 'student', placeholder: 'Student name *', required: true },
+        { key: 'room', placeholder: 'Room (e.g. St. Mary\'s — B14) *', required: true },
+      ],
+      select: { key: 'event', options: ['Checked in', 'Checked out'] },
+      onConfirm: (v) => {
+        const ev = String(v['event'] || 'Checked in');
+        this.events.update((list) => [
+          { student: String(v['student']), room: String(v['room']), event: ev, time: 'Just now', in: ev === 'Checked in' },
+          ...list,
+        ]);
+        this.toast.show(v['student'] + ' — ' + ev.toLowerCase());
+      },
+    });
   }
 }

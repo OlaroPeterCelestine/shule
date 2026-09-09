@@ -15,9 +15,9 @@ export class LoginPage {
   private router = inject(Router);
   protected toast = inject(ToastService);
 
-  protected email = '';
-  protected password = '';
-  protected remember = true;
+  protected readonly email = signal('');
+  protected readonly password = signal('');
+  protected readonly remember = signal(true);
   protected readonly showPw = signal(false);
   protected readonly busy = signal(false);
   protected readonly emailError = signal(false);
@@ -25,15 +25,15 @@ export class LoginPage {
   protected readonly formError = signal('');
 
   demo(role: string) {
-    this.auth.demoLogin(role as RoleKey, this.remember);
+    this.auth.demoLogin(role as RoleKey, this.remember());
     const user = this.auth.user();
     this.toast.show('Signed in as ' + (user?.name ?? '') + ' (' + (user?.label ?? '') + ')');
     this.router.navigate(['/dashboard']);
   }
 
   submit() {
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim());
-    const pwOk = this.password.length > 0;
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim());
+    const pwOk = this.password().length > 0;
     this.emailError.set(!emailOk);
     this.pwError.set(!pwOk);
     if (!emailOk || !pwOk) {
@@ -43,7 +43,7 @@ export class LoginPage {
     this.formError.set('');
     this.busy.set(true);
     setTimeout(() => {
-      const user = this.auth.login(this.email.trim(), this.remember);
+      const user = this.auth.login(this.email().trim(), this.remember());
       this.busy.set(false);
       this.toast.show('Signed in as ' + user.name + ' (' + user.label + ')');
       this.router.navigate(['/dashboard']);

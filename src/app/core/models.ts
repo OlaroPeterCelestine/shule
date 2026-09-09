@@ -1,3 +1,6 @@
+export const SCHOOL_NAME = 'Little Royals Kindergarten & Primary School';
+export const SCHOOL_SHORT = 'Little Royals';
+
 export type RoleKey = 'admin' | 'teacher' | 'accountant' | 'parent';
 
 export interface DemoAccount {

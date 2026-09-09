@@ -9,7 +9,7 @@
               <button type="button" class="ai-chip text-xs border border-line rounded-sm px-3 py-1.5 hover:bg-canvas" (click)="prompt.set('Summarise this term\'s attendance trend for the Principal')">Summarise attendance trend</button>
               <button type="button" class="ai-chip text-xs border border-line rounded-sm px-3 py-1.5 hover:bg-canvas" (click)="prompt.set('Summarise fee collection performance this term')">Summarise fee collection</button>
             </div>
-            <form (ngSubmit)="ask()">
+            <form (ngSubmit)="$event.preventDefault(); ask()">
             <textarea name="aiPrompt" [ngModel]="prompt()" (ngModelChange)="prompt.set($event)" class="w-full border border-line rounded-sm px-3 py-2 h-20 bg-white text-sm" placeholder="Ask for a lesson plan, test questions, a rubric, or a plain-language summary of a report…"></textarea>
             <button type="submit" class="mt-2 bg-ink text-white text-sm px-4 py-2 rounded-sm hover:bg-inkdeep">Ask assistant</button>
             </form>

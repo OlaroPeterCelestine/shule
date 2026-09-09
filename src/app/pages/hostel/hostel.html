@@ -21,12 +21,21 @@
           </div>
         </div>
         <div class="bg-white border border-line rounded-sm p-5 mt-5">
-          <h3 class="font-display text-lg text-ink mb-3">Recent check-in / check-out</h3>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display text-lg text-ink">Recent check-in / check-out</h3>
+            <button type="button" (click)="record()" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">+ Record</button>
+          </div>
           <table class="w-full text-sm">
             <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Student</th><th class="pb-2 font-normal">Room</th><th class="pb-2 font-normal">Event</th><th class="pb-2 font-normal">Time</th></tr></thead>
             <tbody class="divide-y divide-line">
-              <tr><td class="py-2">Nakiwala Faith</td><td class="py-2">St. Mary's — B14</td><td class="py-2 text-primary">Checked in</td><td class="py-2 font-mono text-xs">Sun, 6:40pm</td></tr>
-              <tr><td class="py-2">Byaruhanga T.</td><td class="py-2">St. Peter's — A03</td><td class="py-2 text-maroon">Checked out — home visit</td><td class="py-2 font-mono text-xs">Today, 7:10am</td></tr>
+              @for (e of events(); track e.student + e.time) {
+                <tr>
+                  <td class="py-2">{{ e.student }}</td>
+                  <td class="py-2">{{ e.room }}</td>
+                  <td class="py-2" [class.text-primary]="e.in" [class.text-maroon]="!e.in">{{ e.event }}</td>
+                  <td class="py-2 font-mono text-xs">{{ e.time }}</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>

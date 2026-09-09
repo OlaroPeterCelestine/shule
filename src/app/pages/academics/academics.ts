@@ -1,36 +1,16 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { ToastService } from '../../core/toast.service';
-import { ModalService } from '../../core/modal.service';
-import { ReportService } from '../../core/report.service';
-import { DownloadService } from '../../core/download.service';
-import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-academics',
-  imports: [],
   templateUrl: './academics.html',
 })
 export class AcademicsPage {
-  protected toast = inject(ToastService);
-  protected modal = inject(ModalService);
-  protected report = inject(ReportService);
-  protected download = inject(DownloadService);
-  protected router = inject(Router);
-  protected auth = inject(AuthService);
+  private toast = inject(ToastService);
+  protected readonly clash = signal(true);
 
-  go(path: string) { this.router.navigate(['/', path]); }
-
-  fade(ev: Event, msg: string) {
-    this.toast.show(msg);
-    const row = (ev.target as HTMLElement).closest('.btn-fade, .leave-item');
-    if (!row) return;
-    row.classList.add('gone');
-    setTimeout(() => {
-      row.remove();
-      const el = document.getElementById('leaveCount');
-      if (el) el.textContent = String(document.querySelectorAll('#leaveList .leave-item').length);
-    }, 320);
+  resolveClash() {
+    this.clash.set(false);
+    this.toast.show('Reschedule request sent for S4 Biology practical');
   }
 }

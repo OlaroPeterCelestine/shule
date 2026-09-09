@@ -1,36 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { ToastService } from '../../core/toast.service';
-import { ModalService } from '../../core/modal.service';
-import { ReportService } from '../../core/report.service';
-import { DownloadService } from '../../core/download.service';
-import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-hr',
-  imports: [],
   templateUrl: './hr.html',
 })
 export class HrPage {
-  protected toast = inject(ToastService);
-  protected modal = inject(ModalService);
-  protected report = inject(ReportService);
-  protected download = inject(DownloadService);
-  protected router = inject(Router);
-  protected auth = inject(AuthService);
+  private toast = inject(ToastService);
 
-  go(path: string) { this.router.navigate(['/', path]); }
+  protected readonly leaves = signal([
+    { id: 1, name: 'Mugabe S. — Driver', meta: 'Sick leave · 8–12 Sep' },
+    { id: 2, name: 'Namutebi J. — Teacher', meta: 'Annual leave · 20–27 Sep' },
+  ]);
 
-  fade(ev: Event, msg: string) {
-    this.toast.show(msg);
-    const row = (ev.target as HTMLElement).closest('.btn-fade, .leave-item');
-    if (!row) return;
-    row.classList.add('gone');
-    setTimeout(() => {
-      row.remove();
-      const el = document.getElementById('leaveCount');
-      if (el) el.textContent = String(document.querySelectorAll('#leaveList .leave-item').length);
-    }, 320);
+  decide(id: number, approved: boolean) {
+    const row = this.leaves().find((l) => l.id === id);
+    this.leaves.update((list) => list.filter((l) => l.id !== id));
+    this.toast.show((approved ? 'Leave approved for ' : 'Leave declined for ') + (row?.name.split(' — ')[0] ?? 'staff'));
   }
 }

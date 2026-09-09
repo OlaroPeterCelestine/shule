@@ -45,7 +45,11 @@
               </tbody>
             </table>
           </div>
-          <button type="button" (click)="runPayroll()" class="mt-4 bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep">Run payroll for September <svg class="ic text-white"><use href="#i-arrow-right"/></svg></button>
+          @if (payrollDone()) {
+            <p class="mt-4 text-sm text-primary">September payroll processed — payslips generated.</p>
+          } @else {
+            <button type="button" (click)="runPayroll()" class="mt-4 bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep">Run payroll for September <svg class="ic text-white"><use href="#i-arrow-right"/></svg></button>
+          }
         </div>
 
         <div class="fin-view hidden" [class.hidden]="fin() !== 'procurement'">
@@ -55,10 +59,16 @@
           <div class="bg-white border border-line rounded-sm overflow-hidden">
             <table class="w-full text-sm">
               <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Ref</th><th class="px-4 py-3 font-normal">Item</th><th class="px-4 py-3 font-normal">Requested by</th><th class="px-4 py-3 font-normal">Est. cost</th><th class="px-4 py-3 font-normal">Stage</th></tr></thead>
-              <tbody id="prRows" class="divide-y divide-line">
-                <tr><td class="px-4 py-3 font-mono text-xs">PR-118</td><td class="px-4 py-3">40 chairs — Block C</td><td class="px-4 py-3">B. Kato, HOD</td><td class="px-4 py-3">2,400,000</td><td class="px-4 py-3 text-gold">Awaiting approval</td></tr>
-                <tr><td class="px-4 py-3 font-mono text-xs">PR-117</td><td class="px-4 py-3">Lab reagents restock</td><td class="px-4 py-3">Ssentongo B.</td><td class="px-4 py-3">890,000</td><td class="px-4 py-3 text-primary">PO issued — Chemtech Ltd</td></tr>
-                <tr><td class="px-4 py-3 font-mono text-xs">PR-115</td><td class="px-4 py-3">Printer toner ×6</td><td class="px-4 py-3">Front office</td><td class="px-4 py-3">420,000</td><td class="px-4 py-3 text-slate2/60">Goods received</td></tr>
+              <tbody class="divide-y divide-line">
+                @for (pr of prs(); track pr.ref) {
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-xs">{{ pr.ref }}</td>
+                    <td class="px-4 py-3">{{ pr.item }}</td>
+                    <td class="px-4 py-3">{{ pr.by }}</td>
+                    <td class="px-4 py-3">{{ pr.cost }}</td>
+                    <td class="px-4 py-3" [class.text-gold]="pr.pending" [class.text-primary]="!pr.pending && pr.stage.includes('PO')" [class.text-slate2/60]="!pr.pending && !pr.stage.includes('PO')">{{ pr.stage }}</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>

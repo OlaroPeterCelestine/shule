@@ -1,34 +1,33 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
-import { ReportService } from '../../core/report.service';
 import { DownloadService } from '../../core/download.service';
-import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-finance',
-  imports: [],
   templateUrl: './finance.html',
 })
 export class FinancePage {
-  protected toast = inject(ToastService);
-  protected modal = inject(ModalService);
-  protected report = inject(ReportService);
-  protected download = inject(DownloadService);
-  protected router = inject(Router);
-  protected auth = inject(AuthService);
+  private toast = inject(ToastService);
+  private modal = inject(ModalService);
+  private download = inject(DownloadService);
 
   protected readonly fin = signal('invoices');
+  protected readonly prs = signal([
+    { ref: 'PR-118', item: '40 chairs — Block C', by: 'B. Kato, HOD', cost: '2,400,000', stage: 'Awaiting approval', pending: true },
+    { ref: 'PR-117', item: 'Lab reagents restock', by: 'Ssentongo B.', cost: '890,000', stage: 'PO issued — Chemtech Ltd', pending: false },
+    { ref: 'PR-115', item: 'Printer toner ×6', by: 'Front office', cost: '420,000', stage: 'Goods received', pending: false },
+  ]);
+  protected readonly payrollDone = signal(false);
 
   runPayroll() {
     this.modal.open({
       title: 'Run payroll — September',
       message: 'This will process net pay for <strong>86 employees</strong> totalling <strong>UGX 148.6M</strong> and generate payslips.',
+      confirmLabel: 'Run payroll',
       onConfirm: () => {
+        this.payrollDone.set(true);
         this.toast.show('September payroll processed — payslips generated');
-        return true;
       },
     });
   }
@@ -42,34 +41,23 @@ export class FinancePage {
       ],
       onConfirm: (v) => {
         const ref = 'PR-' + Math.floor(100 + Math.random() * 899);
-        const tbody = document.getElementById('prRows');
-        if (tbody) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = '<td class="px-4 py-3 font-mono text-xs">' + ref + '</td><td class="px-4 py-3">' + v['item'] + '</td><td class="px-4 py-3">Grace Nakato</td><td class="px-4 py-3">' + v['cost'] + '</td><td class="px-4 py-3 text-gold">Awaiting approval</td>';
-          tbody.prepend(tr);
-        }
+        this.prs.update((list) => [
+          { ref, item: String(v['item']), by: 'Grace Nakato', cost: String(v['cost']), stage: 'Awaiting approval', pending: true },
+          ...list,
+        ]);
         this.toast.show('Purchase request ' + ref + ' submitted for approval');
-        return true;
       },
     });
   }
 
   exportLedger() {
-    const table = document.getElementById('accountingTable');
-    if (table) this.download.tableToCsv('chart-of-accounts-term2-2026.csv', table);
-  }
-
-  go(path: string) { this.router.navigate(['/', path]); }
-
-  fade(ev: Event, msg: string) {
-    this.toast.show(msg);
-    const row = (ev.target as HTMLElement).closest('.btn-fade, .leave-item');
-    if (!row) return;
-    row.classList.add('gone');
-    setTimeout(() => {
-      row.remove();
-      const el = document.getElementById('leaveCount');
-      if (el) el.textContent = String(document.querySelectorAll('#leaveList .leave-item').length);
-    }, 320);
+    this.download.csv('chart-of-accounts-term2-2026.csv', [
+      ['Account', 'Type', 'Balance'],
+      ['Tuition income', 'Revenue', '812,000,000'],
+      ['Transport income', 'Revenue', '64,500,000'],
+      ['Salaries & wages', 'Expense', '148,600,000'],
+      ['Utilities', 'Expense', '11,400,000'],
+      ['Bank — Stanbic operating', 'Asset', '216,300,000'],
+    ]);
   }
 }

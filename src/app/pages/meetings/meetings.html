@@ -4,30 +4,37 @@
           <div class="bg-white border border-line rounded-sm p-5">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-display text-lg text-ink">Upcoming PTM — Sat 12 Sep</h3>
-              <button type="button" (click)="toast.show('New parent-teacher meeting scheduler opened')" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">+ New PTM</button>
+              <button type="button" (click)="newPtm()" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">+ New PTM</button>
             </div>
             <table class="w-full text-sm">
               <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Slot</th><th class="pb-2 font-normal">Teacher</th><th class="pb-2 font-normal">Booked by</th></tr></thead>
               <tbody class="divide-y divide-line">
-                <tr><td class="py-2 font-mono text-xs">09:00</td><td class="py-2">Ssentongo B. — Physics</td><td class="py-2">R. Nakiwala</td></tr>
-                <tr><td class="py-2 font-mono text-xs">09:20</td><td class="py-2">Ssentongo B. — Physics</td><td class="py-2 text-slate2/40">Open</td></tr>
-                <tr><td class="py-2 font-mono text-xs">10:30</td><td class="py-2">Namutebi J. — English</td><td class="py-2">J. Namutebi</td></tr>
+                @for (s of slots(); track s.time + s.teacher) {
+                  <tr>
+                    <td class="py-2 font-mono text-xs">{{ s.time }}</td>
+                    <td class="py-2">{{ s.teacher }}</td>
+                    <td class="py-2" [class.text-slate2/40]="s.booked === 'Open'">{{ s.booked }}</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
           <div class="bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-3">Parent visit requests</h3>
-            <div id="visitRequests" class="space-y-3 text-sm">
-              <div class="visit-item border border-line rounded-sm p-3 btn-fade">
-                <p class="font-medium text-ink">P. Okello — wants to discuss fee balance</p>
-                <p class="text-xs text-slate2/50 mt-1">Requested: Fri 11 Sep, 2:00pm · With Accountant</p>
-                <div class="flex gap-2 mt-2"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Visit confirmed with P. Okello')">Confirm</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Reschedule requested for P. Okello')">Reschedule</button></div>
-              </div>
-              <div class="visit-item border border-line rounded-sm p-3 btn-fade">
-                <p class="font-medium text-ink">S. Achieng — counseling follow-up</p>
-                <p class="text-xs text-slate2/50 mt-1">Requested: Mon 14 Sep, 11:00am · With Counselor</p>
-                <div class="flex gap-2 mt-2"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Visit confirmed with S. Achieng')">Confirm</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Reschedule requested for S. Achieng')">Reschedule</button></div>
-              </div>
+            <div class="space-y-3 text-sm">
+              @for (v of visits(); track v.id) {
+                <div class="border border-line rounded-sm p-3">
+                  <p class="font-medium text-ink">{{ v.title }}</p>
+                  <p class="text-xs text-slate2/50 mt-1">{{ v.meta }}</p>
+                  <div class="flex gap-2 mt-2">
+                    <button type="button" class="text-xs text-primary hover:underline" (click)="decide(v.id, 'Visit confirmed')">Confirm</button>
+                    <button type="button" class="text-xs text-maroon hover:underline" (click)="decide(v.id, 'Reschedule requested')">Reschedule</button>
+                  </div>
+                </div>
+              }
+              @if (!visits().length) {
+                <p class="text-xs text-slate2/50">No pending visit requests.</p>
+              }
             </div>
           </div>
         </div>

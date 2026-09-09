@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ModalService } from '../core/modal.service';
 
@@ -13,7 +13,7 @@ import { ModalService } from '../core/modal.service';
             <h3 class="font-display text-lg text-ink">{{ opts.title }}</h3>
             <button type="button" (click)="modal.close()" class="text-slate2/50 hover:text-ink"><svg class="ic-lg"><use href="#i-x"/></svg></button>
           </div>
-          <form (ngSubmit)="modal.confirm()">
+          <form (ngSubmit)="$event.preventDefault(); modal.confirm()">
           <div class="px-5 py-4 text-sm space-y-3">
             @if (opts.message) {
               <div [innerHTML]="opts.message"></div>
@@ -58,6 +58,11 @@ import { ModalService } from '../core/modal.service';
 })
 export class AppModal {
   protected modal = inject(ModalService);
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.modal.options()) this.modal.close();
+  }
 
   onOverlay(ev: Event) {
     if (ev.target === ev.currentTarget) this.modal.close();

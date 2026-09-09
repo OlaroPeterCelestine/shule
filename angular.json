@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "school-os": {
+    "little-royals": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:class": {
@@ -81,10 +81,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "school-os:build:production"
+              "buildTarget": "little-royals:build:production"
             },
             "development": {
-              "buildTarget": "school-os:build:development"
+              "buildTarget": "little-royals:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -26,25 +26,28 @@
               <h3 class="font-display text-lg text-ink">This week's lesson plans</h3>
               <button type="button" (click)="newLesson()" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5 flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-plus"/></svg> New plan</button>
             </div>
-            <ul id="lessonPlanList" class="text-sm divide-y divide-line">
-              <li class="py-2.5"><p class="text-ink font-medium">Quadratic equations — Topic 4.2</p><p class="text-xs text-slate2/50 mt-0.5">S2 Mathematics · Ssentongo B. · Mon 08:00</p></li>
-              <li class="py-2.5"><p class="text-ink font-medium">Wave properties — Topic 6.1</p><p class="text-xs text-slate2/50 mt-0.5">S4 Physics · Ssentongo B. · Wed 08:00</p></li>
-              <li class="py-2.5"><p class="text-ink font-medium">Comprehension: persuasive texts</p><p class="text-xs text-slate2/50 mt-0.5">S1 English · Namutebi J. · Thu 09:40</p></li>
+            <ul class="text-sm divide-y divide-line">
+              @for (p of plans(); track p.topic) {
+                <li class="py-2.5"><p class="text-ink font-medium">{{ p.topic }}</p><p class="text-xs text-slate2/50 mt-0.5">{{ p.meta }}</p></li>
+              }
             </ul>
           </div>
           <div class="bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-3">HOD review queue</h3>
-            <div id="hodReview" class="space-y-3 text-sm">
-              <div class="review-item border border-line rounded-sm p-3 btn-fade">
-                <p class="font-medium text-ink">S2 Mathematics — Term 2 plan</p>
-                <p class="text-xs text-slate2/50 mt-1">Submitted by Ssentongo B. · Behind schedule flag</p>
-                <div class="flex gap-2 mt-2"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'S2 Mathematics plan approved')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Feedback sent to Ssentongo B.')">Request changes</button></div>
-              </div>
-              <div class="review-item border border-line rounded-sm p-3 btn-fade">
-                <p class="font-medium text-ink">S1 English — Term 2 plan</p>
-                <p class="text-xs text-slate2/50 mt-1">Submitted by Namutebi J. · On schedule</p>
-                <div class="flex gap-2 mt-2"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'S1 English plan approved')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Feedback sent to Namutebi J.')">Request changes</button></div>
-              </div>
+            <div class="space-y-3 text-sm">
+              @for (r of reviews(); track r.id) {
+                <div class="border border-line rounded-sm p-3">
+                  <p class="font-medium text-ink">{{ r.title }}</p>
+                  <p class="text-xs text-slate2/50 mt-1">{{ r.meta }}</p>
+                  <div class="flex gap-2 mt-2">
+                    <button type="button" class="text-xs text-primary hover:underline" (click)="decide(r.id, r.title.split(' — ')[0] + ' plan approved')">Approve</button>
+                    <button type="button" class="text-xs text-maroon hover:underline" (click)="decide(r.id, 'Feedback sent')">Request changes</button>
+                  </div>
+                </div>
+              }
+              @if (!reviews().length) {
+                <p class="text-xs text-slate2/50">No plans waiting for review.</p>
+              }
             </div>
           </div>
         </div>

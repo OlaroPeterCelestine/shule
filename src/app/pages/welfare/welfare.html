@@ -7,10 +7,14 @@
           <div class="bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-3">Discipline log</h3>
             <ul class="text-sm space-y-3">
-              <li class="border-l-2 border-gold pl-3"><p class="text-ink">Late submission of assignment — S2 East</p><p class="text-xs text-slate2/50 mt-0.5">Verbal warning · 5 Sep · Follow-up scheduled</p></li>
-              <li class="border-l-2 border-maroon pl-3"><p class="text-ink">Uniform violation — S1 West</p><p class="text-xs text-slate2/50 mt-0.5">Parent notified · 2 Sep · Closed</p></li>
+              @for (i of incidents(); track i.title) {
+                <li class="border-l-2 pl-3" [class.border-gold]="i.tone === 'gold'" [class.border-maroon]="i.tone === 'maroon'">
+                  <p class="text-ink">{{ i.title }}</p>
+                  <p class="text-xs text-slate2/50 mt-0.5">{{ i.meta }}</p>
+                </li>
+              }
             </ul>
-            <button type="button" class="open-toast mt-3 text-xs text-primary border border-primary/30 rounded-sm py-1.5 px-3 hover:bg-primary/5" (click)="toast.show('New incident form opened')">+ Log incident</button>
+            <button type="button" (click)="logIncident()" class="mt-3 text-xs text-primary border border-primary/30 rounded-sm py-1.5 px-3 hover:bg-primary/5">+ Log incident</button>
           </div>
           <div class="bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-3">Nurse visits — today</h3>

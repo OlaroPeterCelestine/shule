@@ -1,36 +1,34 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
-import { ReportService } from '../../core/report.service';
-import { DownloadService } from '../../core/download.service';
-import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-welfare',
-  imports: [],
   templateUrl: './welfare.html',
 })
 export class WelfarePage {
-  protected toast = inject(ToastService);
-  protected modal = inject(ModalService);
-  protected report = inject(ReportService);
-  protected download = inject(DownloadService);
-  protected router = inject(Router);
-  protected auth = inject(AuthService);
+  private toast = inject(ToastService);
+  private modal = inject(ModalService);
 
-  go(path: string) { this.router.navigate(['/', path]); }
+  protected readonly incidents = signal([
+    { title: 'Late submission of assignment — S2 East', meta: 'Verbal warning · 5 Sep · Follow-up scheduled', tone: 'gold' },
+    { title: 'Uniform violation — S1 West', meta: 'Parent notified · 2 Sep · Closed', tone: 'maroon' },
+  ]);
 
-  fade(ev: Event, msg: string) {
-    this.toast.show(msg);
-    const row = (ev.target as HTMLElement).closest('.btn-fade, .leave-item');
-    if (!row) return;
-    row.classList.add('gone');
-    setTimeout(() => {
-      row.remove();
-      const el = document.getElementById('leaveCount');
-      if (el) el.textContent = String(document.querySelectorAll('#leaveList .leave-item').length);
-    }, 320);
+  logIncident() {
+    this.modal.open({
+      title: 'Log incident',
+      fields: [
+        { key: 'title', placeholder: 'What happened *', required: true },
+        { key: 'action', placeholder: 'Action taken (e.g. Parent notified)' },
+      ],
+      onConfirm: (v) => {
+        this.incidents.update((list) => [
+          { title: String(v['title']), meta: String(v['action'] || 'Logged today') + ' · Just now', tone: 'gold' },
+          ...list,
+        ]);
+        this.toast.show('Incident logged');
+      },
+    });
   }
 }

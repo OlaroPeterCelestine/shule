@@ -114,7 +114,7 @@
             <div class="bg-white border border-line rounded-sm p-5 col-span-2">
               <h3 class="font-display text-lg text-ink mb-3">Today's classes — Mr. Ssentongo</h3>
               <ul class="divide-y divide-line text-sm">
-                <li class="py-2.5 flex justify-between items-center"><span>08:00 — S4A Physics (Room 12)</span><button (click)="toast.show('Attendance sheet opened for S4A Physics')" class="mark-attendance text-xs text-primary hover:underline">Mark attendance →</button></li>
+                <li class="py-2.5 flex justify-between items-center"><span>08:00 — S4A Physics (Room 12)</span>@if (marked()) {<span class="text-xs text-primary flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Done</span>} @else {<button type="button" (click)="markAttendance()" class="text-xs text-primary hover:underline">Mark attendance →</button>}</li>
                 <li class="py-2.5 flex justify-between items-center"><span>09:40 — S4B Physics (Room 12)</span><span class="text-xs text-primary flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Done</span></li>
                 <li class="py-2.5 flex justify-between items-center"><span>11:20 — S6 Physics (Lab 2)</span><span class="text-xs text-slate2/50">Upcoming</span></li>
                 <li class="py-2.5 flex justify-between items-center"><span>14:00 — S4 Mock Exam supervision</span><span class="text-xs text-slate2/50">Upcoming</span></li>
@@ -127,7 +127,7 @@
                 <div class="flex justify-between"><span>S6 — Practical report</span><span class="font-medium">6/21</span></div>
                 <div class="flex justify-between"><span>S4B — Homework set 7</span><span class="font-medium">0/29</span></div>
               </div>
-              <button type="button" class="open-toast w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5" (click)="toast.show('Opening the marking workspace…')">Continue marking →</button>
+              <button type="button" class="w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5" (click)="notify('Opening the marking workspace…')">Continue marking →</button>
             </div>
           </div>
         </div>
@@ -145,8 +145,20 @@
             <table class="w-full text-sm">
               <thead><tr class="text-left text-xs text-slate2/50 border-b border-line"><th class="pb-2 font-normal">Ref</th><th class="pb-2 font-normal">Type</th><th class="pb-2 font-normal">Amount</th><th class="pb-2 font-normal">Action</th></tr></thead>
               <tbody class="divide-y divide-line">
-                <tr class="btn-fade"><td class="py-2 font-mono text-xs">EXP-2291</td><td class="py-2">Supplier — Maama Foods Ltd</td><td class="py-2">3,200,000</td><td class="py-2 flex gap-3"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Payment EXP-2291 approved')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Payment EXP-2291 declined')">Decline</button></td></tr>
-                <tr class="btn-fade"><td class="py-2 font-mono text-xs">REF-0182</td><td class="py-2">Fee refund — Okello D.</td><td class="py-2">150,000</td><td class="py-2 flex gap-3"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Refund REF-0182 approved')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Refund REF-0182 declined')">Decline</button></td></tr>
+                @for (a of approvals(); track a.id) {
+                  <tr>
+                    <td class="py-2 font-mono text-xs">{{ a.ref }}</td>
+                    <td class="py-2">{{ a.type }}</td>
+                    <td class="py-2">{{ a.amount }}</td>
+                    <td class="py-2 flex gap-3">
+                      <button type="button" class="text-xs text-primary hover:underline" (click)="decide(a.id, 'Payment ' + a.ref + ' approved')">Approve</button>
+                      <button type="button" class="text-xs text-maroon hover:underline" (click)="decide(a.id, 'Payment ' + a.ref + ' declined')">Decline</button>
+                    </td>
+                  </tr>
+                }
+                @if (!approvals().length) {
+                  <tr><td colspan="4" class="py-3 text-xs text-slate2/50">No payments awaiting approval.</td></tr>
+                }
               </tbody>
             </table>
           </div>
@@ -165,7 +177,9 @@
               <p class="text-xs text-slate2/60">Fees balance</p>
               <p class="font-display text-2xl mt-1" [class.text-maroon]="!paid()" [class.text-primary]="paid()">{{ paid() ? 'UGX 0' : 'UGX 260,000' }}</p>
               <p class="text-xs text-slate2/50 mt-1">{{ paid() ? 'Cleared today' : 'Due 20 Sep 2026' }}</p>
-              <button type="button" (click)="payNow()" class="mt-3 text-xs bg-primary text-white px-3 py-1.5 rounded-sm hover:bg-primarydark">Pay now</button>
+              @if (!paid()) {
+                <button type="button" (click)="payNow()" class="mt-3 text-xs bg-primary text-white px-3 py-1.5 rounded-sm hover:bg-primarydark">Pay now</button>
+              }
             </div>
             <div class="bg-white border border-line rounded-sm p-5">
               <p class="text-xs text-slate2/60">Messages from school</p>
