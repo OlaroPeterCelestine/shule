@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { SchoolOsStore, type Applicant, type ApplicantStage } from '../../core/school-os.store';
 import { ToastService } from '../../core/toast.service';
 import { StatCards } from '../../shared/stat-cards';
@@ -61,6 +62,7 @@ const EMPTY: ApplicationForm = {
 export class AdmissionsPage {
   protected os = inject(SchoolOsStore);
   private toast = inject(ToastService);
+  private router = inject(Router);
   protected readonly stages = STAGES;
   protected readonly classes = ['Baby class', 'Middle class', 'Top class', 'Primary One', 'Primary Two', 'Primary Three', 'Primary Four', 'Primary Five', 'Primary Six', 'Primary Seven'];
   protected readonly form = signal<ApplicationForm>({ ...EMPTY });
@@ -97,7 +99,7 @@ export class AdmissionsPage {
   }
 
   openApplicant(a: Applicant) {
-    this.selected.set(a);
+    this.router.navigate(['/admissions', String(a.id)]);
   }
 
   closeApplicant() {

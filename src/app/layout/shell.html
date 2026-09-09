@@ -125,6 +125,9 @@
         <svg class="ic"><use href="#i-menu"/></svg>
       </button>
       <p class="hidden md:block text-[13px] text-slate-400 shrink-0">Dashboard <span class="text-slate-300 mx-1">›</span> <span class="text-slate-800 font-medium">{{ page() }}</span></p>
+      @if (isList()) {
+        <a [routerLink]="'/' + moduleKey() + '/report'" class="inline-flex h-8 px-3 text-xs border border-slate-200 bg-white rounded-full text-slate-600 hover:text-slate-900 items-center shrink-0">Report</a>
+      }
       <div class="relative flex-1 min-w-0 lg:flex-none lg:w-[420px] lg:max-w-[42vw] mx-auto">
         <svg class="ic absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"><use href="#i-search"/></svg>
         <input #searchBox [(ngModel)]="searchText" name="globalSearch" (keydown.enter)="onSearch()" type="text" placeholder="Search…" class="w-full text-sm border border-slate-200 rounded-full pl-10 pr-4 sm:pr-16 py-2 bg-white shadow-sm" />
@@ -170,6 +173,11 @@
 
     <main class="px-4 lg:px-8 pb-10 flex-1 fade-in min-w-0">
       <router-outlet />
+      @if (isList() && moduleKey() !== 'students' && moduleKey() !== 'finance' && moduleKey() !== 'attendance') {
+        <div class="mt-6">
+          <app-records-block [moduleKey]="moduleKey()" />
+        </div>
+      }
     </main>
   </div>
 </div>

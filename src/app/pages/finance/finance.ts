@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
 import { DownloadService } from '../../core/download.service';
@@ -13,6 +14,7 @@ export class FinancePage {
   private toast = inject(ToastService);
   private modal = inject(ModalService);
   private download = inject(DownloadService);
+  private router = inject(Router);
 
   protected readonly fin = signal('invoices');
   protected readonly prs = signal([
@@ -27,6 +29,10 @@ export class FinancePage {
     { label: 'Purchase requests', value: String(this.prs().length), change: this.prs().filter((p) => p.pending).length + ' awaiting approval', bars: [3, 4, 3, 5, 4, 6, 5] },
     { label: 'Payroll', value: this.payrollDone() ? 'Done' : '3 days', change: this.payrollDone() ? 'September posted' : 'Until September run', bars: [4, 4, 5, 5, 6, 6, 7] },
   ]);
+
+  open(id: string) {
+    this.router.navigate(['/finance', id]);
+  }
 
   runPayroll() {
     this.modal.open({

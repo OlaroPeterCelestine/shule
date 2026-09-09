@@ -1,5 +1,6 @@
 import { Component, computed, effect, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { SearchService } from '../../core/search.service';
 import { StudentsStore } from '../../core/students.store';
 import { SchoolOsStore } from '../../core/school-os.store';
@@ -55,6 +56,7 @@ export class StudentsPage {
   protected os = inject(SchoolOsStore);
   private toast = inject(ToastService);
   private search = inject(SearchService);
+  private router = inject(Router);
 
   protected readonly q = signal(this.search.query());
   protected readonly classFilter = signal('');
@@ -117,9 +119,7 @@ export class StudentsPage {
   }
 
   openStudent(s: Student) {
-    this.selected.set(s);
-    this.pane.set('overview');
-    this.panelOpen.set(true);
+    this.router.navigate(['/students', s.adm]);
   }
 
   close() {

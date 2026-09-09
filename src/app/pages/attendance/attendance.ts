@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { SchoolOsStore, type Mark } from '../../core/school-os.store';
 import { StudentsStore } from '../../core/students.store';
 import { ToastService } from '../../core/toast.service';
@@ -14,6 +15,11 @@ export class AttendancePage {
   protected os = inject(SchoolOsStore);
   private students = inject(StudentsStore);
   private toast = inject(ToastService);
+  private router = inject(Router);
+
+  open(adm: string) {
+    this.router.navigate(['/attendance', adm]);
+  }
 
   protected readonly cls = signal('');
   protected readonly lesson = signal('Morning roll call');

@@ -6,6 +6,7 @@ import { filter } from 'rxjs';
 import { AuthService } from '../core/auth.service';
 import { SearchService } from '../core/search.service';
 import { ToastService } from '../core/toast.service';
+import { RecordsBlock } from '../shared/records-block';
 
 const LABELS: Record<string, string> = {
   dashboard: 'Overview',
@@ -26,6 +27,7 @@ const LABELS: Record<string, string> = {
   lifecycle: 'Promotion & Alumni',
   documents: 'Documents',
   reports: 'Reports',
+  report: 'Report',
   ai: 'AI Assistant',
   system: 'System',
   profile: 'My profile',
@@ -39,7 +41,7 @@ const LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule, RecordsBlock],
   templateUrl: './shell.html',
 })
 export class ShellPage {
@@ -54,13 +56,23 @@ export class ShellPage {
   protected readonly avatarOpen = signal(false);
   protected readonly menuOpen = signal(false);
   protected readonly page = signal('Overview');
+  protected readonly moduleKey = signal('dashboard');
+  protected readonly isList = signal(true);
 
   constructor() {
-    this.page.set(labelFor(this.router.url));
+    this.syncUrl(this.router.url);
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe((e) => {
-      this.page.set(labelFor((e as NavigationEnd).urlAfterRedirects));
+      this.syncUrl((e as NavigationEnd).urlAfterRedirects);
       this.closeMenu();
     });
+  }
+
+  private syncUrl(url: string) {
+    const parts = url.split('?')[0].split('/').filter(Boolean);
+    const key = parts[0] ?? 'dashboard';
+    this.moduleKey.set(key);
+    this.isList.set(parts.length <= 1);
+    this.page.set(labelFor(url));
   }
 
   toggleMenu(ev: Event) {
@@ -127,6 +139,10 @@ export class ShellPage {
 }
 
 function labelFor(url: string): string {
-  const path = url.split('?')[0].split('/').filter(Boolean)[0] ?? 'dashboard';
-  return LABELS[path] ?? 'Overview';
+  const parts = url.split('?')[0].split('/').filter(Boolean);
+  const path = parts[0] ?? 'dashboard';
+  const base = LABELS[path] ?? 'Overview';
+  if (parts[1] === 'report') return base + ' report';
+  if (parts[1]) return base + ' detail';
+  return base;
 }

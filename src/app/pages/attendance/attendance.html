@@ -33,16 +33,16 @@
     </tr></thead>
     <tbody class="divide-y divide-slate-50">
       @for (r of rows(); track r.adm) {
-        <tr>
+        <tr class="cursor-pointer hover:bg-slate-50" (click)="open(r.adm)">
           <td class="px-4 py-3 font-mono text-xs text-slate-500">{{ r.adm }}</td>
           <td class="px-4 py-3 font-medium text-slate-900">{{ r.name }}</td>
           <td class="px-4 py-3 text-slate-600">{{ r.cls }}</td>
           <td class="px-4 py-3">
             <div class="flex gap-1">
-              <button type="button" (click)="mark(r.adm, 'P')" class="w-8 h-8 rounded-full text-xs" [class.bg-emerald-600]="r.status === 'P'" [class.text-white]="r.status === 'P'" [class.bg-slate-100]="r.status !== 'P'">P</button>
-              <button type="button" (click)="mark(r.adm, 'A')" class="w-8 h-8 rounded-full text-xs" [class.bg-rose-600]="r.status === 'A'" [class.text-white]="r.status === 'A'" [class.bg-slate-100]="r.status !== 'A'">A</button>
-              <button type="button" (click)="mark(r.adm, 'L')" class="w-8 h-8 rounded-full text-xs" [class.bg-amber-500]="r.status === 'L'" [class.text-white]="r.status === 'L'" [class.bg-slate-100]="r.status !== 'L'">L</button>
-              <button type="button" (click)="mark(r.adm, 'E')" class="w-8 h-8 rounded-full text-xs" [class.bg-slate-800]="r.status === 'E'" [class.text-white]="r.status === 'E'" [class.bg-slate-100]="r.status !== 'E'">E</button>
+              <button type="button" (click)="$event.stopPropagation(); mark(r.adm, 'P')" class="w-8 h-8 rounded-full text-xs" [class.bg-emerald-600]="r.status === 'P'" [class.text-white]="r.status === 'P'" [class.bg-slate-100]="r.status !== 'P'">P</button>
+              <button type="button" (click)="$event.stopPropagation(); mark(r.adm, 'A')" class="w-8 h-8 rounded-full text-xs" [class.bg-rose-600]="r.status === 'A'" [class.text-white]="r.status === 'A'" [class.bg-slate-100]="r.status !== 'A'">A</button>
+              <button type="button" (click)="$event.stopPropagation(); mark(r.adm, 'L')" class="w-8 h-8 rounded-full text-xs" [class.bg-amber-500]="r.status === 'L'" [class.text-white]="r.status === 'L'" [class.bg-slate-100]="r.status !== 'L'">L</button>
+              <button type="button" (click)="$event.stopPropagation(); mark(r.adm, 'E')" class="w-8 h-8 rounded-full text-xs" [class.bg-slate-800]="r.status === 'E'" [class.text-white]="r.status === 'E'" [class.bg-slate-100]="r.status !== 'E'">E</button>
             </div>
           </td>
         </tr>

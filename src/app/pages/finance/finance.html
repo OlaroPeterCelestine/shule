@@ -15,9 +15,9 @@
             <table class="w-full text-sm">
               <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Invoice</th><th class="px-4 py-3 font-normal">Student</th><th class="px-4 py-3 font-normal">Total</th><th class="px-4 py-3 font-normal">Paid</th><th class="px-4 py-3 font-normal">Balance</th><th class="px-4 py-3 font-normal">Status</th></tr></thead>
               <tbody class="divide-y divide-line">
-                <tr><td class="px-4 py-3 font-mono text-xs">INV-4471</td><td class="px-4 py-3">Nakiwala Faith</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">0</td><td class="px-4 py-3 text-primary">Cleared</td></tr>
-                <tr><td class="px-4 py-3 font-mono text-xs">INV-4472</td><td class="px-4 py-3">Namutebi Racheal</td><td class="px-4 py-3">980,000</td><td class="px-4 py-3">360,000</td><td class="px-4 py-3 text-maroon">620,000</td><td class="px-4 py-3 text-maroon">Overdue</td></tr>
-                <tr><td class="px-4 py-3 font-mono text-xs">INV-4473</td><td class="px-4 py-3">Okello Derrick</td><td class="px-4 py-3">860,000</td><td class="px-4 py-3">320,000</td><td class="px-4 py-3 text-maroon">540,000</td><td class="px-4 py-3 text-gold">Due 20 Sep</td></tr>
+                <tr class="cursor-pointer hover:bg-canvas" (click)="open('INV-4471')"><td class="px-4 py-3 font-mono text-xs">INV-4471</td><td class="px-4 py-3">Nakiwala Faith</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">0</td><td class="px-4 py-3 text-primary">Cleared</td></tr>
+                <tr class="cursor-pointer hover:bg-canvas" (click)="open('INV-4472')"><td class="px-4 py-3 font-mono text-xs">INV-4472</td><td class="px-4 py-3">Namutebi Racheal</td><td class="px-4 py-3">980,000</td><td class="px-4 py-3">360,000</td><td class="px-4 py-3 text-maroon">620,000</td><td class="px-4 py-3 text-maroon">Overdue</td></tr>
+                <tr class="cursor-pointer hover:bg-canvas" (click)="open('INV-4473')"><td class="px-4 py-3 font-mono text-xs">INV-4473</td><td class="px-4 py-3">Okello Derrick</td><td class="px-4 py-3">860,000</td><td class="px-4 py-3">320,000</td><td class="px-4 py-3 text-maroon">540,000</td><td class="px-4 py-3 text-gold">Due 20 Sep</td></tr>
               </tbody>
             </table>
           </div>

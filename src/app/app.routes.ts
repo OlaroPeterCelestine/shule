@@ -1,6 +1,24 @@
 import { Routes } from '@angular/router';
 import { authGuard, guestGuard } from './core/auth.guard';
 
+const report = () => import('./pages/entity/entity-report').then((m) => m.EntityReportPage);
+const detail = () => import('./pages/entity/entity-detail').then((m) => m.EntityDetailPage);
+
+function moduleRoutes(
+  path: string,
+  loadList: () => Promise<Record<string, import('@angular/core').Type<unknown>>>,
+  exportName: string,
+) {
+  return {
+    path,
+    children: [
+      { path: '', loadComponent: () => loadList().then((m) => m[exportName]) },
+      { path: 'report', data: { module: path }, loadComponent: report },
+      { path: ':id', data: { module: path }, loadComponent: detail },
+    ],
+  };
+}
+
 export const routes: Routes = [
   { path: 'login', canActivate: [guestGuard], loadComponent: () => import('./pages/login/login').then((m) => m.LoginPage) },
   {
@@ -9,33 +27,33 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/shell').then((m) => m.ShellPage),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-      { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.DashboardPage) },
-      { path: 'students', loadComponent: () => import('./pages/students/students').then((m) => m.StudentsPage) },
-      { path: 'admissions', loadComponent: () => import('./pages/admissions/admissions').then((m) => m.AdmissionsPage) },
-      { path: 'hr', loadComponent: () => import('./pages/hr/hr').then((m) => m.HrPage) },
-      { path: 'curriculum', loadComponent: () => import('./pages/curriculum/curriculum').then((m) => m.CurriculumPage) },
-      { path: 'academics', loadComponent: () => import('./pages/academics/academics').then((m) => m.AcademicsPage) },
-      { path: 'assessments', loadComponent: () => import('./pages/assessments/assessments').then((m) => m.AssessmentsPage) },
-      { path: 'finance', loadComponent: () => import('./pages/finance/finance').then((m) => m.FinancePage) },
-      { path: 'transport', loadComponent: () => import('./pages/transport/transport').then((m) => m.TransportPage) },
-      { path: 'library', loadComponent: () => import('./pages/library/library').then((m) => m.LibraryPage) },
-      { path: 'hostel', loadComponent: () => import('./pages/hostel/hostel').then((m) => m.HostelPage) },
-      { path: 'visitors', loadComponent: () => import('./pages/visitors/visitors').then((m) => m.VisitorsPage) },
-      { path: 'comms', loadComponent: () => import('./pages/comms/comms').then((m) => m.CommsPage) },
-      { path: 'meetings', loadComponent: () => import('./pages/meetings/meetings').then((m) => m.MeetingsPage) },
-      { path: 'welfare', loadComponent: () => import('./pages/welfare/welfare').then((m) => m.WelfarePage) },
-      { path: 'lifecycle', loadComponent: () => import('./pages/lifecycle/lifecycle').then((m) => m.LifecyclePage) },
-      { path: 'documents', loadComponent: () => import('./pages/documents/documents').then((m) => m.DocumentsPage) },
-      { path: 'reports', loadComponent: () => import('./pages/reports/reports').then((m) => m.ReportsPage) },
-      { path: 'ai', loadComponent: () => import('./pages/ai/ai').then((m) => m.AiPage) },
-      { path: 'system', loadComponent: () => import('./pages/system/system').then((m) => m.SystemPage) },
-      { path: 'profile', loadComponent: () => import('./pages/profile/profile').then((m) => m.ProfilePage) },
-      { path: 'school', loadComponent: () => import('./pages/school/school').then((m) => m.SchoolPage) },
-      { path: 'attendance', loadComponent: () => import('./pages/attendance/attendance').then((m) => m.AttendancePage) },
-      { path: 'calendar', loadComponent: () => import('./pages/calendar/calendar').then((m) => m.CalendarPage) },
-      { path: 'inventory', loadComponent: () => import('./pages/inventory/inventory').then((m) => m.InventoryPage) },
-      { path: 'health', loadComponent: () => import('./pages/health/health').then((m) => m.HealthPage) },
-      { path: 'website', loadComponent: () => import('./pages/website/website').then((m) => m.WebsitePage) },
+      moduleRoutes('dashboard', () => import('./pages/dashboard/dashboard'), 'DashboardPage'),
+      moduleRoutes('students', () => import('./pages/students/students'), 'StudentsPage'),
+      moduleRoutes('admissions', () => import('./pages/admissions/admissions'), 'AdmissionsPage'),
+      moduleRoutes('hr', () => import('./pages/hr/hr'), 'HrPage'),
+      moduleRoutes('curriculum', () => import('./pages/curriculum/curriculum'), 'CurriculumPage'),
+      moduleRoutes('academics', () => import('./pages/academics/academics'), 'AcademicsPage'),
+      moduleRoutes('assessments', () => import('./pages/assessments/assessments'), 'AssessmentsPage'),
+      moduleRoutes('finance', () => import('./pages/finance/finance'), 'FinancePage'),
+      moduleRoutes('transport', () => import('./pages/transport/transport'), 'TransportPage'),
+      moduleRoutes('library', () => import('./pages/library/library'), 'LibraryPage'),
+      moduleRoutes('hostel', () => import('./pages/hostel/hostel'), 'HostelPage'),
+      moduleRoutes('visitors', () => import('./pages/visitors/visitors'), 'VisitorsPage'),
+      moduleRoutes('comms', () => import('./pages/comms/comms'), 'CommsPage'),
+      moduleRoutes('meetings', () => import('./pages/meetings/meetings'), 'MeetingsPage'),
+      moduleRoutes('welfare', () => import('./pages/welfare/welfare'), 'WelfarePage'),
+      moduleRoutes('lifecycle', () => import('./pages/lifecycle/lifecycle'), 'LifecyclePage'),
+      moduleRoutes('documents', () => import('./pages/documents/documents'), 'DocumentsPage'),
+      moduleRoutes('reports', () => import('./pages/reports/reports'), 'ReportsPage'),
+      moduleRoutes('ai', () => import('./pages/ai/ai'), 'AiPage'),
+      moduleRoutes('system', () => import('./pages/system/system'), 'SystemPage'),
+      moduleRoutes('profile', () => import('./pages/profile/profile'), 'ProfilePage'),
+      moduleRoutes('school', () => import('./pages/school/school'), 'SchoolPage'),
+      moduleRoutes('attendance', () => import('./pages/attendance/attendance'), 'AttendancePage'),
+      moduleRoutes('calendar', () => import('./pages/calendar/calendar'), 'CalendarPage'),
+      moduleRoutes('inventory', () => import('./pages/inventory/inventory'), 'InventoryPage'),
+      moduleRoutes('health', () => import('./pages/health/health'), 'HealthPage'),
+      moduleRoutes('website', () => import('./pages/website/website'), 'WebsitePage'),
     ],
   },
   { path: '**', redirectTo: 'dashboard' },
