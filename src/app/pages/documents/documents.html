@@ -1,0 +1,40 @@
+<h1 class="font-display text-2xl text-ink mb-1">Documents & Certificates</h1>
+        <p class="text-sm text-slate2/60 mb-5">Generate official documents straight from student and staff records</p>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="doc-card bg-white border border-line rounded-sm p-4">
+            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
+            <p class="font-medium text-ink text-sm">Student ID card</p>
+            <p class="text-xs text-slate2/50 mt-1 mb-3">Photo, admission no., class, QR code</p>
+            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Student ID card')">Generate</button>
+          </div>
+          <div class="doc-card bg-white border border-line rounded-sm p-4">
+            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
+            <p class="font-medium text-ink text-sm">Admission letter</p>
+            <p class="text-xs text-slate2/50 mt-1 mb-3">Offer confirmation for new students</p>
+            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Admission letter')">Generate</button>
+          </div>
+          <div class="doc-card bg-white border border-line rounded-sm p-4">
+            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
+            <p class="font-medium text-ink text-sm">Transfer certificate</p>
+            <p class="text-xs text-slate2/50 mt-1 mb-3">For students leaving the school</p>
+            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Transfer certificate')">Generate</button>
+          </div>
+          <div class="doc-card bg-white border border-line rounded-sm p-4">
+            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
+            <p class="font-medium text-ink text-sm">Completion certificate</p>
+            <p class="text-xs text-slate2/50 mt-1 mb-3">Issued at graduation</p>
+            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Completion certificate')">Generate</button>
+          </div>
+          <div class="doc-card bg-white border border-line rounded-sm p-4">
+            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
+            <p class="font-medium text-ink text-sm">Staff payslip</p>
+            <p class="text-xs text-slate2/50 mt-1 mb-3">Latest payroll run</p>
+            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Staff payslip')">Generate</button>
+          </div>
+          <div class="doc-card bg-white border border-line rounded-sm p-4">
+            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
+            <p class="font-medium text-ink text-sm">Visitor badge</p>
+            <p class="text-xs text-slate2/50 mt-1 mb-3">Printable check-in badge</p>
+            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Visitor badge')">Generate</button>
+          </div>
+        </div>

@@ -1,0 +1,30 @@
+<h1 class="font-display text-2xl text-ink mb-1">Staff & HR</h1>
+        <p class="text-sm text-slate2/60 mb-5">86 employees · <span id="leaveCount">4</span> pending leave requests</p>
+        <div class="grid grid-cols-3 gap-5">
+          <div class="col-span-2 bg-white border border-line rounded-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Name</th><th class="px-4 py-3 font-normal">Role</th><th class="px-4 py-3 font-normal">Department</th><th class="px-4 py-3 font-normal">Contract</th><th class="px-4 py-3 font-normal">Status</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="px-4 py-3 font-medium text-ink">Ssentongo B.</td><td class="px-4 py-3">Teacher — Physics</td><td class="px-4 py-3">Sciences</td><td class="px-4 py-3">Permanent</td><td class="px-4 py-3 text-primary">Active</td></tr>
+                <tr><td class="px-4 py-3 font-medium text-ink">Kato Brian</td><td class="px-4 py-3">Accountant</td><td class="px-4 py-3">Finance</td><td class="px-4 py-3">Permanent</td><td class="px-4 py-3 text-primary">Active</td></tr>
+                <tr><td class="px-4 py-3 font-medium text-ink">Nabirye C.</td><td class="px-4 py-3">Matron</td><td class="px-4 py-3">Welfare</td><td class="px-4 py-3">Contract · ends Dec</td><td class="px-4 py-3 text-gold">Renewal due</td></tr>
+                <tr><td class="px-4 py-3 font-medium text-ink">Mugabe S.</td><td class="px-4 py-3">Driver</td><td class="px-4 py-3">Transport</td><td class="px-4 py-3">Permanent</td><td class="px-4 py-3 text-slate2/60">On leave</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-lg text-ink mb-3">Leave requests</h3>
+            <div id="leaveList" class="space-y-3 text-sm">
+              <div class="leave-item border border-line rounded-sm p-3 btn-fade">
+                <p class="font-medium text-ink">Mugabe S. — Driver</p>
+                <p class="text-slate2/60 text-xs mt-1">Sick leave · 8–12 Sep</p>
+                <div class="flex gap-2 mt-2"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Leave approved for Mugabe S.')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Leave declined for Mugabe S.')">Decline</button></div>
+              </div>
+              <div class="leave-item border border-line rounded-sm p-3 btn-fade">
+                <p class="font-medium text-ink">Namutebi J. — Teacher</p>
+                <p class="text-slate2/60 text-xs mt-1">Annual leave · 20–27 Sep</p>
+                <div class="flex gap-2 mt-2"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Leave approved for Namutebi J.')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Leave declined for Namutebi J.')">Decline</button></div>
+              </div>
+            </div>
+          </div>
+        </div>

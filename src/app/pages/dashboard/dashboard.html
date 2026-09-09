@@ -1,0 +1,176 @@
+<div class="flex items-start justify-between mb-1">
+          <div>
+            <h1 class="font-display text-3xl text-ink">Good morning, {{ firstName() }}.</h1>
+            <p class="text-sm text-slate2/70 mt-1">Wednesday, 9 September 2026 · Term 2, Week 8</p>
+          </div>
+          <div class="flex gap-2 bg-white border border-line rounded-sm p-1">
+            <button type="button" (click)="setRole('admin')" class="role-btn tab-btn active px-3 py-1.5 text-xs border-b-2 border-transparent" [class.active]="role() === 'admin'">Admin</button>
+            <button type="button" (click)="setRole('teacher')" class="role-btn tab-btn px-3 py-1.5 text-xs border-b-2 border-transparent" [class.active]="role() === 'teacher'">Teacher</button>
+            <button type="button" (click)="setRole('accountant')" class="role-btn tab-btn px-3 py-1.5 text-xs border-b-2 border-transparent" [class.active]="role() === 'accountant'">Accountant</button>
+            <button type="button" (click)="setRole('parent')" class="role-btn tab-btn px-3 py-1.5 text-xs border-b-2 border-transparent" [class.active]="role() === 'parent'">Parent</button>
+          </div>
+        </div>
+
+        <div class="mt-5 border border-gold/40 bg-gold/5 rounded-sm px-5 py-3 flex items-start gap-3 text-sm">
+          <svg class="ic-lg text-gold mt-0.5"><use href="#i-sparkle"/></svg>
+          <p class="text-ink"><span class="font-semibold">Newly added:</span> Curriculum &amp; syllabus coverage, a question bank with online assessments, Hostel/Boarding, Visitor &amp; Gate management, Parent-Teacher meetings &amp; visit requests, Promotion &amp; Alumni, a certificate/document generator, Procurement &amp; Accounting inside Finance, and an AI assistant for report and lesson-plan drafting.</p>
+        </div>
+
+        <!-- ADMIN role view -->
+        <div class="role-view mt-6" [class.hidden]="role() !== 'admin'">
+          <div class="grid grid-cols-4 gap-4">
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#0E7C61">
+              <p class="text-xs text-slate2/60">Total students</p>
+              <p class="font-display text-3xl text-ink mt-1">1,284</p>
+              <p class="text-xs text-primary mt-1 flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-trend-up"/></svg> 34 this term</p>
+            </div>
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#C68A1A">
+              <p class="text-xs text-slate2/60">Fees collected (Term 2)</p>
+              <p class="font-display text-3xl text-ink mt-1">UGX 812M</p>
+              <p class="text-xs text-slate2/60 mt-1">76% of UGX 1.07B billed</p>
+            </div>
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#8A2E3B">
+              <p class="text-xs text-slate2/60">Attendance today</p>
+              <p class="font-display text-3xl text-ink mt-1">94.2%</p>
+              <p class="text-xs text-maroon mt-1">74 absent, 12 unexplained</p>
+            </div>
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#14213D">
+              <p class="text-xs text-slate2/60">Applications pending</p>
+              <p class="font-display text-3xl text-ink mt-1">37</p>
+              <p class="text-xs text-slate2/60 mt-1">9 awaiting interview</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-5 mt-6">
+            <div class="col-span-2 bg-white border border-line rounded-sm p-5">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-display text-lg text-ink">Fee collection — last 6 terms</h3>
+                <span class="text-xs text-slate2/50">UGX, millions</span>
+              </div>
+              <svg viewBox="0 0 560 180" class="w-full h-44">
+                <line x1="30" y1="150" x2="540" y2="150" stroke="#E1E5EA"/>
+                <g font-family="Inter" font-size="10" fill="#3B4A5A">
+                  <rect x="50" y="90" width="60" height="60" fill="#0E7C61"/>
+                  <rect x="130" y="105" width="60" height="45" fill="#0E7C61"/>
+                  <rect x="210" y="70" width="60" height="80" fill="#0E7C61"/>
+                  <rect x="290" y="60" width="60" height="90" fill="#0E7C61"/>
+                  <rect x="370" y="40" width="60" height="110" fill="#0E7C61"/>
+                  <rect x="450" y="25" width="60" height="125" fill="#C68A1A"/>
+                  <text x="80" y="165" text-anchor="middle">T1 '24</text>
+                  <text x="160" y="165" text-anchor="middle">T2 '24</text>
+                  <text x="240" y="165" text-anchor="middle">T3 '24</text>
+                  <text x="320" y="165" text-anchor="middle">T1 '25</text>
+                  <text x="400" y="165" text-anchor="middle">T2 '25</text>
+                  <text x="480" y="165" text-anchor="middle">T2 '26</text>
+                </g>
+              </svg>
+            </div>
+
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Today's calendar</h3>
+              <ul class="text-sm space-y-3">
+                <li class="flex gap-3"><span class="font-mono text-xs text-primary w-12 shrink-0">08:00</span><span>S4 Mock Exam — Physics</span></li>
+                <li class="flex gap-3"><span class="font-mono text-xs text-primary w-12 shrink-0">10:30</span><span>Parent–Teacher meeting, Block C</span></li>
+                <li class="flex gap-3"><span class="font-mono text-xs text-primary w-12 shrink-0">13:00</span><span>Bus route inspection — Route 4</span></li>
+                <li class="flex gap-3"><span class="font-mono text-xs text-primary w-12 shrink-0">15:00</span><span>Finance committee, staffroom</span></li>
+              </ul>
+              <button type="button" (click)="go('academics')" class="goto-link w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5 flex items-center justify-center gap-1">Open full calendar <svg class="ic w-3.5 h-3.5"><use href="#i-arrow-right"/></svg></button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-5 mt-5">
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Outstanding balances — top 5</h3>
+              <table class="w-full text-sm">
+                <thead><tr class="text-left text-xs text-slate2/50 border-b border-line">
+                  <th class="pb-2 font-normal">Student</th><th class="pb-2 font-normal">Class</th><th class="pb-2 font-normal text-right">Balance</th>
+                </tr></thead>
+                <tbody class="divide-y divide-line">
+                  <tr><td class="py-2">Namutebi R.</td><td class="py-2 text-slate2/60">S5 Arts</td><td class="py-2 text-right text-maroon font-medium">620,000</td></tr>
+                  <tr><td class="py-2">Okello D.</td><td class="py-2 text-slate2/60">S2 East</td><td class="py-2 text-right text-maroon font-medium">540,000</td></tr>
+                  <tr><td class="py-2">Achieng P.</td><td class="py-2 text-slate2/60">P7 Blue</td><td class="py-2 text-right text-maroon font-medium">480,000</td></tr>
+                  <tr><td class="py-2">Byaruhanga T.</td><td class="py-2 text-slate2/60">S1 West</td><td class="py-2 text-right text-maroon font-medium">455,000</td></tr>
+                  <tr><td class="py-2">Kwikiriza M.</td><td class="py-2 text-slate2/60">S6 Sciences</td><td class="py-2 text-right text-maroon font-medium">410,000</td></tr>
+                </tbody>
+              </table>
+              <button type="button" (click)="go('finance')" class="goto-link w-full mt-3 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5">Open Finance →</button>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Recent audit events</h3>
+              <ul class="text-sm space-y-2.5">
+                <li class="flex justify-between"><span>Fee waiver applied — Namutebi R.</span><span class="text-xs text-slate2/50 font-mono">09:12</span></li>
+                <li class="flex justify-between"><span>S4 Physics results published</span><span class="text-xs text-slate2/50 font-mono">08:47</span></li>
+                <li class="flex justify-between"><span>New staff contract signed — B. Kato</span><span class="text-xs text-slate2/50 font-mono">Yesterday</span></li>
+                <li class="flex justify-between"><span>Permission changed — Accountant role</span><span class="text-xs text-slate2/50 font-mono">Yesterday</span></li>
+              </ul>
+              <button type="button" (click)="go('system')" class="goto-link w-full mt-3 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5">View full audit log →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEACHER role view -->
+        <div class="role-view mt-6 hidden" [class.hidden]="role() !== 'teacher'">
+          <div class="grid grid-cols-3 gap-5">
+            <div class="bg-white border border-line rounded-sm p-5 col-span-2">
+              <h3 class="font-display text-lg text-ink mb-3">Today's classes — Mr. Ssentongo</h3>
+              <ul class="divide-y divide-line text-sm">
+                <li class="py-2.5 flex justify-between items-center"><span>08:00 — S4A Physics (Room 12)</span><button (click)="toast.show('Attendance sheet opened for S4A Physics')" class="mark-attendance text-xs text-primary hover:underline">Mark attendance →</button></li>
+                <li class="py-2.5 flex justify-between items-center"><span>09:40 — S4B Physics (Room 12)</span><span class="text-xs text-primary flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Done</span></li>
+                <li class="py-2.5 flex justify-between items-center"><span>11:20 — S6 Physics (Lab 2)</span><span class="text-xs text-slate2/50">Upcoming</span></li>
+                <li class="py-2.5 flex justify-between items-center"><span>14:00 — S4 Mock Exam supervision</span><span class="text-xs text-slate2/50">Upcoming</span></li>
+              </ul>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Marking queue</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span>S4A — Mid-term paper</span><span class="font-medium">18/32</span></div>
+                <div class="flex justify-between"><span>S6 — Practical report</span><span class="font-medium">6/21</span></div>
+                <div class="flex justify-between"><span>S4B — Homework set 7</span><span class="font-medium">0/29</span></div>
+              </div>
+              <button type="button" class="open-toast w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5" (click)="toast.show('Opening the marking workspace…')">Continue marking →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCOUNTANT role view -->
+        <div class="role-view mt-6 hidden" [class.hidden]="role() !== 'accountant'">
+          <div class="grid grid-cols-4 gap-4">
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#0E7C61"><p class="text-xs text-slate2/60">Collected today</p><p class="font-display text-3xl text-ink mt-1">14.2M</p></div>
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#8A2E3B"><p class="text-xs text-slate2/60">Outstanding fees</p><p class="font-display text-3xl text-ink mt-1">258M</p></div>
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#C68A1A"><p class="text-xs text-slate2/60">Expenses (MTD)</p><p class="font-display text-3xl text-ink mt-1">61.4M</p></div>
+            <div class="stat-accent bg-white border border-line rounded-sm p-4" style="--accent:#14213D"><p class="text-xs text-slate2/60">Payroll run</p><p class="font-display text-3xl text-ink mt-1">3 days</p></div>
+          </div>
+          <div class="bg-white border border-line rounded-sm p-5 mt-5">
+            <h3 class="font-display text-lg text-ink mb-3">Payments awaiting approval</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="text-left text-xs text-slate2/50 border-b border-line"><th class="pb-2 font-normal">Ref</th><th class="pb-2 font-normal">Type</th><th class="pb-2 font-normal">Amount</th><th class="pb-2 font-normal">Action</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr class="btn-fade"><td class="py-2 font-mono text-xs">EXP-2291</td><td class="py-2">Supplier — Maama Foods Ltd</td><td class="py-2">3,200,000</td><td class="py-2 flex gap-3"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Payment EXP-2291 approved')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Payment EXP-2291 declined')">Decline</button></td></tr>
+                <tr class="btn-fade"><td class="py-2 font-mono text-xs">REF-0182</td><td class="py-2">Fee refund — Okello D.</td><td class="py-2">150,000</td><td class="py-2 flex gap-3"><button type="button" class="approve-row text-xs text-primary hover:underline" (click)="fade($event, 'Refund REF-0182 approved')">Approve</button><button type="button" class="decline-row text-xs text-maroon hover:underline" (click)="fade($event, 'Refund REF-0182 declined')">Decline</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PARENT role view -->
+        <div class="role-view mt-6 hidden" [class.hidden]="role() !== 'parent'">
+          <div class="grid grid-cols-3 gap-5">
+            <div class="bg-white border border-line rounded-sm p-5">
+              <p class="text-xs text-slate2/60">Child</p>
+              <p class="font-display text-xl text-ink mt-1">Nakiwala Faith — S4 East</p>
+              <p class="text-sm text-slate2/70 mt-3">Attendance this term: <span class="font-medium text-ink">96%</span></p>
+              <p class="text-sm text-slate2/70">Latest position: <span class="font-medium text-ink">4th of 58</span></p>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5" style="border-left:3px solid #8A2E3B">
+              <p class="text-xs text-slate2/60">Fees balance</p>
+              <p class="font-display text-2xl mt-1" [class.text-maroon]="!paid()" [class.text-primary]="paid()">{{ paid() ? 'UGX 0' : 'UGX 260,000' }}</p>
+              <p class="text-xs text-slate2/50 mt-1">{{ paid() ? 'Cleared today' : 'Due 20 Sep 2026' }}</p>
+              <button type="button" (click)="payNow()" class="mt-3 text-xs bg-primary text-white px-3 py-1.5 rounded-sm hover:bg-primarydark">Pay now</button>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5">
+              <p class="text-xs text-slate2/60">Messages from school</p>
+              <p class="text-sm mt-2">"Mid-term reports released — view Faith's results in the Academics tab."</p>
+              <p class="text-xs text-slate2/50 mt-2">Sent yesterday, 4:30pm</p>
+            </div>
+          </div>
+        </div>

@@ -1,0 +1,27 @@
+<h1 class="font-display text-2xl text-ink mb-1">Promotion & Alumni</h1>
+        <p class="text-sm text-slate2/60 mb-5">End-of-year progression decisions and the graduate directory</p>
+
+        <div class="bg-white border border-line rounded-sm p-5 mb-5">
+          <h3 class="font-display text-lg text-ink mb-3">S6 Sciences — promotion decisions (2026 → graduation)</h3>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Student</th><th class="pb-2 font-normal">Final average</th><th class="pb-2 font-normal">Clearance</th><th class="pb-2 font-normal">Decision</th></tr></thead>
+            <tbody id="promotionRows" class="divide-y divide-line">
+              <tr class="promo-row"><td class="py-2">Kwikiriza M.</td><td class="py-2">74%</td><td class="py-2 text-primary">Cleared</td><td class="py-2 flex gap-2"><button (click)="promote($event)" class="promote-btn text-xs bg-primary text-white px-2.5 py-1 rounded-sm">Graduate</button><button (click)="hold($event)" class="hold-btn text-xs border border-line px-2.5 py-1 rounded-sm">Hold</button></td></tr>
+              <tr class="promo-row"><td class="py-2">Achen R.</td><td class="py-2">58%</td><td class="py-2 text-maroon">Fees outstanding</td><td class="py-2 flex gap-2"><button (click)="promote($event)" class="promote-btn text-xs bg-primary text-white px-2.5 py-1 rounded-sm">Graduate</button><button (click)="hold($event)" class="hold-btn text-xs border border-line px-2.5 py-1 rounded-sm">Hold</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bg-white border border-line rounded-sm p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display text-lg text-ink">Alumni directory</h3>
+            <button type="button" (click)="addAlumni()" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">+ Add alumnus</button>
+          </div>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Name</th><th class="pb-2 font-normal">Graduated</th><th class="pb-2 font-normal">Class</th><th class="pb-2 font-normal">Now</th></tr></thead>
+            <tbody id="alumniRows" class="divide-y divide-line">
+              <tr><td class="py-2">Namara Diana</td><td class="py-2">2022</td><td class="py-2">S6 Sciences</td><td class="py-2 text-slate2/60">Medical student, Makerere</td></tr>
+              <tr><td class="py-2">Ocen Bright</td><td class="py-2">2021</td><td class="py-2">S6 Arts</td><td class="py-2 text-slate2/60">Journalist, NBS TV</td></tr>
+            </tbody>
+          </table>
+        </div>

@@ -1,0 +1,23 @@
+<div class="flex items-center gap-2 mb-1">
+          <h1 class="font-display text-2xl text-ink">Welfare & Health</h1>
+          <span class="text-xs bg-maroon/10 text-maroon px-2 py-0.5 rounded-sm">Restricted access</span>
+        </div>
+        <p class="text-sm text-slate2/60 mb-5">Visible to admin, matron and welfare officers only</p>
+        <div class="grid grid-cols-2 gap-5">
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-lg text-ink mb-3">Discipline log</h3>
+            <ul class="text-sm space-y-3">
+              <li class="border-l-2 border-gold pl-3"><p class="text-ink">Late submission of assignment — S2 East</p><p class="text-xs text-slate2/50 mt-0.5">Verbal warning · 5 Sep · Follow-up scheduled</p></li>
+              <li class="border-l-2 border-maroon pl-3"><p class="text-ink">Uniform violation — S1 West</p><p class="text-xs text-slate2/50 mt-0.5">Parent notified · 2 Sep · Closed</p></li>
+            </ul>
+            <button type="button" class="open-toast mt-3 text-xs text-primary border border-primary/30 rounded-sm py-1.5 px-3 hover:bg-primary/5" (click)="toast.show('New incident form opened')">+ Log incident</button>
+          </div>
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-lg text-ink mb-3">Nurse visits — today</h3>
+            <ul class="text-sm space-y-3">
+              <li class="flex justify-between"><span>Byaruhanga T. — headache</span><span class="text-xs text-slate2/50">09:20 · Rested, returned to class</span></li>
+              <li class="flex justify-between"><span>Nabatanzi J. — asthma (known allergy)</span><span class="text-xs text-slate2/50">11:05 · Inhaler administered</span></li>
+            </ul>
+            <p class="text-xs text-slate2/50 mt-3 bg-canvas rounded-sm px-2 py-1.5">Emergency contacts and allergy records are stored on each student's profile with restricted visibility.</p>
+          </div>
+        </div>

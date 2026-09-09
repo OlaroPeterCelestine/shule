@@ -1,0 +1,92 @@
+<h1 class="font-display text-2xl text-ink mb-1">Fees & Payroll</h1>
+        <p class="text-sm text-slate2/60 mb-5">Term 2, 2026</p>
+
+        <div class="flex gap-2 mb-4 text-sm border-b border-line">
+          <button type="button" (click)="fin.set('invoices')" class="fin-tab tab-btn active px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'invoices'">Invoices</button>
+          <button type="button" (click)="fin.set('expenses')" class="fin-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'expenses'">Expenses</button>
+          <button type="button" (click)="fin.set('payroll')" class="fin-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'payroll'">Payroll</button>
+          <button type="button" (click)="fin.set('procurement')" class="fin-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'procurement'">Procurement</button>
+          <button type="button" (click)="fin.set('accounting')" class="fin-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="fin() === 'accounting'">Accounting</button>
+        </div>
+
+        <div class="fin-view" [class.hidden]="fin() !== 'invoices'">
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Invoice</th><th class="px-4 py-3 font-normal">Student</th><th class="px-4 py-3 font-normal">Total</th><th class="px-4 py-3 font-normal">Paid</th><th class="px-4 py-3 font-normal">Balance</th><th class="px-4 py-3 font-normal">Status</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="px-4 py-3 font-mono text-xs">INV-4471</td><td class="px-4 py-3">Nakiwala Faith</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">0</td><td class="px-4 py-3 text-primary">Cleared</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs">INV-4472</td><td class="px-4 py-3">Namutebi Racheal</td><td class="px-4 py-3">980,000</td><td class="px-4 py-3">360,000</td><td class="px-4 py-3 text-maroon">620,000</td><td class="px-4 py-3 text-maroon">Overdue</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs">INV-4473</td><td class="px-4 py-3">Okello Derrick</td><td class="px-4 py-3">860,000</td><td class="px-4 py-3">320,000</td><td class="px-4 py-3 text-maroon">540,000</td><td class="px-4 py-3 text-gold">Due 20 Sep</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="fin-view hidden" [class.hidden]="fin() !== 'expenses'">
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Ref</th><th class="px-4 py-3 font-normal">Supplier</th><th class="px-4 py-3 font-normal">Category</th><th class="px-4 py-3 font-normal">Amount</th><th class="px-4 py-3 font-normal">Status</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="px-4 py-3 font-mono text-xs">EXP-2291</td><td class="px-4 py-3">Maama Foods Ltd</td><td class="px-4 py-3">Food & Catering</td><td class="px-4 py-3">3,200,000</td><td class="px-4 py-3 text-gold">Pending approval</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs">EXP-2290</td><td class="px-4 py-3">Umeme Ltd</td><td class="px-4 py-3">Utilities</td><td class="px-4 py-3">1,140,000</td><td class="px-4 py-3 text-primary">Paid</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs">EXP-2288</td><td class="px-4 py-3">Bic Uganda</td><td class="px-4 py-3">Teaching materials</td><td class="px-4 py-3">640,000</td><td class="px-4 py-3 text-primary">Paid</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="fin-view hidden" [class.hidden]="fin() !== 'payroll'">
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Employee</th><th class="px-4 py-3 font-normal">Basic</th><th class="px-4 py-3 font-normal">Allowances</th><th class="px-4 py-3 font-normal">Deductions</th><th class="px-4 py-3 font-normal">Net pay</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="px-4 py-3">Ssentongo B.</td><td class="px-4 py-3">1,800,000</td><td class="px-4 py-3">200,000</td><td class="px-4 py-3">312,000</td><td class="px-4 py-3 font-medium text-ink">1,688,000</td></tr>
+                <tr><td class="px-4 py-3">Kato Brian</td><td class="px-4 py-3">1,500,000</td><td class="px-4 py-3">150,000</td><td class="px-4 py-3">247,500</td><td class="px-4 py-3 font-medium text-ink">1,402,500</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" (click)="runPayroll()" class="mt-4 bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep">Run payroll for September <svg class="ic text-white"><use href="#i-arrow-right"/></svg></button>
+        </div>
+
+        <div class="fin-view hidden" [class.hidden]="fin() !== 'procurement'">
+          <div class="flex justify-end mb-3">
+            <button type="button" (click)="newPR()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep"><svg class="ic text-white"><use href="#i-plus"/></svg> New purchase request</button>
+          </div>
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Ref</th><th class="px-4 py-3 font-normal">Item</th><th class="px-4 py-3 font-normal">Requested by</th><th class="px-4 py-3 font-normal">Est. cost</th><th class="px-4 py-3 font-normal">Stage</th></tr></thead>
+              <tbody id="prRows" class="divide-y divide-line">
+                <tr><td class="px-4 py-3 font-mono text-xs">PR-118</td><td class="px-4 py-3">40 chairs — Block C</td><td class="px-4 py-3">B. Kato, HOD</td><td class="px-4 py-3">2,400,000</td><td class="px-4 py-3 text-gold">Awaiting approval</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs">PR-117</td><td class="px-4 py-3">Lab reagents restock</td><td class="px-4 py-3">Ssentongo B.</td><td class="px-4 py-3">890,000</td><td class="px-4 py-3 text-primary">PO issued — Chemtech Ltd</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs">PR-115</td><td class="px-4 py-3">Printer toner ×6</td><td class="px-4 py-3">Front office</td><td class="px-4 py-3">420,000</td><td class="px-4 py-3 text-slate2/60">Goods received</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="fin-view hidden" [class.hidden]="fin() !== 'accounting'">
+          <div class="grid grid-cols-3 gap-5">
+            <div class="col-span-2 bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Chart of accounts — Term 2 summary</h3>
+              <table id="accountingTable" class="w-full text-sm">
+                <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Account</th><th class="pb-2 font-normal">Type</th><th class="pb-2 font-normal text-right">Balance</th></tr></thead>
+                <tbody class="divide-y divide-line">
+                  <tr><td class="py-2">Tuition income</td><td class="py-2 text-slate2/60">Revenue</td><td class="py-2 text-right text-primary">812,000,000</td></tr>
+                  <tr><td class="py-2">Transport income</td><td class="py-2 text-slate2/60">Revenue</td><td class="py-2 text-right text-primary">64,500,000</td></tr>
+                  <tr><td class="py-2">Salaries & wages</td><td class="py-2 text-slate2/60">Expense</td><td class="py-2 text-right text-maroon">148,600,000</td></tr>
+                  <tr><td class="py-2">Utilities</td><td class="py-2 text-slate2/60">Expense</td><td class="py-2 text-right text-maroon">11,400,000</td></tr>
+                  <tr><td class="py-2">Bank — Stanbic operating</td><td class="py-2 text-slate2/60">Asset</td><td class="py-2 text-right text-ink font-medium">216,300,000</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Budget vs actual</h3>
+              <div class="space-y-3 text-sm">
+                <div><div class="flex justify-between text-xs mb-1"><span>Salaries</span><span class="text-slate2/60">96%</span></div><div class="h-1.5 bg-canvas rounded-full"><div class="h-1.5 bg-primary rounded-full" style="width:96%"></div></div></div>
+                <div><div class="flex justify-between text-xs mb-1"><span>Utilities</span><span class="text-slate2/60">71%</span></div><div class="h-1.5 bg-canvas rounded-full"><div class="h-1.5 bg-primary rounded-full" style="width:71%"></div></div></div>
+                <div><div class="flex justify-between text-xs mb-1"><span>Teaching materials</span><span class="text-gold">104%</span></div><div class="h-1.5 bg-canvas rounded-full"><div class="h-1.5 bg-gold rounded-full" style="width:100%"></div></div></div>
+              </div>
+              <button type="button" (click)="exportLedger()" class="w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5 flex items-center justify-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-download"/></svg> Export ledger (CSV)</button>
+            </div>
+          </div>
+        </div>

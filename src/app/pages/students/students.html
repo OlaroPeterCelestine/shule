@@ -1,0 +1,119 @@
+<div class="flex items-center justify-between mb-5">
+  <div>
+    <h1 class="font-display text-2xl text-ink">Students</h1>
+    <p class="text-sm text-slate2/60 mt-1">1,284 enrolled across 14 classes</p>
+  </div>
+  <button type="button" (click)="addStudent()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep">
+    <svg class="ic text-white"><use href="#i-plus"/></svg> Add student
+  </button>
+</div>
+
+<div class="flex gap-3 mb-4">
+  <input [ngModel]="q()" (ngModelChange)="q.set($event)" name="studentSearch" class="border border-line rounded-sm px-3 py-2 text-sm w-64 bg-white" placeholder="Search by name or admission no.">
+  <select [ngModel]="classFilter()" (ngModelChange)="classFilter.set($event)" name="classFilter" class="border border-line rounded-sm px-3 py-2 text-sm bg-white">
+    <option value="">All classes</option>
+    <option value="S4 East">S4 East</option>
+    <option value="S5 Arts">S5 Arts</option>
+    <option value="S2 East">S2 East</option>
+    <option value="P7 Blue">P7 Blue</option>
+  </select>
+  <select [ngModel]="feeFilter()" (ngModelChange)="feeFilter.set($event)" name="feeFilter" class="border border-line rounded-sm px-3 py-2 text-sm bg-white">
+    <option value="">Fee status: All</option>
+    <option value="due">Balance due</option>
+    <option value="cleared">Cleared</option>
+  </select>
+</div>
+
+<div class="bg-white border border-line rounded-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left">
+      <th class="px-4 py-3 font-normal">Adm. No.</th><th class="px-4 py-3 font-normal">Name</th><th class="px-4 py-3 font-normal">Class</th><th class="px-4 py-3 font-normal">Guardian</th><th class="px-4 py-3 font-normal">Attendance</th><th class="px-4 py-3 font-normal">Fees</th><th class="px-4 py-3 font-normal"></th>
+    </tr></thead>
+    <tbody class="divide-y divide-line">
+      @for (s of filtered(); track s.adm) {
+        <tr class="student-row hover:bg-canvas cursor-pointer" (click)="openStudent(s)">
+          <td class="px-4 py-3 font-mono text-xs">{{ s.adm }}</td>
+          <td class="px-4 py-3 font-medium text-ink">{{ s.name }}</td>
+          <td class="px-4 py-3">{{ s.cls }}</td>
+          <td class="px-4 py-3">{{ s.guardian }}</td>
+          <td class="px-4 py-3">{{ s.attendance }}</td>
+          <td class="px-4 py-3" [class.text-primary]="s.fee === 'cleared'" [class.text-maroon]="s.fee === 'due'">{{ s.feeLabel }}</td>
+          <td class="px-4 py-3 text-primary text-xs flex items-center gap-1">View <svg class="ic w-3.5 h-3.5"><use href="#i-arrow-right"/></svg></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  @if (filtered().length === 0) {
+    <p class="text-sm text-slate2/50 text-center py-8">No students match those filters.</p>
+  }
+</div>
+
+<div class="fixed inset-0 z-40" [class.hidden]="!panelOpen()">
+        <div class="absolute inset-0 bg-ink/40" (click)="close()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-[560px] bg-white shadow-2xl overflow-y-auto">
+          <div class="p-6 border-b border-line flex items-start justify-between">
+            <div>
+              <p class="text-xs text-slate2/50 font-mono">{{ selected()?.adm }}</p>
+              <h2 class="font-display text-2xl text-ink mt-1">{{ selected()?.name }}</h2>
+              <p class="text-sm text-slate2/60 mt-1">{{ selected()?.cls }} · Admitted Feb 2023</p>
+            </div>
+            <button (click)="close()" class="text-slate2/50 hover:text-ink"><svg class="ic-lg"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="flex text-xs border-b border-line px-6">
+            <button type="button" (click)="pane.set('overview')" class="panel-tab active px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'overview'">Overview</button>
+            <button type="button" (click)="pane.set('academics')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'academics'">Academics</button>
+            <button type="button" (click)="pane.set('fees')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'fees'">Fees</button>
+            <button type="button" (click)="pane.set('attendance')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'attendance'">Attendance</button>
+            <button type="button" (click)="pane.set('documents')" class="panel-tab px-3 py-3 border-b-2 border-transparent text-slate2/50" [class.active]="pane() === 'documents'">Documents</button>
+          </div>
+
+          <div class="panel-pane active p-6 space-y-5 text-sm" [class.active]="pane() === 'overview'">
+            <div>
+              <p class="text-xs text-slate2/50 mb-2">Guardian</p>
+              <p class="text-ink font-medium">Rose Nakiwala — Mother</p>
+              <p class="text-slate2/60">+256 772 445 210 · rose.nakiwala@gmail.com</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="border border-line rounded-sm p-3"><p class="text-xs text-slate2/50">Term average</p><p class="font-display text-xl text-ink">78%</p></div>
+              <div class="border border-line rounded-sm p-3"><p class="text-xs text-slate2/50">Class position</p><p class="font-display text-xl text-ink">4th / 58</p></div>
+            </div>
+            <div>
+              <p class="text-xs text-slate2/50 mb-2">Recent notes</p>
+              <p class="text-slate2/70">Selected for national science fair — awaiting parent consent form.</p>
+            </div>
+          </div>
+
+          <div class="panel-pane p-6 text-sm space-y-3" [class.active]="pane() === 'academics'">
+            <table class="w-full">
+              <thead><tr class="text-left text-xs text-slate2/50 border-b border-line"><th class="pb-2 font-normal">Subject</th><th class="pb-2 font-normal">Score</th><th class="pb-2 font-normal">Grade</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="py-2">Physics</td><td class="py-2">74%</td><td class="py-2">B</td></tr>
+                <tr><td class="py-2">Mathematics</td><td class="py-2">81%</td><td class="py-2">A</td></tr>
+                <tr><td class="py-2">English</td><td class="py-2">79%</td><td class="py-2">B+</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel-pane p-6 text-sm space-y-3" [class.active]="pane() === 'fees'">
+            <div class="border border-line rounded-sm p-3 flex justify-between items-center">
+              <span>Term 2 balance</span><span class="text-primary font-medium">Cleared</span>
+            </div>
+            <div class="border border-line rounded-sm p-3 flex justify-between items-center">
+              <span>Last payment</span><span>1,020,000 · 3 Sep 2026</span>
+            </div>
+          </div>
+
+          <div class="panel-pane p-6 text-sm space-y-3" [class.active]="pane() === 'attendance'">
+            <div class="flex items-center gap-4">
+              <div class="w-20 h-20 rounded-full" style="background: conic-gradient(#0E7C61 0% 96%, #E1E5EA 96% 100%)"></div>
+              <div><p class="font-display text-2xl text-ink">96%</p><p class="text-slate2/60 text-xs">Present this term</p></div>
+            </div>
+          </div>
+
+          <div class="panel-pane p-6 text-sm space-y-2" [class.active]="pane() === 'documents'">
+            <div class="border border-line rounded-sm p-3 flex items-center gap-2"><svg class="ic text-slate2/50"><use href="#i-file"/></svg> Birth certificate.pdf</div>
+            <div class="border border-line rounded-sm p-3 flex items-center gap-2"><svg class="ic text-slate2/50"><use href="#i-file"/></svg> Admission form.pdf</div>
+            <div class="border border-line rounded-sm p-3 flex items-center gap-2"><svg class="ic text-slate2/50"><use href="#i-file"/></svg> Science fair consent.pdf</div>
+          </div>
+        </div>
+      </div>

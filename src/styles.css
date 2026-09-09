@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { font-family: 'Inter', sans-serif; background: #F4F6F8; }
+.font-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #C7CED6; border-radius: 4px; }
+.navlink.active { background: rgba(255,255,255,0.08); border-left-color: #C68A1A; color: #fff; }
+.navlink.active .ic { color: #C68A1A; }
+.tab-btn.active { border-bottom-color: #0E7C61; color: #14213D; font-weight: 600; }
+.fade-in { animation: fadeIn .35s ease both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px);} to { opacity:1; transform:translateY(0);} }
+.kanban-card:hover { border-color: #0E7C61; }
+input:focus, select:focus, textarea:focus { outline: 2px solid #0E7C61; outline-offset: 1px; }
+.stat-accent { border-left: 3px solid var(--accent, #0E7C61); }
+.ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.ic-lg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.btn-fade { transition: opacity .3s ease, transform .3s ease; }
+.btn-fade.gone { opacity: 0; transform: translateX(8px); pointer-events: none; }
+.modal-overlay { display: none; }
+.modal-overlay.open { display: flex; }
+.toast { transition: opacity .25s ease, transform .25s ease; }
+.row-hidden { display: none !important; }
+.panel-tab.active { color: #14213D; border-color: #0E7C61; font-weight: 600; }
+.panel-pane { display: none; }
+.panel-pane.active { display: block; }
+@media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }
+@media print {
+  body * { visibility: hidden; }
+  #reportOverlay, #reportOverlay * { visibility: visible; }
+  #reportOverlay { position: fixed; inset: 0; background: white !important; display: block !important; }
+  #reportOverlay > div { box-shadow: none; width: 100%; max-width: 100%; max-height: none; }
+  .no-print { display: none !important; }
+}

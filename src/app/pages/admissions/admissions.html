@@ -1,0 +1,45 @@
+<div class="flex items-center justify-between mb-5">
+          <div>
+            <h1 class="font-display text-2xl text-ink">Admissions</h1>
+            <p class="text-sm text-slate2/60 mt-1">37 active applications for Term 3, 2026 intake</p>
+          </div>
+          <button type="button" (click)="addApplication()" class="bg-ink text-white text-sm px-4 py-2 rounded-sm flex items-center gap-1.5 hover:bg-inkdeep">
+            <svg class="ic text-white"><use href="#i-plus"/></svg> New application
+          </button>
+        </div>
+        <div class="grid grid-cols-5 gap-3">
+          <div class="bg-white border border-line rounded-sm">
+            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">APPLIED · 14</p>
+            <div id="col-applied" class="p-2 space-y-2 min-h-[40px]">
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Kirabo Alex','P1')"><p class="font-medium text-ink">Kirabo Alex</p><p class="text-slate2/50 mt-1">P1 · Submitted 2 Sep</p></div>
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Tumwine Ivan','S1')"><p class="font-medium text-ink">Tumwine Ivan</p><p class="text-slate2/50 mt-1">S1 · Submitted 3 Sep</p></div>
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Nabatanzi Joy','P4')"><p class="font-medium text-ink">Nabatanzi Joy</p><p class="text-slate2/50 mt-1">P4 · Submitted 4 Sep</p></div>
+            </div>
+          </div>
+          <div class="bg-white border border-line rounded-sm">
+            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">UNDER REVIEW · 9</p>
+            <div class="p-2 space-y-2 min-h-[40px]">
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Mugisha Ruth','S1')"><p class="font-medium text-ink">Mugisha Ruth</p><p class="text-slate2/50 mt-1">S1 · Docs complete</p></div>
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Ojok Simon','P6')"><p class="font-medium text-ink">Ojok Simon</p><p class="text-slate2/50 mt-1">P6 · Awaiting transcript</p></div>
+            </div>
+          </div>
+          <div class="bg-white border border-line rounded-sm">
+            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">INTERVIEW · 6</p>
+            <div class="p-2 space-y-2 min-h-[40px]">
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Namuli Grace','S1')"><p class="font-medium text-ink">Namuli Grace</p><p class="text-slate2/50 mt-1">S1 · 11 Sep, 10am</p></div>
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Byaruhanga Eli','S3')"><p class="font-medium text-ink">Byaruhanga Eli</p><p class="text-slate2/50 mt-1">S3 · 12 Sep, 2pm</p></div>
+            </div>
+          </div>
+          <div class="bg-white border border-line rounded-sm">
+            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">ADMITTED · 6</p>
+            <div class="p-2 space-y-2 min-h-[40px]">
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" style="border-left:3px solid #0E7C61" (click)="openApplicant('Kato Brian','P2')"><p class="font-medium text-ink">Kato Brian</p><p class="text-slate2/50 mt-1">P2 · Adm. no. issued</p></div>
+            </div>
+          </div>
+          <div class="bg-white border border-line rounded-sm">
+            <p class="text-xs font-medium text-slate2/60 px-3 py-2 border-b border-line">WAITLIST / DECLINED · 2</p>
+            <div class="p-2 space-y-2 min-h-[40px]">
+              <div class="kanban-card border border-line rounded-sm p-2.5 text-xs bg-canvas cursor-pointer" (click)="openApplicant('Ssali Peter','S1')"><p class="font-medium text-ink">Ssali Peter</p><p class="text-slate2/50 mt-1">S1 · Waitlisted, no. 3</p></div>
+            </div>
+          </div>
+        </div>

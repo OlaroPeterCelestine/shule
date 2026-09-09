@@ -1,0 +1,38 @@
+<h1 class="font-display text-2xl text-ink mb-1">Reports & Analytics</h1>
+        <p class="text-sm text-slate2/60 mb-5">School-wide performance, Term 2 2026</p>
+        <div class="grid grid-cols-3 gap-5">
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-base text-ink mb-3">Enrollment trend</h3>
+            <svg viewBox="0 0 220 100" class="w-full h-24"><polyline points="10,80 50,70 90,55 130,45 170,30 210,20" fill="none" stroke="#0E7C61" stroke-width="2.5"/></svg>
+            <p class="text-xs text-slate2/50 mt-2 flex items-center gap-1"><svg class="ic w-3.5 h-3.5 text-primary"><use href="#i-trend-up"/></svg> 1,284 students, up 11% year-on-year</p>
+          </div>
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-base text-ink mb-3">Fee collection rate</h3>
+            <svg viewBox="0 0 220 100" class="w-full h-24"><polyline points="10,40 50,50 90,35 130,55 170,25 210,20" fill="none" stroke="#C68A1A" stroke-width="2.5"/></svg>
+            <p class="text-xs text-slate2/50 mt-2">76% collected, 3pp above last term</p>
+          </div>
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-base text-ink mb-3">Attendance by class</h3>
+            <svg viewBox="0 0 220 100" class="w-full h-24">
+              <rect x="10" y="30" width="20" height="60" fill="#0E7C61"/><rect x="45" y="20" width="20" height="70" fill="#0E7C61"/><rect x="80" y="45" width="20" height="45" fill="#8A2E3B"/><rect x="115" y="15" width="20" height="75" fill="#0E7C61"/><rect x="150" y="35" width="20" height="55" fill="#0E7C61"/><rect x="185" y="25" width="20" height="65" fill="#0E7C61"/>
+            </svg>
+            <p class="text-xs text-slate2/50 mt-2">S2 East lowest at 88.4%</p>
+          </div>
+          <div class="col-span-2 bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-base text-ink mb-3">Academic performance by subject</h3>
+            <table class="w-full text-sm">
+              <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Subject</th><th class="pb-2 font-normal">Mean score</th><th class="pb-2 font-normal">Pass rate</th><th class="pb-2 font-normal">Trend</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="py-2">Mathematics</td><td class="py-2">61%</td><td class="py-2">82%</td><td class="py-2 text-primary flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-trend-up"/></svg> 4pp</td></tr>
+                <tr><td class="py-2">Physics</td><td class="py-2">58%</td><td class="py-2">76%</td><td class="py-2 text-maroon flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-trend-down"/></svg> 2pp</td></tr>
+                <tr><td class="py-2">English</td><td class="py-2">67%</td><td class="py-2">91%</td><td class="py-2 text-primary flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-trend-up"/></svg> 1pp</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-base text-ink mb-3">Report card generator</h3>
+            <p class="text-xs text-slate2/60 mb-3">Generate a full term batch or preview a single student's report.</p>
+            <button type="button" (click)="genBatch()" class="w-full text-sm bg-ink text-white rounded-sm py-2 mb-2 flex items-center justify-center gap-1.5 hover:bg-inkdeep"><svg class="ic text-white"><use href="#i-download"/></svg> Generate — S4 East (58 reports)</button>
+            <button type="button" (click)="genSingle()" class="w-full text-sm border border-line rounded-sm py-2 hover:bg-canvas">Preview single report</button>
+          </div>
+        </div>

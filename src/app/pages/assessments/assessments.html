@@ -1,0 +1,58 @@
+<h1 class="font-display text-2xl text-ink mb-1">Assessments & Question Bank</h1>
+        <p class="text-sm text-slate2/60 mb-5">Continuous assessment, reusable questions and online tests</p>
+
+        <div class="flex gap-2 mb-4 text-sm border-b border-line">
+          <button type="button" (click)="tab.set('ca')" class="asm-tab tab-btn active px-4 py-2 border-b-2 border-transparent" [class.active]="tab() === 'ca'">Continuous assessment</button>
+          <button type="button" (click)="tab.set('bank')" class="asm-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="tab() === 'bank'">Question bank</button>
+          <button type="button" (click)="tab.set('online')" class="asm-tab tab-btn px-4 py-2 border-b-2 border-transparent" [class.active]="tab() === 'online'">Online exams</button>
+        </div>
+
+        <div class="asm-view" [class.hidden]="tab() !== 'ca'">
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Assessment</th><th class="px-4 py-3 font-normal">Class</th><th class="px-4 py-3 font-normal">Type</th><th class="px-4 py-3 font-normal">Max marks</th><th class="px-4 py-3 font-normal">Status</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="px-4 py-3">Quadratics — Class test 3</td><td class="px-4 py-3">S2 Math</td><td class="px-4 py-3">Class test</td><td class="px-4 py-3">20</td><td class="px-4 py-3 text-gold">Marking in progress</td></tr>
+                <tr><td class="px-4 py-3">Circuits practical report</td><td class="px-4 py-3">S6 Physics</td><td class="px-4 py-3">Practical</td><td class="px-4 py-3">30</td><td class="px-4 py-3 text-primary">Published</td></tr>
+                <tr><td class="px-4 py-3">Essay: persuasive writing</td><td class="px-4 py-3">S1 English</td><td class="px-4 py-3">Coursework</td><td class="px-4 py-3">15</td><td class="px-4 py-3 text-slate2/60">Draft</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="asm-view hidden" [class.hidden]="tab() !== 'bank'">
+          <div class="flex justify-between items-center mb-3">
+            <p class="text-sm text-slate2/60">1,860 questions tagged across 9 subjects</p>
+            <button type="button" (click)="toast.show('Test generated from 15 questions — ready to review')" class="bg-ink text-white text-sm px-4 py-2 rounded-sm hover:bg-inkdeep">Generate test from bank</button>
+          </div>
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Question</th><th class="px-4 py-3 font-normal">Subject</th><th class="px-4 py-3 font-normal">Difficulty</th><th class="px-4 py-3 font-normal">Marks</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="px-4 py-3">Solve x² − 5x + 6 = 0</td><td class="px-4 py-3">Mathematics</td><td class="px-4 py-3">Medium</td><td class="px-4 py-3">3</td></tr>
+                <tr><td class="px-4 py-3">Define Newton's second law</td><td class="px-4 py-3">Physics</td><td class="px-4 py-3">Easy</td><td class="px-4 py-3">2</td></tr>
+                <tr><td class="px-4 py-3">Analyse tone in a persuasive text</td><td class="px-4 py-3">English</td><td class="px-4 py-3">Hard</td><td class="px-4 py-3">5</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="asm-view hidden" [class.hidden]="tab() !== 'online'">
+          <div class="grid grid-cols-2 gap-5">
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Scheduled online tests</h3>
+              <ul class="text-sm space-y-2.5">
+                <li class="flex justify-between"><span>S4 Physics — Waves quiz</span><span class="text-xs text-slate2/50">20 min · Opens 10 Sep</span></li>
+                <li class="flex justify-between"><span>S6 Math — Calculus MCQ</span><span class="text-xs text-slate2/50">30 min · Opens 12 Sep</span></li>
+              </ul>
+              <button type="button" (click)="toast.show('Online test scheduling opened')" class="w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5">+ Schedule online test</button>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Settings</h3>
+              <div class="space-y-2 text-sm text-slate2/70">
+                <p>Timer, auto-save and randomised question order are on by default.</p>
+                <p>Proctoring is <span class="text-ink font-medium">off</span> — this school has not enabled camera or screen monitoring.</p>
+              </div>
+            </div>
+          </div>
+        </div>

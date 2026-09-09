@@ -1,0 +1,45 @@
+<h1 class="font-display text-2xl text-ink mb-1">System & Audit</h1>
+        <p class="text-sm text-slate2/60 mb-5">Users, roles, integrations and activity history</p>
+        <div class="grid grid-cols-2 gap-5">
+          <div class="bg-white border border-line rounded-sm p-5">
+            <h3 class="font-display text-lg text-ink mb-3">Audit log</h3>
+            <table class="w-full text-xs">
+              <thead class="text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Event</th><th class="pb-2 font-normal">User</th><th class="pb-2 font-normal">Time</th></tr></thead>
+              <tbody class="divide-y divide-line">
+                <tr><td class="py-2">Fee waiver applied — Namutebi R.</td><td class="py-2">G. Nakato</td><td class="py-2 font-mono">09:12</td></tr>
+                <tr><td class="py-2">S4 Physics results published</td><td class="py-2">B. Ssentongo</td><td class="py-2 font-mono">08:47</td></tr>
+                <tr><td class="py-2">Permission changed — Accountant role</td><td class="py-2">G. Nakato</td><td class="py-2 font-mono">Yesterday</td></tr>
+                <tr><td class="py-2">Student record deleted — duplicate entry</td><td class="py-2">G. Nakato</td><td class="py-2 font-mono">2 Sep</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="space-y-5">
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Roles & permissions</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between border-b border-line pb-2"><span>Admin</span><span class="text-xs text-slate2/50">Full access</span></div>
+                <div class="flex justify-between border-b border-line pb-2"><span>Accountant</span><span class="text-xs text-slate2/50">Finance module only</span></div>
+                <div class="flex justify-between border-b border-line pb-2"><span>Teacher</span><span class="text-xs text-slate2/50">Own classes only</span></div>
+                <div class="flex justify-between"><span>Parent</span><span class="text-xs text-slate2/50">Own children only</span></div>
+              </div>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Integrations</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between items-center"><span>SMS gateway (Africa's Talking)</span><span class="text-xs text-primary">Connected</span></div>
+                <div class="flex justify-between items-center"><span>Mobile money (MTN / Airtel)</span><span class="text-xs text-primary">Connected</span></div>
+                <div class="flex justify-between items-center"><span>Email (SMTP)</span><span class="text-xs text-primary">Connected</span></div>
+                <div class="flex justify-between items-center"><span>Nightly backup</span><span class="text-xs text-slate2/50">Last run 04:00 today</span></div>
+              </div>
+              <button type="button" (click)="runBackup()" class="w-full mt-4 text-xs text-primary border border-primary/30 rounded-sm py-1.5 hover:bg-primary/5">Run backup now</button>
+            </div>
+            <div class="bg-white border border-line rounded-sm p-5">
+              <h3 class="font-display text-lg text-ink mb-3">Import / export</h3>
+              <p class="text-xs text-slate2/60 mb-3">Bulk-load students, marks, fees or attendance from CSV/Excel, or export any list for offline use.</p>
+              <div class="flex gap-2">
+                <button type="button" (click)="importData()" class="flex-1 text-xs border border-line rounded-sm py-1.5 hover:bg-canvas flex items-center justify-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-upload"/></svg> Import CSV</button>
+                <button type="button" (click)="exportData()" class="flex-1 text-xs border border-line rounded-sm py-1.5 hover:bg-canvas flex items-center justify-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-download"/></svg> Export data</button>
+              </div>
+            </div>
+          </div>
+        </div>

@@ -1,0 +1,127 @@
+<!-- ===== LOGIN SCREEN ===== -->
+<div class="fixed inset-0 z-[70] flex bg-canvas overflow-y-auto">
+
+  <!-- Left: brand / stats panel -->
+  <div class="hidden md:flex w-[46%] shrink-0 flex-col justify-between p-10 text-white relative overflow-hidden" style="background: radial-gradient(circle at 20% 15%, #1c2f5c 0%, #0D1730 60%);">
+    <div class="absolute inset-0 opacity-[0.06]" style="background-image: repeating-linear-gradient(135deg, #fff 0 1px, transparent 1px 42px);"></div>
+
+    <div class="relative">
+      <div class="flex items-center gap-3 mb-10">
+        <img src="logo.png" alt="Little Royals Kindergarten & Primary School logo" class="w-11 h-11 rounded-full bg-white object-contain shadow-lg" />
+        <div>
+          <p class="font-display text-white text-[15px] leading-tight">Little Royals</p>
+          <p class="text-[11px] text-white/45 leading-tight">Kindergarten &amp; Primary School</p>
+        </div>
+      </div>
+
+      <p class="font-display text-3xl leading-snug mb-2">One place to run<br/>the whole school.</p>
+      <p class="text-sm text-white/55 mb-8 max-w-xs">Admissions, academics, fees, staff and communication — all connected to a single student record.</p>
+
+      <div class="grid grid-cols-2 gap-3 max-w-md">
+        <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
+          <div class="flex items-center justify-between mb-2">
+            <svg class="ic-lg text-gold"><use href="#i-cap"/></svg>
+            <span class="text-[10px] text-primary flex items-center gap-0.5"><svg class="ic w-3 h-3"><use href="#i-trend-up"/></svg> 34</span>
+          </div>
+          <p class="font-display text-2xl leading-none">1,284</p>
+          <p class="text-[11px] text-white/45 mt-1">Students enrolled</p>
+        </div>
+        <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
+          <div class="flex items-center justify-between mb-2">
+            <svg class="ic-lg text-gold"><use href="#i-coin"/></svg>
+            <span class="text-[10px] text-white/40">76%</span>
+          </div>
+          <p class="font-display text-2xl leading-none">812M</p>
+          <p class="text-[11px] text-white/45 mt-1">Fees collected, UGX</p>
+        </div>
+        <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
+          <div class="flex items-center justify-between mb-2">
+            <svg class="ic-lg text-gold"><use href="#i-heart-pulse"/></svg>
+            <span class="text-[10px] text-primary">Today</span>
+          </div>
+          <p class="font-display text-2xl leading-none">94.2%</p>
+          <p class="text-[11px] text-white/45 mt-1">Attendance</p>
+        </div>
+        <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
+          <div class="flex items-center justify-between mb-2">
+            <svg class="ic-lg text-gold"><use href="#i-users"/></svg>
+            <span class="text-[10px] text-white/40">86</span>
+          </div>
+          <p class="font-display text-2xl leading-none">14</p>
+          <p class="text-[11px] text-white/45 mt-1">Classes, all campuses</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative text-xs text-white/35 flex items-center gap-4">
+      <span class="flex items-center gap-1.5"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Multi-campus</span>
+      <span class="flex items-center gap-1.5"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Role-based access</span>
+      <span class="flex items-center gap-1.5"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Full audit trail</span>
+    </div>
+  </div>
+
+  <!-- Right: sign-in form -->
+  <div class="flex-1 flex items-center justify-center p-6 md:p-10">
+    <div class="w-[380px] max-w-full">
+      <div class="flex md:hidden flex-col items-center mb-6">
+        <img src="logo.png" alt="Little Royals Kindergarten & Primary School logo" class="w-14 h-14 rounded-full bg-white object-contain shadow mb-2" />
+        <p class="font-display text-ink text-lg text-center leading-tight">Little Royals</p>
+        <p class="text-slate2/50 text-xs text-center mt-1">Kindergarten &amp; Primary School · School OS</p>
+      </div>
+
+      <h2 class="font-display text-2xl text-ink mb-1">Welcome back</h2>
+      <p class="text-sm text-slate2/60 mb-5">Sign in to continue to your dashboard.</p>
+
+      <p class="text-[11px] text-slate2/50 mb-2">Quick demo sign-in</p>
+      <div class="grid grid-cols-2 gap-2 mb-5">
+        <button type="button" class="demo-role-btn flex items-center gap-2 border border-line rounded-sm px-3 py-2 text-left hover:border-primary hover:bg-primary/5" (click)="demo('admin')">
+          <svg class="ic text-primary"><use href="#i-gear"/></svg>
+          <span><span class="block text-xs font-medium text-ink">Admin</span><span class="block text-[10px] text-slate2/45">Grace Nakato</span></span>
+        </button>
+        <button type="button" class="demo-role-btn flex items-center gap-2 border border-line rounded-sm px-3 py-2 text-left hover:border-primary hover:bg-primary/5" (click)="demo('teacher')">
+          <svg class="ic text-primary"><use href="#i-book-open"/></svg>
+          <span><span class="block text-xs font-medium text-ink">Teacher</span><span class="block text-[10px] text-slate2/45">B. Ssentongo</span></span>
+        </button>
+        <button type="button" class="demo-role-btn flex items-center gap-2 border border-line rounded-sm px-3 py-2 text-left hover:border-primary hover:bg-primary/5" (click)="demo('accountant')">
+          <svg class="ic text-primary"><use href="#i-coin"/></svg>
+          <span><span class="block text-xs font-medium text-ink">Accountant</span><span class="block text-[10px] text-slate2/45">B. Kato</span></span>
+        </button>
+        <button type="button" class="demo-role-btn flex items-center gap-2 border border-line rounded-sm px-3 py-2 text-left hover:border-primary hover:bg-primary/5" (click)="demo('parent')">
+          <svg class="ic text-primary"><use href="#i-heart-pulse"/></svg>
+          <span><span class="block text-xs font-medium text-ink">Parent</span><span class="block text-[10px] text-slate2/45">R. Nakiwala</span></span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 mb-5">
+        <div class="h-px bg-line flex-1"></div>
+        <span class="text-[10px] text-slate2/40 tracking-wide">OR SIGN IN WITH EMAIL</span>
+        <div class="h-px bg-line flex-1"></div>
+      </div>
+
+      <form (ngSubmit)="submit()" novalidate>
+        <label class="text-xs text-slate2/60">Email</label>
+        <input type="email" [(ngModel)]="email" name="email" [class.border-maroon]="emailError()" autocomplete="username" class="w-full border border-line rounded-sm px-3 py-2 mt-1 mb-1 text-sm bg-white" placeholder="you@littleroyals.ac.ug" />
+        <p class="text-xs text-maroon mb-2" [class.hidden]="!emailError()">Enter a valid email address.</p>
+
+        <label class="text-xs text-slate2/60 mt-2 block">Password</label>
+        <div class="relative">
+          <input [type]="showPw() ? 'text' : 'password'" [(ngModel)]="password" name="password" [class.border-maroon]="pwError()" autocomplete="current-password" class="w-full border border-line rounded-sm px-3 py-2 mt-1 mb-1 text-sm pr-16 bg-white" placeholder="••••••••" />
+          <button type="button" (click)="showPw.set(!showPw())" class="absolute right-2 top-2.5 text-xs text-primary">{{ showPw() ? 'Hide' : 'Show' }}</button>
+        </div>
+        <p class="text-xs text-maroon mb-2" [class.hidden]="!pwError()">Enter your password.</p>
+
+        <div class="flex items-center justify-between mt-3 mb-4 text-xs">
+          <label class="flex items-center gap-1.5 text-slate2/60"><input type="checkbox" name="remember" [(ngModel)]="remember"> Remember me</label>
+          <button type="button" (click)="toast.show('Password reset link sent — check your email')" class="text-primary hover:underline">Forgot password?</button>
+        </div>
+
+        <p class="text-xs text-maroon bg-maroon/5 border border-maroon/20 rounded-sm px-3 py-2 mb-3" [class.hidden]="!formError()">{{ formError() }}</p>
+
+        <button [disabled]="busy()" type="submit" class="w-full bg-ink text-white text-sm py-2.5 rounded-sm hover:bg-inkdeep flex items-center justify-center gap-2">
+          <span>{{ busy() ? 'Signing in…' : 'Sign in' }}</span>
+        </button>
+        <p class="text-[11px] text-slate2/40 text-center mt-3">Demo build — pick a role above, or use any email &amp; password.</p>
+      </form>
+    </div>
+  </div>
+</div>
