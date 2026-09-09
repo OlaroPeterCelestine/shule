@@ -1,15 +1,15 @@
 <h1 class="font-display text-2xl text-ink mb-1">Timetable & Exams</h1>
-        <p class="text-sm text-slate2/60 mb-5">S4 East · Term 2, Week 8</p>
+        <p class="text-sm text-slate2/60 mb-5">Primary Five · Term 2, Week 8</p>
         <app-stat-cards [items]="stats()" />
 
         <div class="bg-white border border-line rounded-sm overflow-hidden mb-6">
           <table class="w-full text-xs text-center">
             <thead class="bg-canvas"><tr><th class="py-2 px-2 text-left font-normal text-slate2/60">Time</th><th class="py-2 font-normal">Mon</th><th class="py-2 font-normal">Tue</th><th class="py-2 font-normal">Wed</th><th class="py-2 font-normal">Thu</th><th class="py-2 font-normal">Fri</th></tr></thead>
             <tbody class="divide-y divide-line">
-              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">08:00</td><td>Physics</td><td>Math</td><td class="bg-gold/10 font-medium">Physics</td><td>English</td><td>Chemistry</td></tr>
-              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">09:40</td><td>Math</td><td>Chemistry</td><td>Biology</td><td>History</td><td>Math</td></tr>
+              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">08:00</td><td>English</td><td>Math</td><td class="bg-gold/10 font-medium">Science</td><td>English</td><td>SST</td></tr>
+              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">09:40</td><td>Math</td><td>Science</td><td>Literacy</td><td>RE</td><td>Math</td></tr>
               <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">11:20</td><td>Break</td><td>Break</td><td>Break</td><td>Break</td><td>Break</td></tr>
-              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">11:40</td><td>English</td><td>Physics</td><td>Geography</td><td>Chemistry</td><td>Biology</td></tr>
+              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">11:40</td><td>Art</td><td>English</td><td>PE</td><td>Science</td><td>Literacy</td></tr>
             </tbody>
           </table>
         </div>
@@ -18,15 +18,15 @@
           <div class="bg-white border border-line rounded-sm p-5">
             <h3 class="font-display text-lg text-ink mb-3">Exam calendar</h3>
             <ul class="text-sm space-y-2.5">
-              <li class="flex justify-between"><span>S4 Mock — Physics</span><span class="text-slate2/50 text-xs">Today, 8:00</span></li>
-              <li class="flex justify-between"><span>S4 Mock — Chemistry</span><span class="text-slate2/50 text-xs">10 Sep, 8:00</span></li>
-              <li class="flex justify-between"><span>S1–S3 End-of-term exams begin</span><span class="text-slate2/50 text-xs">22 Sep</span></li>
+              <li class="flex justify-between"><span>P5 mid-term — Mathematics</span><span class="text-slate2/50 text-xs">Today, 8:00</span></li>
+              <li class="flex justify-between"><span>P5 mid-term — Science</span><span class="text-slate2/50 text-xs">10 Sep, 8:00</span></li>
+              <li class="flex justify-between"><span>P1–P3 end-of-term begins</span><span class="text-slate2/50 text-xs">22 Sep</span></li>
             </ul>
             @if (clash()) {
-              <p class="text-xs text-gold mt-3 bg-gold/10 rounded-sm px-2 py-1.5 flex items-start gap-1.5"><svg class="ic w-3.5 h-3.5 mt-0.5 shrink-0"><use href="#i-alert"/></svg> Timetable check: S4 Mock Chemistry clashes with S4 Biology practical on 10 Sep.</p>
+              <p class="text-xs text-gold mt-3 bg-gold/10 rounded-sm px-2 py-1.5 flex items-start gap-1.5"><svg class="ic w-3.5 h-3.5 mt-0.5 shrink-0"><use href="#i-alert"/></svg> Timetable check: P5 Science clashes with P5 Art on 10 Sep.</p>
               <button type="button" class="mt-2 text-xs text-primary border border-primary/30 rounded-sm py-1.5 px-3 hover:bg-primary/5" (click)="resolveClash()">Resolve clash →</button>
             } @else {
-              <p class="text-xs text-primary mt-3">Clash resolved — S4 Biology practical moved to 11 Sep.</p>
+              <p class="text-xs text-primary mt-3">Clash resolved — P5 Art moved to 11 Sep.</p>
             }
           </div>
           <div class="bg-white border border-line rounded-sm p-5">

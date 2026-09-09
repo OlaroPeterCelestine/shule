@@ -13,8 +13,8 @@ export class MeetingsPage {
   private modal = inject(ModalService);
 
   protected readonly slots = signal([
-    { time: '09:00', teacher: 'Ssentongo B. — Physics', booked: 'R. Nakiwala' },
-    { time: '09:20', teacher: 'Ssentongo B. — Physics', booked: 'Open' },
+    { time: '09:00', teacher: 'Ssentongo B. — Primary Five', booked: 'R. Nakiwala' },
+    { time: '09:20', teacher: 'Ssentongo B. — Primary Five', booked: 'Open' },
     { time: '10:30', teacher: 'Namutebi J. — English', booked: 'J. Namutebi' },
   ]);
   protected readonly visits = signal([

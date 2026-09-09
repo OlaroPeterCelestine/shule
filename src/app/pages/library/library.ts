@@ -14,7 +14,7 @@ export class LibraryPage {
 
   protected readonly loans = signal([
     { book: 'A Grain of Wheat', borrower: 'Nakiwala F.', due: '14 Sep', late: false },
-    { book: 'Advanced Physics Vol. 2', borrower: 'Byaruhanga T.', due: 'Overdue 3 days', late: true },
+    { book: 'MK Primary Science 5', borrower: 'Nakiwala Faith', due: 'Overdue 3 days', late: true },
     { book: 'Things Fall Apart', borrower: 'Okello D.', due: '18 Sep', late: false },
   ]);
   protected readonly stats = computed(() => [

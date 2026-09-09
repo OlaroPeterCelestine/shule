@@ -71,7 +71,7 @@ export class StudentsPage {
   protected readonly errors = signal<Partial<Record<keyof StudentForm, boolean>>>({});
   protected readonly saving = signal(false);
 
-  protected readonly classOptions = ['Baby', 'Middle', 'Top', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7 Blue', 'P7 Green', 'S1 East', 'S2 East', 'S3 West', 'S4 East', 'S5 Arts', 'S6 Sciences'];
+  protected readonly classOptions = ['Baby class', 'Middle class', 'Top class', 'Primary One', 'Primary Two', 'Primary Three', 'Primary Four', 'Primary Five', 'Primary Six', 'Primary Seven'];
   protected readonly routes = ['', 'Route 1 — Ntinda', 'Route 2 — Kireka', 'Route 3 — Bweyogerere', 'Route 4 — Namugongo'];
   protected readonly hostels = ['', "St. Mary's Block (Girls)", "St. Peter's Block (Boys)", 'Junior Block (Mixed)'];
 

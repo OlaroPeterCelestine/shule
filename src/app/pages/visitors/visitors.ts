@@ -14,7 +14,7 @@ export class VisitorsPage {
 
   protected readonly visitors = signal([
     { id: 1, name: 'John Mukasa', purpose: 'Textbook delivery', host: 'Librarian', badge: 'V-0231', status: 'On campus' },
-    { id: 2, name: 'Rose Nakiwala', purpose: 'Parent meeting', host: 'Class Teacher, S4 East', badge: 'V-0232', status: 'On campus' },
+    { id: 2, name: 'Rose Nakiwala', purpose: 'Parent meeting', host: 'Class Teacher, Primary Five', badge: 'V-0232', status: 'On campus' },
     { id: 3, name: 'Umeme Technician', purpose: 'Meter inspection', host: "Bursar's office", badge: 'V-0230', status: 'Checked out' },
   ]);
   protected readonly stats = computed(() => {

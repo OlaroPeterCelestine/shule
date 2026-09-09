@@ -15,7 +15,7 @@ export class CommsPage {
   protected readonly audience = signal('All parents');
   protected readonly channel = signal('SMS');
   protected readonly campaigns = signal([
-    { title: 'Fee reminder — S5 Arts', meta: 'Sent to 58 · Delivered 56' },
+    { title: 'Fee reminder — Primary Seven', meta: 'Sent to 28 · Delivered 27' },
     { title: 'Mid-term reports released', meta: 'Sent to 1,284 · Delivered 1,271' },
     { title: 'Sports day — transport update', meta: 'Sent to 312 · Delivered 308' },
   ]);

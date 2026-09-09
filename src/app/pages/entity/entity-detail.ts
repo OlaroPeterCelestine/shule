@@ -21,6 +21,9 @@ import { StatCards } from '../../shared/stat-cards';
       </div>
       <div class="flex flex-wrap gap-2">
         <a [routerLink]="'/' + key()" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">Back to list</a>
+        @if (key() === 'students' && id()) {
+          <a [routerLink]="['/students', id(), 'card']" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">Report card</a>
+        }
         <a [routerLink]="'/' + key() + '/report'" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full inline-flex items-center">Open report</a>
       </div>
     </div>

@@ -13,8 +13,8 @@ export class WelfarePage {
   private modal = inject(ModalService);
 
   protected readonly incidents = signal([
-    { title: 'Late submission of assignment — S2 East', meta: 'Verbal warning · 5 Sep · Follow-up scheduled', tone: 'gold' },
-    { title: 'Uniform violation — S1 West', meta: 'Parent notified · 2 Sep · Closed', tone: 'maroon' },
+    { title: 'Late submission of homework — Primary Three', meta: 'Verbal warning · 5 Sep · Follow-up scheduled', tone: 'gold' },
+    { title: 'Uniform reminder — Primary One', meta: 'Parent notified · 2 Sep · Closed', tone: 'maroon' },
   ]);
   protected readonly stats = computed(() => [
     { label: 'Incidents', value: String(this.incidents().length), change: 'This term', bars: [2, 2, 3, 2, 3, 3, 2] },

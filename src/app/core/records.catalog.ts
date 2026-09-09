@@ -50,7 +50,7 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     fields: fields(['area', 'Area'], ['item', 'Item'], ['owner', 'Owner'], ['when', 'When'], ['status', 'Status'], ['impact', 'Impact']),
     rows: [
       r('act-1', 'Fee balances due', 'Urgent', { area: 'Finance', item: '3 families over UGX 500k', owner: 'B. Kato', when: 'Today', status: 'Urgent', impact: 'Call list for accounts' }),
-      r('act-2', 'Absent students', 'Open', { area: 'Attendance', item: 'Okello Derrick — S2 East', owner: 'B. Ssentongo', when: 'Morning', status: 'Open', impact: 'SMS parent if not in by 10am' }),
+      r('act-2', 'Absent students', 'Open', { area: 'Attendance', item: 'Okello Derrick — Primary Three', owner: 'B. Ssentongo', when: 'Morning', status: 'Open', impact: 'SMS parent if not in by 10am' }),
       r('act-3', 'Leave requests', 'Review', { area: 'HR', item: '2 pending approvals', owner: 'Grace Nakato', when: '12 min ago', status: 'Review', impact: 'Driver coverage on Route 1' }),
       r('act-4', 'Interview slots', 'Scheduled', { area: 'Admissions', item: 'Namuli Grace — 11 Sep, 10am', owner: 'Registrar', when: 'Tomorrow', status: 'Scheduled', impact: 'Prepare paper form pack' }),
       r('act-5', 'Sickbay visit', 'Notified', { area: 'Health', item: 'Achieng Patricia — inhaler', owner: 'Nurse', when: '9:40am', status: 'Notified', impact: 'Parent already called' }),
@@ -111,7 +111,7 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     columns: cols(['name', 'Report'], ['audience', 'Audience'], ['period', 'Period'], ['status', 'Status']),
     fields: fields(['name', 'Report'], ['audience', 'Audience'], ['period', 'Period'], ['status', 'Status'], ['owner', 'Owner']),
     rows: [
-      r('rpt-cards', 'S4 East report cards', 'Ready', { name: 'S4 East report cards', audience: '58 students', period: 'Term 2, 2026', status: 'Ready', owner: 'B. Ssentongo' }),
+      r('rpt-cards', 'Term 2 report cards', 'Ready', { name: 'Term 2 report cards', audience: 'All pupils', period: 'Term 2, 2026', status: 'Ready', owner: 'B. Ssentongo' }),
       r('rpt-fees', 'Fee collection summary', 'Published', { name: 'Fee collection summary', audience: 'Accounts + Board', period: 'Week 8', status: 'Published', owner: 'B. Kato' }),
       r('rpt-att', 'Weekly attendance', 'Published', { name: 'Weekly attendance', audience: 'Heads of class', period: '2–6 Sep', status: 'Published', owner: 'Admin' }),
       r('rpt-enr', 'Enrolment census', 'Draft', { name: 'Enrolment census', audience: 'Registrar', period: 'Term 2', status: 'Draft', owner: 'Grace Nakato' }),
@@ -125,7 +125,7 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     columns: cols(['title', 'Campaign'], ['channel', 'Channel'], ['audience', 'Audience'], ['delivered', 'Delivered'], ['status', 'Status']),
     fields: fields(['title', 'Campaign'], ['channel', 'Channel'], ['audience', 'Audience'], ['delivered', 'Delivered'], ['status', 'Status'], ['sent', 'Sent at']),
     rows: [
-      r('c1', 'Fee reminder — S5 Arts', 'Sent', { title: 'Fee reminder — S5 Arts', channel: 'SMS', audience: '58 parents', delivered: '56 / 58', status: 'Sent', sent: '8 Sep, 7:40am' }),
+      r('c1', 'Fee reminder — Primary Seven', 'Sent', { title: 'Fee reminder — Primary Seven', channel: 'SMS', audience: 'P7 parents', delivered: '56 / 58', status: 'Sent', sent: '8 Sep, 7:40am' }),
       r('c2', 'Mid-term reports released', 'Sent', { title: 'Mid-term reports released', channel: 'Email', audience: '1,284 parents', delivered: '1,271 / 1,284', status: 'Sent', sent: '5 Sep, 4:10pm' }),
       r('c3', 'Sports day — transport update', 'Sent', { title: 'Sports day — transport update', channel: 'Push', audience: '312 van parents', delivered: '308 / 312', status: 'Sent', sent: '3 Sep, 6:00pm' }),
       r('c4', 'Parents’ day invitation', 'Draft', { title: 'Parents’ day invitation', channel: 'SMS + Email', audience: 'All parents', delivered: '—', status: 'Draft', sent: 'Not yet' }),
@@ -154,10 +154,10 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     columns: cols(['subject', 'Subject'], ['cls', 'Class'], ['covered', 'Covered'], ['expected', 'Expected'], ['status', 'Status']),
     fields: fields(['subject', 'Subject'], ['cls', 'Class'], ['covered', 'Covered'], ['expected', 'Expected'], ['status', 'Status'], ['teacher', 'Teacher']),
     rows: [
-      r('cur-math-s2', 'Mathematics — S2', 'Behind', { subject: 'Mathematics', cls: 'S2', covered: '72%', expected: '80%', status: 'Behind', teacher: 'B. Ssentongo' }, '8 points behind schedule.'),
-      r('cur-phy-s4', 'Physics — S4', 'On track', { subject: 'Physics', cls: 'S4', covered: '88%', expected: '85%', status: 'On track', teacher: 'J. Namutebi' }),
-      r('cur-eng-s1', 'English — S1', 'On track', { subject: 'English', cls: 'S1', covered: '64%', expected: '65%', status: 'On track', teacher: 'Namutebi J.' }),
-      r('cur-lit-p3', 'Literacy — P3', 'Ahead', { subject: 'Literacy', cls: 'P3', covered: '78%', expected: '70%', status: 'Ahead', teacher: 'S. Achieng' }),
+      r('cur-math-p5', 'Mathematics — Primary Five', 'Behind', { subject: 'Mathematics', cls: 'Primary Five', covered: '72%', expected: '80%', status: 'Behind', teacher: 'B. Ssentongo' }, '8 points behind schedule.'),
+      r('cur-sci-p7', 'Science — Primary Seven', 'On track', { subject: 'Science', cls: 'Primary Seven', covered: '88%', expected: '85%', status: 'On track', teacher: 'J. Namutebi' }),
+      r('cur-eng-p1', 'English — Primary One', 'On track', { subject: 'English', cls: 'Primary One', covered: '64%', expected: '65%', status: 'On track', teacher: 'Namutebi J.' }),
+      r('cur-lit-p3', 'Literacy — Primary Three', 'Ahead', { subject: 'Literacy', cls: 'Primary Three', covered: '78%', expected: '70%', status: 'Ahead', teacher: 'S. Achieng' }),
     ],
   },
   academics: {
@@ -210,9 +210,9 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     fields: fields(['item', 'Item'], ['holder', 'Holder'], ['due', 'Due'], ['status', 'Status'], ['isbn', 'Code']),
     rows: [
       r('lib-1', 'Things Fall Apart', 'Out', { item: 'Things Fall Apart', holder: 'Nakiwala Faith', due: '16 Sep', status: 'Out', isbn: 'LIB-1102' }),
-      r('lib-2', 'New Secondary Maths 4', 'Overdue', { item: 'New Secondary Maths 4', holder: 'Okello Derrick', due: '4 Sep', status: 'Overdue', isbn: 'LIB-2240' }),
+      r('lib-2', 'MK Primary Mathematics 3', 'Overdue', { item: 'MK Primary Mathematics 3', holder: 'Okello Derrick', due: '4 Sep', status: 'Overdue', isbn: 'LIB-2240' }),
       r('lib-3', 'Oxford Primary Atlas', 'In', { item: 'Oxford Primary Atlas', holder: 'Shelf B2', due: '—', status: 'In', isbn: 'LIB-0088' }),
-      r('lib-4', 'Chromebook set #6', 'Out', { item: 'Chromebook set #6', holder: 'S4 East', due: '11 Sep', status: 'Out', isbn: 'AST-006' }),
+      r('lib-4', 'Chromebook set #6', 'Out', { item: 'Chromebook set #6', holder: 'Primary Five', due: '11 Sep', status: 'Out', isbn: 'AST-006' }),
     ],
   },
   inventory: {
@@ -260,7 +260,7 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     columns: cols(['title', 'Meeting'], ['who', 'With'], ['when', 'When'], ['status', 'Status']),
     fields: fields(['title', 'Meeting'], ['who', 'With'], ['when', 'When'], ['status', 'Status'], ['place', 'Place']),
     rows: [
-      r('m1', 'Parents’ day — S4 East', 'Booked', { title: 'Parents’ day — S4 East', who: 'B. Ssentongo', when: '26 Sep, 9:00', status: 'Booked', place: 'Hall A' }),
+      r('m1', 'Parents’ day — Primary Five', 'Booked', { title: 'Parents’ day — Primary Five', who: 'B. Ssentongo', when: '26 Sep, 9:00', status: 'Booked', place: 'Hall A' }),
       r('m2', 'Fee plan — Namutebi', 'Requested', { title: 'Fee plan — Namutebi', who: 'B. Kato', when: '12 Sep, 14:00', status: 'Requested', place: 'Accounts' }),
       r('m3', 'Admissions interview', 'Confirmed', { title: 'Admissions interview', who: 'Namuli Grace', when: '11 Sep, 10:00', status: 'Confirmed', place: 'Registrar' }),
       r('m4', 'House tutors briefing', 'Done', { title: 'House tutors briefing', who: 'All tutors', when: '8 Sep, 16:00', status: 'Done', place: 'Staff room' }),
@@ -306,10 +306,10 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     columns: cols(['name', 'Name'], ['from', 'From'], ['to', 'To'], ['status', 'Decision']),
     fields: fields(['name', 'Name'], ['from', 'From'], ['to', 'To'], ['status', 'Decision'], ['year', 'Year']),
     rows: [
-      r('p1', 'Achieng Patricia', 'Promote', { name: 'Achieng Patricia', from: 'P7 Blue', to: 'S1 East', status: 'Promote', year: '2026' }),
-      r('p2', 'Nakiwala Faith', 'Promote', { name: 'Nakiwala Faith', from: 'S4 East', to: 'S5 Arts', status: 'Promote', year: '2026' }),
-      r('p3', 'Okello Derrick', 'Hold', { name: 'Okello Derrick', from: 'S2 East', to: 'S2 East', status: 'Hold', year: '2026' }, 'Attendance + fee follow-up first.'),
-      r('a1', 'Namuli Sarah', 'Alumni', { name: 'Namuli Sarah', from: 'S6 Sciences', to: 'Makerere University', status: 'Alumni', year: '2025' }),
+      r('p1', 'Namutebi Racheal', 'Graduate', { name: 'Namutebi Racheal', from: 'Primary Seven', to: 'Completed PLE', status: 'Graduate', year: '2026' }),
+      r('p2', 'Nakiwala Faith', 'Promote', { name: 'Nakiwala Faith', from: 'Primary Five', to: 'Primary Six', status: 'Promote', year: '2026' }),
+      r('p3', 'Okello Derrick', 'Hold', { name: 'Okello Derrick', from: 'Primary Three', to: 'Primary Three', status: 'Hold', year: '2026' }, 'Attendance + fee follow-up first.'),
+      r('a1', 'Namuli Sarah', 'Alumni', { name: 'Namuli Sarah', from: 'Primary Seven', to: 'Gayaza High School', status: 'Alumni', year: '2025' }),
     ],
   },
   documents: {
@@ -345,7 +345,7 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     rows: [
       r('ai1', 'Fee reminder SMS', 'Saved', { title: 'Fee reminder SMS', kind: 'SMS', owner: 'B. Kato', status: 'Saved' }),
       r('ai2', 'Parents’ day speech', 'Draft', { title: 'Parents’ day speech', kind: 'Speech', owner: 'Grace Nakato', status: 'Draft' }),
-      r('ai3', 'S4 report comments', 'Used', { title: 'S4 report comments', kind: 'Comments', owner: 'B. Ssentongo', status: 'Used' }),
+      r('ai3', 'P5 report comments', 'Used', { title: 'P5 report comments', kind: 'Comments', owner: 'B. Ssentongo', status: 'Used' }),
       r('ai4', 'Admissions FAQ', 'Saved', { title: 'Admissions FAQ', kind: 'Web copy', owner: 'Registrar', status: 'Saved' }),
     ],
   },
@@ -373,7 +373,7 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     rows: [
       r('me1', 'Signed in', 'OK', { action: 'Signed in', detail: 'Kampala · Chrome', when: 'Today, 7:12am', status: 'OK' }),
       r('me2', 'Updated phone', 'Saved', { action: 'Updated phone', detail: 'Profile details', when: '2 Sep', status: 'Saved' }),
-      r('me3', 'Downloaded report', 'OK', { action: 'Downloaded report', detail: 'S4 East report cards', when: '5 Sep', status: 'OK' }),
+      r('me3', 'Downloaded report', 'OK', { action: 'Downloaded report', detail: 'Term 2 report cards', when: '5 Sep', status: 'OK' }),
       r('me4', 'Password last changed', 'Secure', { action: 'Password last changed', detail: 'Security tab', when: '18 Aug', status: 'Secure' }),
     ],
   },

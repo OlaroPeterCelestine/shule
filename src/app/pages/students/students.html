@@ -39,7 +39,7 @@
           <td class="px-4 py-3 text-slate-600">{{ s.guardian }}</td>
           <td class="px-4 py-3 text-slate-600">{{ s.attendance }}</td>
           <td class="px-4 py-3" [class.text-emerald-600]="s.fee === 'cleared'" [class.text-rose-600]="s.fee === 'due'">{{ s.feeLabel }}</td>
-          <td class="px-4 py-3 text-slate-700 text-xs flex items-center gap-1">View <svg class="ic w-3.5 h-3.5"><use href="#i-arrow-right"/></svg></td>
+          <td class="px-4 py-3 text-slate-700 text-xs whitespace-nowrap">View · Card</td>
         </tr>
       }
     </tbody>

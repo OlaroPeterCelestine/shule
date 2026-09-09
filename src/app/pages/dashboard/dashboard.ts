@@ -57,7 +57,7 @@ export class DashboardPage {
     { label: "Today's classes", value: '4', change: '1 remaining', bars: [3, 4, 4, 5, 4, 5, 4] },
     { label: 'Attendance marked', value: '1 / 4', change: 'S4A still open', bars: [6, 7, 7, 8, 8, 9, 8] },
     { label: 'Marking queue', value: '37', change: 'Papers left', bars: [8, 7, 6, 6, 5, 5, 4] },
-    { label: 'Students taught', value: '82', change: 'S4 & S6 Physics', bars: [6, 6, 7, 7, 8, 8, 8] },
+    { label: 'Pupils taught', value: '36', change: 'P5 Mathematics & Science', bars: [6, 6, 7, 7, 8, 8, 8] },
   ];
   protected readonly accountantKpis = [
     { label: 'Collected today', value: '14.2M', change: '+1.1M vs yesterday', bars: [5, 6, 7, 6, 8, 9, 10] },
@@ -66,7 +66,7 @@ export class DashboardPage {
     { label: 'Payroll run', value: '3 days', change: 'Next Friday', bars: [3, 3, 4, 4, 5, 5, 6] },
   ];
   protected readonly parentKpis = computed(() => [
-    { label: 'Attendance', value: '96%', change: 'Faith · S4 East', bars: [8, 9, 8, 9, 10, 9, 10] },
+    { label: 'Attendance', value: '96%', change: 'Faith · Primary Five', bars: [8, 9, 8, 9, 10, 9, 10] },
     { label: 'Class position', value: '4th', change: 'Of 58 students', bars: [5, 6, 6, 7, 7, 8, 8] },
     { label: 'Fees balance', value: this.paid() ? 'UGX 0' : '260,000', change: this.paid() ? 'Cleared today' : 'Due 20 Sep', bars: [7, 6, 6, 5, 5, 4, 3] },
     { label: 'Messages', value: '1', change: 'Reports released', bars: [2, 2, 3, 2, 3, 3, 2] },
@@ -144,7 +144,7 @@ export class DashboardPage {
 
   markAttendance() {
     this.marked.set(true);
-    this.toast.show('Attendance sheet opened for S4A Physics');
+    this.toast.show('Attendance sheet opened for Primary Five');
   }
 
   decide(id: number, msg: string) {

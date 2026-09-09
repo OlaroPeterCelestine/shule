@@ -17,8 +17,8 @@ export class AssessmentsPage {
   protected readonly tab = signal('ca');
   protected readonly generated = signal<string | null>(null);
   protected readonly online = signal([
-    { title: 'S4 Physics — Waves quiz', meta: '20 min · Opens 10 Sep' },
-    { title: 'S6 Math — Calculus MCQ', meta: '30 min · Opens 12 Sep' },
+    { title: 'P5 Science — Plants quiz', meta: '20 min · Opens 10 Sep' },
+    { title: 'P7 Math — Fractions MCQ', meta: '30 min · Opens 12 Sep' },
   ]);
   protected readonly stats = computed(() => [
     { label: 'CA items', value: '3', change: 'This term', bars: [3, 4, 4, 5, 5, 6, 5] },

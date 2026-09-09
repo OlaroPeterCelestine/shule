@@ -17,13 +17,13 @@ export class AcademicsPage {
   protected readonly stats = computed(() => [
     { label: 'Present today', value: '1,209', change: '94.2% attendance', bars: [8, 9, 8, 9, 10, 9, 10] },
     { label: 'Absent', value: '75', change: '13 unexplained', bars: [4, 5, 4, 3, 4, 3, 2] },
-    { label: 'Exams this week', value: '3', change: 'S4 mocks running', bars: [2, 3, 3, 4, 4, 5, 4] },
+    { label: 'Exams this week', value: '3', change: 'P5 mid-terms running', bars: [2, 3, 3, 4, 4, 5, 4] },
     { label: 'Clashes', value: this.clash() ? '1' : '0', change: this.clash() ? 'Needs reschedule' : 'All clear', bars: [3, 2, 2, 1, 1, 1, 0] },
   ]);
 
   resolveClash() {
     this.clash.set(false);
-    this.toast.show('Reschedule request sent for S4 Biology practical');
+    this.toast.show('Reschedule request sent for Primary Five Art');
   }
 
   addRoom() {

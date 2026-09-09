@@ -13,19 +13,19 @@ export class CurriculumPage {
   private modal = inject(ModalService);
 
   protected readonly plans = signal([
-    { topic: 'Quadratic equations — Topic 4.2', meta: 'S2 Mathematics · Ssentongo B. · Mon 08:00' },
-    { topic: 'Wave properties — Topic 6.1', meta: 'S4 Physics · Ssentongo B. · Wed 08:00' },
-    { topic: 'Comprehension: persuasive texts', meta: 'S1 English · Namutebi J. · Thu 09:40' },
+    { topic: 'Place value — Topic 4.2', meta: 'Primary Five Mathematics · Ssentongo B. · Mon 08:00' },
+    { topic: 'Parts of a plant — Topic 6.1', meta: 'Primary Seven Science · Ssentongo B. · Wed 08:00' },
+    { topic: 'Letter sounds', meta: 'Primary One English · Namutebi J. · Thu 09:40' },
   ]);
   protected readonly reviews = signal([
-    { id: 1, title: 'S2 Mathematics — Term 2 plan', meta: 'Submitted by Ssentongo B. · Behind schedule flag' },
-    { id: 2, title: 'S1 English — Term 2 plan', meta: 'Submitted by Namutebi J. · On schedule' },
+    { id: 1, title: 'Primary Five Mathematics — Term 2 plan', meta: 'Submitted by Ssentongo B. · Behind schedule flag' },
+    { id: 2, title: 'Primary One English — Term 2 plan', meta: 'Submitted by Namutebi J. · On schedule' },
   ]);
   protected readonly stats = computed(() => [
     { label: 'Lesson plans', value: String(this.plans().length), change: 'This week', bars: [4, 5, 5, 6, 7, 7, 8] },
     { label: 'HOD queue', value: String(this.reviews().length), change: 'Awaiting review', bars: [6, 5, 5, 4, 4, 3, 2] },
     { label: 'On schedule', value: '2 / 3', change: 'Subjects tracked', bars: [5, 6, 6, 7, 7, 8, 8] },
-    { label: 'Behind', value: '8 pts', change: 'S2 Mathematics', bars: [8, 7, 7, 6, 6, 5, 5] },
+    { label: 'Behind', value: '8 pts', change: 'P5 Mathematics', bars: [8, 7, 7, 6, 6, 5, 5] },
   ]);
 
   newLesson() {

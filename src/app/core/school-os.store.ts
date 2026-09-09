@@ -146,7 +146,7 @@ export class SchoolOsStore {
     currency: 'UGX',
     country: 'Uganda',
     dayBoarding: 'Day and boarding',
-    levels: 'Kindergarten · Primary · O-Level · A-Level',
+    levels: 'Kindergarten · Primary',
   });
 
   readonly campuses = signal<Campus[]>([
@@ -162,17 +162,19 @@ export class SchoolOsStore {
   ]);
 
   readonly events = signal<SchoolEvent[]>([
-    { id: 1, title: 'Mid-term tests', date: '15–19 Sep', type: 'Exams', audience: 'S1–S6' },
+    { id: 1, title: 'Mid-term tests', date: '15–19 Sep', type: 'Exams', audience: 'P1–P7' },
     { id: 2, title: 'Parents’ day', date: '26 Sep', type: 'PTM', audience: 'All parents' },
     { id: 3, title: 'Sports day', date: '3 Oct', type: 'Event', audience: 'Whole school' },
     { id: 4, title: 'Term 2 holiday begins', date: '21 Nov', type: 'Holiday', audience: 'All' },
   ]);
 
   readonly register = signal<AttendanceRow[]>([
-    { adm: 'LR-2291', name: 'Nakiwala Faith', cls: 'S4 East', status: 'P' },
-    { adm: 'LR-1187', name: 'Namutebi Racheal', cls: 'S5 Arts', status: 'P' },
-    { adm: 'LR-0894', name: 'Okello Derrick', cls: 'S2 East', status: 'A' },
-    { adm: 'LR-2456', name: 'Achieng Patricia', cls: 'P7 Blue', status: 'L' },
+    { adm: 'LR-2291', name: 'Nakiwala Faith', cls: 'Primary Five', status: 'P' },
+    { adm: 'LR-1187', name: 'Namutebi Racheal', cls: 'Primary Seven', status: 'P' },
+    { adm: 'LR-0894', name: 'Okello Derrick', cls: 'Primary Three', status: 'A' },
+    { adm: 'LR-2456', name: 'Achieng Patricia', cls: 'Primary Six', status: 'L' },
+    { adm: 'LR-1520', name: 'Nailah Kasumbakali', cls: 'Primary Two', status: 'P' },
+    { adm: 'LR-1104', name: 'Kirabo Amani', cls: 'Baby class', status: 'P' },
   ]);
 
   readonly stock = signal<StockItem[]>([
@@ -188,15 +190,15 @@ export class SchoolOsStore {
   ]);
 
   readonly questions = signal<Question[]>([
-    { id: 1, subject: 'Mathematics', topic: 'Quadratic equations', type: 'Short answer', difficulty: 'Medium', marks: 4, text: 'Solve x² − 5x + 6 = 0' },
-    { id: 2, subject: 'Physics', topic: "Newton's laws", type: 'MCQ', difficulty: 'Easy', marks: 2, text: 'Which law relates force, mass and acceleration?' },
-    { id: 3, subject: 'English', topic: 'Comprehension', type: 'Long answer', difficulty: 'Hard', marks: 10, text: 'Summarise the passage in 120 words.' },
+    { id: 1, subject: 'Mathematics', topic: 'Place value', type: 'Short answer', difficulty: 'Medium', marks: 4, text: 'Write 347 in expanded form.' },
+    { id: 2, subject: 'Science', topic: 'Parts of a plant', type: 'MCQ', difficulty: 'Easy', marks: 2, text: 'Which part of the plant makes food?' },
+    { id: 3, subject: 'English', topic: 'Comprehension', type: 'Long answer', difficulty: 'Hard', marks: 10, text: 'Retell the story in your own words.' },
   ]);
 
   readonly examRooms = signal<ExamRoom[]>([
-    { id: 1, room: 'Hall A', exam: 'S4 Mathematics', capacity: 60, seated: 58, invigilator: 'B. Ssentongo' },
-    { id: 2, room: 'Lab 2', exam: 'S6 Physics practical', capacity: 24, seated: 21, invigilator: 'J. Namutebi' },
-    { id: 3, room: 'Room 12', exam: 'P7 English', capacity: 40, seated: 36, invigilator: 'S. Achieng' },
+    { id: 1, room: 'Hall A', exam: 'Primary Five Mathematics', capacity: 40, seated: 36, invigilator: 'B. Ssentongo' },
+    { id: 2, room: 'Room 4', exam: 'Primary Seven Science', capacity: 36, seated: 34, invigilator: 'J. Namutebi' },
+    { id: 3, room: 'Room 12', exam: 'Primary Two English', capacity: 32, seated: 30, invigilator: 'S. Achieng' },
   ]);
 
   readonly cms = signal<CmsPage[]>([

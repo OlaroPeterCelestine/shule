@@ -8,7 +8,7 @@ export const DOC_TEMPLATES: Record<string, string> = {
         <div class="p-4 text-center">
           <div class="w-20 h-20 rounded-full bg-canvas border border-line mx-auto mb-2 flex items-center justify-center text-slate2/30 text-xs">Photo</div>
           <p class="font-display text-ink">Nakiwala Faith</p>
-          <p class="text-xs text-slate2/50">S4 East · Adm. No. LR-2291</p>
+          <p class="text-xs text-slate2/50">Primary Five · Adm. No. LR-2291</p>
           <p class="text-xs text-slate2/50 mt-2">Valid: Term 2, 2026</p>
         </div>
       </div>`,
@@ -27,7 +27,7 @@ export const DOC_TEMPLATES: Record<string, string> = {
         <img src="logo.png" class="w-14 h-14 rounded-full object-contain mx-auto mb-2" />
         <p class="font-display text-lg text-ink mb-1">Little Royals Kindergarten &amp; Primary School</p>
         <p class="text-xs text-slate2/50 mb-6 tracking-wide">TRANSFER CERTIFICATE</p>
-        <p class="text-left mb-3">This is to certify that <strong>Okello Derrick</strong>, Admission No. <strong>LR-0894</strong>, was a bona fide student of this school in class <strong>S2 East</strong> and is hereby released to join another institution in good standing.</p>
+        <p class="text-left mb-3">This is to certify that <strong>Okello Derrick</strong>, Admission No. <strong>LR-0894</strong>, was a bona fide pupil of this school in class <strong>Primary Three</strong> and is hereby released to join another institution in good standing.</p>
         <p class="text-left mb-3">Conduct: <strong>Good</strong> &nbsp;·&nbsp; Fees: <strong>Cleared</strong> &nbsp;·&nbsp; Date of leaving: <strong>9 Sep 2026</strong></p>
         <div class="mt-8 flex justify-between text-xs text-left"><span>_____________________<br>Class Teacher</span><span>_____________________<br>Head Teacher</span></div>
       </div>`,
@@ -38,7 +38,7 @@ export const DOC_TEMPLATES: Record<string, string> = {
         <p class="text-xs text-slate2/50 mb-6 tracking-wide">CERTIFICATE OF COMPLETION</p>
         <p class="mb-3">This certifies that</p>
         <p class="font-display text-2xl text-ink mb-3">Kwikiriza M.</p>
-        <p class="mb-3">has successfully completed the full course of study for <strong>S6 Sciences</strong> in the academic year <strong>2026</strong>.</p>
+        <p class="mb-3">has successfully completed the full course of study for <strong>Primary Seven</strong> in the academic year <strong>2026</strong>.</p>
         <div class="mt-8 flex justify-between text-xs text-left"><span>_____________________<br>Head Teacher</span><span>_____________________<br>Date</span></div>
       </div>`,
   'Staff payslip': `
@@ -49,7 +49,7 @@ export const DOC_TEMPLATES: Record<string, string> = {
         </div>
         <div class="grid grid-cols-2 gap-2 text-xs mb-4">
           <p><span class="text-slate2/50">Employee:</span> Ssentongo B.</p>
-          <p><span class="text-slate2/50">Role:</span> Teacher — Physics</p>
+          <p><span class="text-slate2/50">Role:</span> Teacher — Primary Five</p>
         </div>
         <table class="w-full text-xs">
           <tbody class="divide-y divide-line">

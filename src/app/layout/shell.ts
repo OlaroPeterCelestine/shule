@@ -143,6 +143,7 @@ function labelFor(url: string): string {
   const path = parts[0] ?? 'dashboard';
   const base = LABELS[path] ?? 'Overview';
   if (parts[1] === 'report') return base + ' report';
+  if (parts[2] === 'card') return 'Report card';
   if (parts[1]) return base + ' detail';
   return base;
 }

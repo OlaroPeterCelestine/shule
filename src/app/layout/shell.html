@@ -145,7 +145,7 @@
               <ul class="text-sm divide-y divide-slate-100 max-h-72 overflow-y-auto">
                 <li class="px-4 py-3"><p class="text-slate-800">2 leave requests awaiting your approval</p><p class="text-xs text-slate-400 mt-0.5">Staff & HR · 12 min ago</p></li>
                 <li class="px-4 py-3"><p class="text-slate-800">Route 4 vehicle inspection scheduled today</p><p class="text-xs text-slate-400 mt-0.5">Transport · 1 hr ago</p></li>
-                <li class="px-4 py-3"><p class="text-slate-800">Timetable clash detected — S4 Mock exams</p><p class="text-xs text-slate-400 mt-0.5">Academics · 2 hrs ago</p></li>
+                <li class="px-4 py-3"><p class="text-slate-800">Timetable clash detected — P7 mid-term</p><p class="text-xs text-slate-400 mt-0.5">Academics · 2 hrs ago</p></li>
                 <li class="px-4 py-3"><p class="text-slate-800">9 applicants awaiting interview scheduling</p><p class="text-xs text-slate-400 mt-0.5">Admissions · Yesterday</p></li>
               </ul>
             </div>
@@ -173,7 +173,7 @@
 
     <main class="px-4 lg:px-8 pb-10 flex-1 fade-in min-w-0">
       <router-outlet />
-      @if (isList() && moduleKey() !== 'students' && moduleKey() !== 'finance' && moduleKey() !== 'attendance') {
+      @if (isList() && moduleKey() !== 'students' && moduleKey() !== 'finance' && moduleKey() !== 'attendance' && moduleKey() !== 'reports') {
         <div class="mt-6">
           <app-records-block [moduleKey]="moduleKey()" />
         </div>

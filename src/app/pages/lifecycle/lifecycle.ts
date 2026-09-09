@@ -17,8 +17,8 @@ export class LifecyclePage {
     { id: 2, name: 'Achen R.', avg: '58%', clearance: 'Fees outstanding', decision: 'pending' },
   ]);
   protected readonly alumni = signal([
-    { name: 'Namara Diana', year: '2022', cls: 'S6 Sciences', now: 'Medical student, Makerere' },
-    { name: 'Ocen Bright', year: '2021', cls: 'S6 Arts', now: 'Journalist, NBS TV' },
+    { name: 'Namara Diana', year: '2022', cls: 'Primary Seven', now: 'Gayaza High School' },
+    { name: 'Ocen Bright', year: '2021', cls: 'Primary Seven', now: 'St. Mary’s Kisubi' },
   ]);
   protected readonly stats = computed(() => [
     { label: 'Pending', value: String(this.promos().filter((p) => p.decision === 'pending').length), change: 'Need a decision', bars: [3, 3, 4, 3, 2, 2, 2] },

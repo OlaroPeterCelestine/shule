@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
-import { SINGLE_REPORT } from './report-card';
-import { ReportService } from '../../core/report.service';
+import { Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { isKindergarten, reportsFor } from '../../core/report-cards';
+import { StudentsStore } from '../../core/students.store';
 import { DownloadService } from '../../core/download.service';
 import { StatCards } from '../../shared/stat-cards';
 
@@ -10,29 +11,31 @@ import { StatCards } from '../../shared/stat-cards';
   templateUrl: './reports.html',
 })
 export class ReportsPage {
-  private report = inject(ReportService);
+  private students = inject(StudentsStore);
   private download = inject(DownloadService);
+  private router = inject(Router);
 
-  protected readonly stats = [
-    { label: 'Students', value: '1,284', change: '+11% year-on-year', bars: [6, 7, 7, 8, 8, 9, 10] },
-    { label: 'Fees collected', value: '76%', change: '+3pp last term', bars: [5, 6, 6, 7, 7, 8, 8] },
-    { label: 'Attendance', value: '94.2%', change: '+0.4 this week', bars: [8, 9, 8, 9, 9, 10, 9] },
-    { label: 'Report cards', value: '58', change: 'S4 East ready', bars: [3, 4, 5, 6, 7, 8, 9] },
-  ];
+  protected readonly cards = computed(() => reportsFor(this.students.students()));
+  protected readonly stats = computed(() => {
+    const all = this.students.students();
+    const kg = all.filter((s) => isKindergarten(s.cls)).length;
+    return [
+      { label: 'Pupils', value: String(all.length), change: 'Kindergarten & Primary', bars: [4, 5, 6, 7, 8, 8, 9] },
+      { label: 'Kindergarten', value: String(kg), change: 'Baby · Middle · Top', bars: [3, 4, 4, 5, 5, 6, 6] },
+      { label: 'Primary', value: String(all.length - kg), change: 'P1 to P7', bars: [5, 6, 6, 7, 8, 8, 9] },
+      { label: 'Cards ready', value: String(all.length), change: 'Term 2, 2026', bars: [6, 7, 7, 8, 8, 9, 10] },
+    ];
+  });
 
-  genBatch() {
-    const rows: string[][] = [['Admission No.', 'Name', 'Average (%)', 'Grade', 'Position']];
-    const names = ['Nakiwala Faith', 'Okwir Peter', 'Namuli Grace', 'Byaruhanga Tom', 'Achen Ruth', 'Ssali Ivan', 'Nabatanzi Joy', 'Kirabo Alex', 'Tumwine Ivan', 'Mugisha Ruth'];
-    for (let i = 1; i <= 58; i++) {
-      const base = names[(i - 1) % names.length];
-      const avg = 52 + ((i * 7) % 40);
-      const grade = avg >= 80 ? 'A' : avg >= 70 ? 'B' : avg >= 60 ? 'C' : avg >= 50 ? 'D' : 'F';
-      rows.push(['LR-' + (3000 + i), base + (i > names.length ? ' ' + i : ''), String(avg), grade, String(i)]);
-    }
-    this.download.csv('S4-East-report-cards-Term2-2026.csv', rows);
+  open(adm: string) {
+    this.router.navigate(['/students', adm, 'card']);
   }
 
-  genSingle() {
-    this.report.open('Report card — Nakiwala Faith', SINGLE_REPORT);
+  genBatch() {
+    const rows: string[][] = [['Admission No.', 'Name', 'Class', 'Section', 'Average', 'Grade', 'Position']];
+    for (const c of this.cards()) {
+      rows.push([c.student.adm, c.student.name, c.student.cls, c.section, c.average, c.grade, c.position]);
+    }
+    this.download.csv('little-royals-report-cards-term2-2026.csv', rows);
   }
 }
