@@ -2,7 +2,9 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { AccessService } from '../../core/access.service';
 import { AuthService } from '../../core/auth.service';
+import { ClockService } from '../../core/clock.service';
 import { ToastService } from '../../core/toast.service';
 import { StatCards } from '../../shared/stat-cards';
 
@@ -15,6 +17,8 @@ type Tab = 'details' | 'notifications' | 'security' | 'preferences';
 })
 export class ProfilePage {
   protected auth = inject(AuthService);
+  protected access = inject(AccessService);
+  protected clock = inject(ClockService);
   private toast = inject(ToastService);
   private route = inject(ActivatedRoute);
 
@@ -60,6 +64,7 @@ export class ProfilePage {
 
   constructor() {
     this.hydrate();
+    if (this.access.can('clock', 'create')) void this.clock.refreshMine();
     this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const tab = params.get('tab');
       if (tab === 'security' || tab === 'notifications' || tab === 'preferences' || tab === 'details') {
@@ -171,5 +176,14 @@ export class ProfilePage {
   endOtherSessions() {
     this.sessions.update((list) => list.filter((s) => s.current));
     this.toast.show('Signed out of other devices');
+  }
+
+  async punch(kind: 'in' | 'out') {
+    try {
+      const row = kind === 'in' ? await this.clock.clockIn() : await this.clock.clockOut();
+      this.toast.show(kind === 'in' ? 'Clocked in at ' + row.inAt : 'Clocked out at ' + (row.outAt || '') + (row.hours ? ' · ' + row.hours : ''));
+    } catch (err) {
+      this.toast.show(err instanceof Error ? err.message : 'Could not update the clock');
+    }
   }
 }

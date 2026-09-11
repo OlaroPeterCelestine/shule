@@ -34,6 +34,10 @@ export class ApiService {
     return this.request<T>(path, { method: 'PATCH', body });
   }
 
+  async delete<T>(path: string): Promise<T> {
+    return this.request<T>(path, { method: 'DELETE' });
+  }
+
   async blob(path: string): Promise<Blob> {
     const headers: Record<string, string> = { Accept: 'application/pdf' };
     const token = this.token();

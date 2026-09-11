@@ -5,7 +5,6 @@ import {
   DEMO_ACCOUNTS,
   EVENTS,
   INVOICES,
-  PERMS,
   REGISTER,
   SCHOOL,
   STAFF,
@@ -36,6 +35,7 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
     await this.pool.query(SCHEMA_SQL);
     await this.seedIfEmpty();
     await this.seedChangelogIfEmpty();
+    await this.seedClockIfEmpty();
     this.log.log('Postgres ready');
   }
 
@@ -61,11 +61,26 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
   }
 
   async changes(limit = 50) {
-    return this.query(
+    const rows = await this.query<{
+      id: string;
+      who: string;
+      action: string;
+      module: string;
+      detail: string;
+      when: string;
+    }>(
       `SELECT id, who, action, module, detail, to_char(created_at, 'DD Mon YYYY HH24:MI') AS "when"
        FROM change_log ORDER BY created_at DESC LIMIT $1`,
       [limit],
     );
+    return rows.map((r) => ({
+      id: Number(r.id),
+      who: r.who,
+      action: r.action,
+      module: r.module,
+      detail: r.detail,
+      when: r.when,
+    }));
   }
 
   private async seedIfEmpty() {
@@ -141,12 +156,6 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
           [s.id, s.name, s.role, s.dept, s.status],
         );
       }
-      for (const p of PERMS) {
-        await client.query(
-          'INSERT INTO perms (role, module, can_view, can_create, can_edit, can_approve) VALUES ($1,$2,$3,$4,$5,$6)',
-          [p.role, p.module, p.view, p.create, p.edit, p.approve],
-        );
-      }
       await client.query(
         `INSERT INTO change_log (who, action, module, detail) VALUES
          ('Grace Nakato', 'Signed in', 'Auth', 'Demo admin session'),
@@ -161,6 +170,17 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
     } finally {
       client.release();
     }
+  }
+
+  private async seedClockIfEmpty() {
+    const row = await this.one<{ n: string }>('SELECT count(*)::text AS n FROM staff_clock');
+    if (Number(row?.n) > 0) return;
+    await this.query(
+      `INSERT INTO staff_clock (email, who, role, clock_in, clock_out) VALUES
+       ('teacher@littleroyals.ac.ug', 'B. Ssentongo', 'teacher',
+         (date_trunc('day', now() AT TIME ZONE 'Africa/Kampala') - interval '1 day' + interval '7 hours 40 minutes') AT TIME ZONE 'Africa/Kampala',
+         (date_trunc('day', now() AT TIME ZONE 'Africa/Kampala') - interval '1 day' + interval '16 hours 15 minutes') AT TIME ZONE 'Africa/Kampala')`,
+    );
   }
 
   private async seedChangelogIfEmpty() {

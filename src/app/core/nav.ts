@@ -78,28 +78,45 @@ export const ROLE_VIEW: Record<RoleKey, Set<string>> = {
   ]),
 };
 
+const TEACHER_WRITE = new Set(['students', 'admissions', 'attendance', 'health', 'clock']);
+
 export function defaultPerms(): PermRow[] {
-  const extras: PermRow[] = [
-    { role: 'Nurse', module: 'Health', view: true, create: true, edit: true, approve: false },
-    { role: 'Nurse', module: 'Students', view: true, create: false, edit: false, approve: false },
-    { role: 'Registrar', module: 'Admissions', view: true, create: true, edit: true, approve: true },
+  const extras: Array<[string, string, PermRow['view'], boolean, boolean, boolean]> = [
+    ['nurse', 'health', true, true, true, false],
+    ['nurse', 'students', true, false, false, false],
+    ['registrar', 'admissions', true, true, true, true],
+    ['registrar', 'students', true, false, false, false],
   ];
   const roles: RoleKey[] = ['teacher', 'accountant', 'parent'];
+  const modules = [
+    ...NAV_SECTIONS.flatMap((s) => s.items).filter((i) => !OPEN_PATHS.has(i.path)).map((i) => ({ key: i.path, label: i.label })),
+    { key: 'clock', label: 'Staff clock' },
+  ];
   const rows = roles.flatMap((role) =>
-    NAV_SECTIONS.flatMap((s) => s.items)
-      .filter((i) => !OPEN_PATHS.has(i.path))
-      .map((i) => {
-        const view = ROLE_VIEW[role].has(i.path);
-        const write = view && (role === 'teacher' || role === 'accountant') && i.path !== 'students';
-        return {
-          role: role.charAt(0).toUpperCase() + role.slice(1),
-          module: i.label,
-          view,
-          create: write,
-          edit: write,
-          approve: view && role === 'accountant' && i.path === 'finance',
-        };
-      }),
+    modules.map((m) => {
+      const view = ROLE_VIEW[role].has(m.key) || (role === 'teacher' && TEACHER_WRITE.has(m.key));
+      const write = role === 'teacher' ? TEACHER_WRITE.has(m.key) : role === 'accountant' && m.key === 'finance';
+      return {
+        role,
+        roleLabel: role.charAt(0).toUpperCase() + role.slice(1),
+        module: m.key,
+        label: m.label,
+        view,
+        create: write,
+        edit: write,
+        approve: role === 'accountant' && m.key === 'finance',
+      };
+    }),
   );
-  return [...rows, ...extras];
+  const extraRows = extras.map(([role, module, view, create, edit, approve]) => ({
+    role,
+    roleLabel: role.charAt(0).toUpperCase() + role.slice(1),
+    module,
+    label: modules.find((m) => m.key === module)?.label || module,
+    view,
+    create,
+    edit,
+    approve,
+  }));
+  return [...rows, ...extraRows];
 }

@@ -3,12 +3,20 @@ CREATE TABLE IF NOT EXISTS users (
   id         serial PRIMARY KEY,
   email      text NOT NULL,
   name       text NOT NULL,
-  role       text NOT NULL CHECK (role IN ('admin', 'teacher', 'accountant', 'parent')),
+  role       text NOT NULL,
   label      text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
 CREATE UNIQUE INDEX IF NOT EXISTS users_email_lower_uidx ON users (lower(email));
 CREATE INDEX IF NOT EXISTS users_role_idx ON users (role);
+
+CREATE TABLE IF NOT EXISTS roles (
+  key        text PRIMARY KEY,
+  label      text NOT NULL,
+  locked     boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 
 CREATE TABLE IF NOT EXISTS school (
   id      integer PRIMARY KEY DEFAULT 1 CHECK (id = 1),
@@ -143,4 +151,16 @@ CREATE TABLE IF NOT EXISTS change_log (
 );
 CREATE INDEX IF NOT EXISTS change_log_created_idx ON change_log (created_at DESC);
 CREATE INDEX IF NOT EXISTS change_log_module_idx ON change_log (module);
+
+CREATE TABLE IF NOT EXISTS staff_clock (
+  id         bigserial PRIMARY KEY,
+  email      text NOT NULL,
+  who        text NOT NULL,
+  role       text NOT NULL,
+  clock_in   timestamptz NOT NULL DEFAULT now(),
+  clock_out  timestamptz
+);
+CREATE INDEX IF NOT EXISTS staff_clock_email_idx ON staff_clock (lower(email), clock_in DESC);
+CREATE INDEX IF NOT EXISTS staff_clock_in_idx ON staff_clock (clock_in DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS staff_clock_open_uidx ON staff_clock (lower(email)) WHERE clock_out IS NULL;
 `;

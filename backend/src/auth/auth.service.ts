@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DbService } from '../db/db.service.js';
 import { DEMO_ACCOUNTS, type Role, type SessionUser } from '../data/seed.js';
+import { isRoleKey, roleKey } from '../rbac/activities.js';
 import { isEmail } from '../util/form-safe.js';
 
 function tokenHours() {
@@ -42,17 +43,24 @@ export class AuthService {
         )
         .catch(() => undefined);
     }
-    return { token: this.encodeToken(user), user };
+    return this.session(user);
   }
 
   async demo(role: Role) {
+    const key = roleKey(String(role || 'admin'));
     const row = await this.db.one<SessionUser>(
       'SELECT name, email, role, label FROM users WHERE role = $1 ORDER BY id LIMIT 1',
-      [role],
+      [key],
     );
-    const user = row ?? DEMO_ACCOUNTS[role];
+    const named = await this.db.one<{ key: string; label: string }>('SELECT key, label FROM roles WHERE key = $1', [key]);
+    const user =
+      row ??
+      DEMO_ACCOUNTS[key as keyof typeof DEMO_ACCOUNTS] ??
+      (named
+        ? { name: named.label, email: key + '@littleroyals.ac.ug', role: named.key, label: named.label }
+        : null);
     if (!user) throw new UnauthorizedException('Unknown demo role');
-    return { token: this.encodeToken(user), user };
+    return this.session(user);
   }
 
   fromToken(token?: string): SessionUser {
@@ -67,7 +75,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid session');
     }
     if (payload.exp < Date.now()) throw new UnauthorizedException('Session expired');
-    if (!['admin', 'teacher', 'accountant', 'parent'].includes(payload.role)) {
+    if (!isRoleKey(String(payload.role))) {
       throw new UnauthorizedException('Invalid session');
     }
     return {
@@ -75,6 +83,15 @@ export class AuthService {
       email: payload.email,
       role: payload.role,
       label: payload.label,
+    };
+  }
+
+  private session(user: SessionUser) {
+    return {
+      token: this.encodeToken(user),
+      tokenType: 'Bearer' as const,
+      expiresIn: tokenHours() * 60 * 60,
+      user,
     };
   }
 

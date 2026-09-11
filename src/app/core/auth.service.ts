@@ -16,15 +16,20 @@ export class AuthService {
     return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase() || 'U';
   }
 
-  async demoLogin(role: RoleKey, remember = true) {
+  async demoLogin(role: string, remember = true) {
     try {
       const res = await this.api.post<{ token: string; user: SessionUser }>('/auth/demo', { role });
       this.setUser(res.user, remember);
       this.api.setToken(res.token, remember);
       return res.user;
     } catch {
-      const acct = DEMO_ACCOUNTS[role];
-      this.setUser({ name: acct.name, email: acct.email, role: acct.role, label: acct.label }, remember);
+      const acct = DEMO_ACCOUNTS[role as RoleKey];
+      if (acct) {
+        this.setUser({ name: acct.name, email: acct.email, role: acct.role, label: acct.label }, remember);
+      } else {
+        const label = role.charAt(0).toUpperCase() + role.slice(1);
+        this.setUser({ name: label, email: role + '@littleroyals.ac.ug', role, label }, remember);
+      }
       return this.session()!;
     }
   }
@@ -137,7 +142,18 @@ const PROFILE_DEFAULTS: Record<RoleKey, Partial<SessionUser>> = {
 };
 
 function withDefaults(user: SessionUser): SessionUser {
-  return { ...PROFILE_DEFAULTS[user.role], ...user };
+  const preset = PROFILE_DEFAULTS[user.role as RoleKey] ?? {
+    title: user.label || 'Staff',
+    department: 'Little Royals',
+    campus: 'Main campus — Seguku',
+    language: 'English',
+    dateFormat: '9 Sep 2026',
+    notifyEmail: true,
+    notifySms: false,
+    notifyPush: true,
+    twoFactor: false,
+  };
+  return { ...preset, ...user };
 }
 
 function readSession(): SessionUser | null {

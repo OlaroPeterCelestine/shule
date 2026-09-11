@@ -12,8 +12,8 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  async login(@Body() body: { email?: string; password?: string }) {
-    const res = await this.auth.login(body.email ?? '', body.password ?? '');
+  async login(@Body() body: { email?: string; username?: string; password?: string }) {
+    const res = await this.auth.login(body.email || body.username || '', body.password ?? '');
     await this.db.logChange(res.user.name, 'Signed in', 'Auth', res.user.email);
     return res;
   }

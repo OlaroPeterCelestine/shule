@@ -10,6 +10,24 @@
 
 <app-stat-cards [items]="stats()" />
 
+@if (access.can('clock', 'create')) {
+  <div class="bg-white rounded-2xl border border-slate-100 p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <p class="text-[15px] font-semibold text-slate-900">Staff clock</p>
+      @if (clock.open(); as open) {
+        <p class="text-sm text-slate-500 mt-1">On campus since {{ open.inAt }}</p>
+      } @else {
+        <p class="text-sm text-slate-500 mt-1">Clock in when you arrive. Clock out when you leave.</p>
+      }
+    </div>
+    @if (clock.open()) {
+      <button type="button" (click)="punch('out')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800 disabled:opacity-60">Clock out</button>
+    } @else {
+      <button type="button" (click)="punch('in')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800 disabled:opacity-60">Clock in</button>
+    }
+  </div>
+}
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
   <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_1px_2px_rgba(16,24,40,0.04)] p-5">
     <div class="flex flex-col items-center text-center">

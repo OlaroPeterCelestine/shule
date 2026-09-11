@@ -31,9 +31,11 @@ export class PdfController {
       'Documents',
       title + ' · ' + filename,
     );
+    const attachment = query.download === '1' || query.download === 'true';
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename="${filename}"`,
+      'Content-Length': String(buffer.length),
+      'Content-Disposition': `${attachment ? 'attachment' : 'inline'}; filename="${filename}"`,
       'Cache-Control': 'no-store',
     });
     return new StreamableFile(buffer);

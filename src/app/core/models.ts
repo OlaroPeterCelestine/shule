@@ -14,7 +14,7 @@ export interface DemoAccount {
 export interface SessionUser {
   name: string;
   email: string;
-  role: RoleKey;
+  role: string;
   label: string;
   phone?: string;
   title?: string;
@@ -71,11 +71,25 @@ export interface Student {
 
 export interface PermRow {
   role: string;
+  roleLabel?: string;
   module: string;
+  label?: string;
   view: boolean;
   create: boolean;
   edit: boolean;
   approve: boolean;
+}
+
+export interface RoleDef {
+  key: string;
+  label: string;
+  locked: boolean;
+  users: number;
+}
+
+export interface ActivityDef {
+  key: string;
+  label: string;
 }
 
 export interface ModalField {

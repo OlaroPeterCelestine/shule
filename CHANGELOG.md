@@ -1,44 +1,34 @@
 # Changelog
 
-All notable changes to Little Royals School OS.
+Little Royals School OS — **11 Sep 2026** · v0.0.1
 
-## 11 Sep 2026
+The app and API share the same release list:
 
-### PostgreSQL backend
-- API reads and writes school data from Postgres (`littleroyals` database).
-- `.env` / `.env.example` hold `DATABASE_URL` and auth token hours.
-- Tables are created on boot, with unique and lookup indexes on users, students, applicants, attendance, invoices, stock, visits, staff, permissions, and the change log.
-- Demo records seed once when the database is empty.
+- Frontend: [src/app/core/releases.ts](src/app/core/releases.ts) and [src/CHANGELOG.md](src/CHANGELOG.md)
+- Backend: [backend/src/releases.ts](backend/src/releases.ts) and [backend/CHANGELOG.md](backend/CHANGELOG.md)
+- Live copy: `GET /api/releases` (same JSON the dashboard What’s new card uses)
 
-### Official PDFs
-- Server builds PDFs with pdfkit. The Angular app only requests and displays them.
-- Templates: report card, sickbay / sick leave, staff leave, student ID, admission letter, transfer certificate, completion certificate, fee statement, payslip, visitor badge.
-- `GET /api/documents` lists templates. `GET /api/documents/:key/pdf` returns the file.
-- Documents, Report cards, and Health can open the PDF viewer and download the file.
+Keep those two `releases.ts` files identical. Staff actions (sign-in, enrol, clock) stay on **Permissions → Change log**.
 
-### Change log
-- `change_log` table records sign-in, enrolments, application moves, and PDF generation.
-- `GET /api/changelog` feeds the live list on Permissions.
-- This file records product releases for the repo.
+## 11 Sep 2026 — App
 
-### Admissions and forms
-- Admissions opens in a right-side drawer, same pattern as Add student.
-- New admission numbers use the short year: `LR26001`.
-- Forms validate names, class, dates, Uganda phones, NIN / LIN / Schoolpay, and strip markup before save.
+- Custom roles on Permissions, with view / create / edit / approve per activity
+- Teacher clock in and out on the dashboard and My profile
+- Official PDFs in the in-app viewer
+- Live audit list on Permissions
+- Admissions drawer and `LR26001` admission numbers
 
-### Reports
-- Module reports and the report-card index use live pupils, applications, fees, and attendance.
-- Header Report still prints or downloads CSV.
+## 11 Sep 2026 — API
 
-### Auth
-- Login and demo roles issue a Bearer token.
-- School routes require the token. Parents cannot write records. Teachers and accountants have limited writes.
+- `/roles`, `/perms`, `/activities` and RBAC on writes
+- `/clock/in`, `/clock/out`, `/clock/me`, `/clock/today`
+- PostgreSQL for school records, clock, roles and the audit log
+- `/documents/:key/pdf` with `Content-Length`
+- Flutter-friendly JSON, CORS, `/status` and `/openapi.json`
 
 ## Earlier
 
-- Kindergarten and primary only (Baby–Top, P1–P7).
-- Paper application form on Admissions.
-- Role-based navigation.
-- Report card page for every pupil.
-- List, detail, and report pages for each School OS module.
-- Angular app deployed for Vercel as Little Royals.
+- Kindergarten and primary only (Baby–Top, P1–P7)
+- Paper application form and role-based navigation
+- Report card page for every pupil
+- Angular app on Vercel as Little Royals

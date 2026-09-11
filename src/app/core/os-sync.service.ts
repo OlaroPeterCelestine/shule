@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { SchoolOsStore, type Applicant } from './school-os.store';
 import { StudentsStore } from './students.store';
-import type { Student } from './models';
+import type { ActivityDef, PermRow, RoleDef, Student } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class OsSyncService {
@@ -13,16 +13,22 @@ export class OsSyncService {
   async load(): Promise<boolean> {
     if (!this.api.token()) return false;
     try {
-      const [school, students, applicants, register] = await Promise.all([
+      const [school, students, applicants, register, perms, roles, activities] = await Promise.all([
         this.api.get<Record<string, string>>('/school'),
         this.api.get<Student[]>('/students'),
         this.api.get<Applicant[]>('/admissions'),
         this.api.get<{ adm: string; name: string; cls: string; status: 'P' | 'A' | 'L' | 'E' }[]>('/attendance'),
+        this.api.get<PermRow[]>('/perms'),
+        this.api.get<RoleDef[]>('/roles'),
+        this.api.get<ActivityDef[]>('/activities'),
       ]);
       if (school) this.os.saveSchool(school);
       if (Array.isArray(students) && students.length) this.students.replace(students.map(withStudentDefaults));
       if (Array.isArray(applicants) && applicants.length) this.os.replaceApplicants(applicants.map(withApplicantDefaults));
       if (Array.isArray(register) && register.length) this.os.replaceRegister(register);
+      if (Array.isArray(perms) && perms.length) this.os.replacePerms(perms);
+      if (Array.isArray(roles) && roles.length) this.os.replaceRoles(roles);
+      if (Array.isArray(activities) && activities.length) this.os.replaceActivities(activities);
       return true;
     } catch {
       return false;

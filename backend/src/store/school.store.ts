@@ -197,6 +197,43 @@ export class SchoolStore {
     return this.db.query('SELECT id, name, role, dept, status FROM staff ORDER BY name');
   }
 
+  async myClock(email: string) {
+    const clean = String(email || '').trim().toLowerCase();
+    if (!clean) return { open: null, today: [], recent: [] };
+    const today = await this.db.query(CLOCK_SQL + ' WHERE lower(email) = $1 AND ' + CLOCK_TODAY + ' ORDER BY clock_in DESC', [clean]);
+    const recent = await this.db.query(CLOCK_SQL + ' WHERE lower(email) = $1 ORDER BY clock_in DESC LIMIT 12', [clean]);
+    const open = today.map(mapClock).find((r) => r.open) ?? null;
+    return { open, today: today.map(mapClock), recent: recent.map(mapClock) };
+  }
+
+  async todayClock() {
+    const rows = await this.db.query(CLOCK_SQL + ' WHERE ' + CLOCK_TODAY + ' ORDER BY clock_in');
+    return rows.map(mapClock);
+  }
+
+  async clockIn(email: string, who: string, role: string) {
+    const clean = String(email || '').trim().toLowerCase();
+    if (!clean) throw new BadRequestException('Sign in required');
+    const open = await this.db.one(CLOCK_SQL + ' WHERE lower(email) = $1 AND clock_out IS NULL', [clean]);
+    if (open) return mapClock(open);
+    const row = await this.db.one(
+      `INSERT INTO staff_clock (email, who, role) VALUES ($1, $2, $3) RETURNING ${CLOCK_COLS}`,
+      [clean, cleanText(who, 80) || 'Staff', cleanText(role, 20) || 'teacher'],
+    );
+    return mapClock(row!);
+  }
+
+  async clockOut(email: string) {
+    const clean = String(email || '').trim().toLowerCase();
+    if (!clean) throw new BadRequestException('Sign in required');
+    const row = await this.db.one(
+      `UPDATE staff_clock SET clock_out = now() WHERE lower(email) = $1 AND clock_out IS NULL RETURNING ${CLOCK_COLS}`,
+      [clean],
+    );
+    if (!row) throw new BadRequestException('Clock in first');
+    return mapClock(row);
+  }
+
   async perms() {
     const rows = await this.db.query(
       'SELECT role, module, can_view, can_create, can_edit, can_approve FROM perms ORDER BY role, module',
@@ -283,6 +320,40 @@ export class SchoolStore {
     );
     return prefix + String(Number(row?.n ?? 0) + 1).padStart(3, '0');
   }
+}
+
+const CLOCK_COLS = `id, email, who, role, clock_in, clock_out,
+  to_char(clock_in AT TIME ZONE 'Africa/Kampala', 'HH24:MI') AS in_at,
+  to_char(clock_out AT TIME ZONE 'Africa/Kampala', 'HH24:MI') AS out_at`;
+
+const CLOCK_SQL = `SELECT ${CLOCK_COLS} FROM staff_clock`;
+
+const CLOCK_TODAY = `(clock_in AT TIME ZONE 'Africa/Kampala')::date = (now() AT TIME ZONE 'Africa/Kampala')::date`;
+
+function mapClock(r: Record<string, unknown>) {
+  const clockIn = r.clock_in instanceof Date ? r.clock_in.toISOString() : String(r.clock_in ?? '');
+  const clockOut = r.clock_out instanceof Date ? r.clock_out.toISOString() : r.clock_out ? String(r.clock_out) : null;
+  return {
+    id: Number(r.id),
+    email: r.email,
+    who: r.who,
+    role: r.role,
+    clockIn,
+    clockOut,
+    inAt: String(r.in_at ?? ''),
+    outAt: r.out_at ? String(r.out_at) : null,
+    hours: hoursBetween(clockIn, clockOut),
+    open: !clockOut,
+  };
+}
+
+function hoursBetween(start: string, end: string | null) {
+  if (!end) return null;
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  if (!Number.isFinite(ms) || ms < 0) return null;
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h ? h + 'h ' + m + 'm' : m + 'm';
 }
 
 function mapStudent(r: Record<string, unknown>) {

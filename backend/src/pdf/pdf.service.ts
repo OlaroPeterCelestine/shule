@@ -9,6 +9,7 @@ export interface PdfQuery {
   visit?: string;
   applicant?: string;
   name?: string;
+  download?: string;
 }
 
 @Injectable()

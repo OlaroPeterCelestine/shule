@@ -32,3 +32,25 @@
             </div>
           </div>
         </div>
+        <div class="bg-white border border-line rounded-sm p-5 mt-5">
+          <h3 class="font-display text-lg text-ink mb-3">Teacher clock today</h3>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate2/60 text-left border-b border-line">
+              <tr><th class="pb-2 font-normal">Name</th><th class="pb-2 font-normal">In</th><th class="pb-2 font-normal">Out</th><th class="pb-2 font-normal">Hours</th><th class="pb-2 font-normal">Status</th></tr>
+            </thead>
+            <tbody class="divide-y divide-line">
+              @for (p of clock.today(); track p.id) {
+                <tr>
+                  <td class="py-2 font-medium text-ink">{{ p.who }}</td>
+                  <td class="py-2 font-mono text-xs">{{ p.inAt }}</td>
+                  <td class="py-2 font-mono text-xs">{{ p.outAt || '—' }}</td>
+                  <td class="py-2 text-xs">{{ p.hours || '—' }}</td>
+                  <td class="py-2 text-xs" [class.text-primary]="p.open" [class.text-slate2/50]="!p.open">{{ p.open ? 'On campus' : 'Clocked out' }}</td>
+                </tr>
+              }
+              @if (!clock.today().length) {
+                <tr><td class="py-3 text-xs text-slate2/50" colspan="5">No clock-ins yet today.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>

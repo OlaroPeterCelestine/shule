@@ -1,10 +1,13 @@
 import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ApiService } from '../../core/api.service';
+import { ClockService } from '../../core/clock.service';
 import { DownloadService } from '../../core/download.service';
 import { ModalService } from '../../core/modal.service';
 import { AuthService } from '../../core/auth.service';
 import type { RoleKey } from '../../core/models';
+import { RELEASES, type Release } from '../../core/releases';
 import { ToastService } from '../../core/toast.service';
 import { StatCards } from '../../shared/stat-cards';
 
@@ -32,7 +35,10 @@ export class DashboardPage {
   private modal = inject(ModalService);
   private download = inject(DownloadService);
   protected auth = inject(AuthService);
+  protected clock = inject(ClockService);
+  private api = inject(ApiService);
   protected router = inject(Router);
+  protected readonly release = signal<Release>(RELEASES[0]);
 
   protected readonly role = signal<string>(this.auth.user()?.role ?? 'admin');
   protected readonly paid = signal(false);
@@ -54,12 +60,21 @@ export class DashboardPage {
     { label: 'Attendance today', value: '94.2%', change: '+0.4 this week', bars: [8, 9, 7, 8, 9, 10, 9] },
     { label: 'Applications', value: '37', change: '9 awaiting interview', bars: [3, 4, 5, 4, 6, 7, 8] },
   ];
-  protected readonly teacherKpis = [
-    { label: "Today's classes", value: '4', change: '1 remaining', bars: [3, 4, 4, 5, 4, 5, 4] },
-    { label: 'Attendance marked', value: '1 / 4', change: 'S4A still open', bars: [6, 7, 7, 8, 8, 9, 8] },
-    { label: 'Marking queue', value: '37', change: 'Papers left', bars: [8, 7, 6, 6, 5, 5, 4] },
-    { label: 'Pupils taught', value: '36', change: 'P5 Mathematics & Science', bars: [6, 6, 7, 7, 8, 8, 8] },
-  ];
+
+  protected readonly teacherKpis = computed(() => {
+    const open = this.clock.open();
+    return [
+      {
+        label: 'On campus',
+        value: open ? 'In' : 'Out',
+        change: open ? 'Since ' + open.inAt : 'Clock in to start the day',
+        bars: open ? [6, 7, 8, 8, 9, 9, 10] : [3, 3, 4, 3, 4, 3, 3],
+      },
+      { label: "Today's classes", value: '4', change: '1 remaining', bars: [3, 4, 4, 5, 4, 5, 4] },
+      { label: 'Attendance marked', value: '1 / 4', change: 'S4A still open', bars: [6, 7, 7, 8, 8, 9, 8] },
+      { label: 'Marking queue', value: '37', change: 'Papers left', bars: [8, 7, 6, 6, 5, 5, 4] },
+    ];
+  });
   protected readonly accountantKpis = [
     { label: 'Collected today', value: '14.2M', change: '+1.1M vs yesterday', bars: [5, 6, 7, 6, 8, 9, 10] },
     { label: 'Outstanding fees', value: '258M', change: '76% collected', bars: [9, 8, 8, 7, 7, 6, 6] },
@@ -110,6 +125,16 @@ export class DashboardPage {
     return this.txns().filter((t) => t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q) || t.product.toLowerCase().includes(q));
   });
 
+  constructor() {
+    void this.clock.refreshMine();
+    void this.api
+      .get<Release[]>('/releases')
+      .then((rows) => {
+        if (rows?.[0]) this.release.set(rows[0]);
+      })
+      .catch(() => undefined);
+  }
+
   blocks(n: number): number[] {
     return Array.from({ length: n }, (_, i) => i);
   }
@@ -117,7 +142,16 @@ export class DashboardPage {
   setRole(role: string) {
     const next = role as RoleKey;
     this.role.set(next);
-    void this.auth.demoLogin(next);
+    void this.auth.demoLogin(next).then(() => this.clock.refreshMine());
+  }
+
+  async punch(kind: 'in' | 'out') {
+    try {
+      const row = kind === 'in' ? await this.clock.clockIn() : await this.clock.clockOut();
+      this.toast.show(kind === 'in' ? 'Clocked in at ' + row.inAt : 'Clocked out at ' + (row.outAt || '') + (row.hours ? ' · ' + row.hours : ''));
+    } catch (err) {
+      this.toast.show(err instanceof Error ? err.message : 'Could not update the clock');
+    }
   }
 
   setTrend(t: Trend) {

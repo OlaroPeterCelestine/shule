@@ -1,5 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
-import type { PermRow } from './models';
+import type { ActivityDef, PermRow, RoleDef } from './models';
 import { defaultPerms } from './nav';
 
 export type Mark = 'P' | 'A' | 'L' | 'E';
@@ -229,6 +229,15 @@ export class SchoolOsStore {
   ]);
 
   readonly perms = signal<PermRow[]>(defaultPerms());
+  readonly roles = signal<RoleDef[]>([
+    { key: 'admin', label: 'Admin', locked: true, users: 1 },
+    { key: 'teacher', label: 'Teacher', locked: true, users: 1 },
+    { key: 'accountant', label: 'Accountant', locked: true, users: 1 },
+    { key: 'parent', label: 'Parent', locked: true, users: 1 },
+    { key: 'nurse', label: 'Nurse', locked: false, users: 0 },
+    { key: 'registrar', label: 'Registrar', locked: false, users: 0 },
+  ]);
+  readonly activities = signal<ActivityDef[]>([]);
 
   readonly presentCount = computed(() => this.register().filter((r) => r.status === 'P' || r.status === 'L').length);
   readonly absentCount = computed(() => this.register().filter((r) => r.status === 'A').length);
@@ -322,7 +331,39 @@ export class SchoolOsStore {
 
   togglePerm(role: string, module: string, key: 'view' | 'create' | 'edit' | 'approve') {
     this.perms.update((list) =>
-      list.map((p) => (p.role === role && p.module === module ? { ...p, [key]: !p[key] } : p)),
+      list.map((p) => {
+        if (p.role !== role || p.module !== module) return p;
+        const next = { ...p, [key]: !p[key] };
+        if ((next.create || next.edit || next.approve) && !next.view) next.view = true;
+        if (!next.view) {
+          next.create = false;
+          next.edit = false;
+          next.approve = false;
+        }
+        return next;
+      }),
     );
+  }
+
+  applyPerm(row: PermRow) {
+    this.perms.update((list) => {
+      const i = list.findIndex((p) => p.role === row.role && p.module === row.module);
+      if (i < 0) return [...list, row];
+      const next = [...list];
+      next[i] = { ...next[i], ...row };
+      return next;
+    });
+  }
+
+  replacePerms(rows: PermRow[]) {
+    if (rows.length) this.perms.set(rows);
+  }
+
+  replaceRoles(rows: RoleDef[]) {
+    if (rows.length) this.roles.set(rows);
+  }
+
+  replaceActivities(rows: ActivityDef[]) {
+    if (rows.length) this.activities.set(rows);
   }
 }

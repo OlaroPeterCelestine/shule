@@ -1,5 +1,5 @@
 <h1 class="font-display text-2xl text-ink mb-1">Permissions</h1>
-        <p class="text-sm text-slate2/60 mb-5">Roles, module access, change log and integrations. Toggle View to show or hide a module on the sidebar.</p>
+        <p class="text-sm text-slate2/60 mb-5">Create roles from school activities, then tick view, create, edit or approve. The sidebar and API both honour these grants.</p>
         <app-stat-cards [items]="stats()" />
         <div class="grid grid-cols-2 gap-5">
           <div class="bg-white border border-line rounded-sm p-5">
@@ -25,12 +25,21 @@
           </div>
           <div class="space-y-5">
             <div class="bg-white border border-line rounded-sm p-5">
-              <h3 class="font-display text-lg text-ink mb-3">Roles & permissions</h3>
-              <div class="space-y-2 text-sm">
-                <div class="flex justify-between border-b border-line pb-2"><span>Admin</span><span class="text-xs text-slate2/50">Full access</span></div>
-                <div class="flex justify-between border-b border-line pb-2"><span>Accountant</span><span class="text-xs text-slate2/50">Finance module only</span></div>
-                <div class="flex justify-between border-b border-line pb-2"><span>Teacher</span><span class="text-xs text-slate2/50">Own classes only</span></div>
-                <div class="flex justify-between"><span>Parent</span><span class="text-xs text-slate2/50">Own children only</span></div>
+              <h3 class="font-display text-lg text-ink mb-3">Roles</h3>
+              <div class="flex flex-wrap gap-2">
+                @for (r of os.roles(); track r.key) {
+                  <button type="button" (click)="pick(r.key)" class="px-3 py-1.5 text-xs rounded-full border"
+                    [class.bg-slate-900]="selected() === r.key" [class.text-white]="selected() === r.key"
+                    [class.border-slate-900]="selected() === r.key" [class.border-line]="selected() !== r.key">
+                    {{ r.label }}@if (!r.locked) { · custom }
+                  </button>
+                }
+              </div>
+              <div class="flex gap-2 mt-4">
+                <button type="button" (click)="newRole()" [disabled]="busy()" class="flex-1 text-xs bg-slate-900 text-white rounded-sm py-1.5 hover:bg-slate-800 disabled:opacity-60">New role</button>
+                @if (currentRole() && !currentRole()?.locked) {
+                  <button type="button" (click)="deleteRole()" class="flex-1 text-xs border border-line rounded-sm py-1.5 hover:bg-canvas">Delete role</button>
+                }
               </div>
             </div>
             <div class="bg-white border border-line rounded-sm p-5">
@@ -56,20 +65,30 @@
         </div>
 
         <div class="bg-white border border-line rounded-sm p-5 mt-5">
-          <h3 class="font-display text-lg text-ink mb-3">Fine-grained permissions</h3>
-          <p class="text-xs text-slate2/50 mb-3">View · Create · Edit · Approve — click a cell to toggle. Finance stays off for teachers.</p>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div>
+              <h3 class="font-display text-lg text-ink">Activities for {{ currentRole()?.label || 'role' }}</h3>
+              <p class="text-xs text-slate2/50 mt-1">
+                @if (selected() === 'admin') { Admin can do everything. }
+                @else { Click a cell to grant or revoke. Writes also show the module on the sidebar. }
+              </p>
+            </div>
+            <p class="text-xs text-slate2/45">{{ currentRole()?.users || 0 }} user{{ currentRole()?.users === 1 ? '' : 's' }}</p>
+          </div>
           <table class="w-full text-xs">
-            <thead class="text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Role</th><th class="pb-2 font-normal">Module</th><th class="pb-2 font-normal">View</th><th class="pb-2 font-normal">Create</th><th class="pb-2 font-normal">Edit</th><th class="pb-2 font-normal">Approve</th></tr></thead>
+            <thead class="text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Activity</th><th class="pb-2 font-normal">View</th><th class="pb-2 font-normal">Create</th><th class="pb-2 font-normal">Edit</th><th class="pb-2 font-normal">Approve</th></tr></thead>
             <tbody class="divide-y divide-line">
-              @for (p of os.perms(); track p.role + p.module) {
+              @for (p of rolePerms(); track p.module) {
                 <tr>
-                  <td class="py-2">{{ p.role }}</td>
-                  <td class="py-2">{{ p.module }}</td>
+                  <td class="py-2">{{ p.label || p.module }}</td>
                   <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'view')" class="text-left">{{ p.view ? 'Yes' : 'No' }}</button></td>
                   <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'create')" class="text-left">{{ p.create ? 'Yes' : 'No' }}</button></td>
                   <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'edit')" class="text-left">{{ p.edit ? 'Yes' : 'No' }}</button></td>
                   <td class="py-2"><button type="button" (click)="toggle(p.role, p.module, 'approve')" class="text-left">{{ p.approve ? 'Yes' : 'No' }}</button></td>
                 </tr>
+              }
+              @if (!rolePerms().length) {
+                <tr><td class="py-3 text-slate2/50" colspan="5">No activities for this role yet.</td></tr>
               }
             </tbody>
           </table>

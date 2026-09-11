@@ -20,6 +20,37 @@
   </div>
 </div>
 
+<div class="bg-white rounded-2xl border border-slate-100 p-5 mb-4">
+  <div class="flex items-center justify-between gap-3 mb-3">
+    <p class="text-[15px] font-semibold text-slate-900">What’s new</p>
+    <p class="text-xs text-slate-400">{{ release().date }} · v{{ release().version }} · app and API</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
+    <div>
+      <p class="text-xs font-medium text-slate-500 mb-2">Frontend</p>
+      <ul class="space-y-2">
+        @for (item of release().frontend; track item.title) {
+          <li>
+            <p class="font-medium text-slate-800">{{ item.title }}</p>
+            <p class="text-xs text-slate-500 mt-0.5">{{ item.detail }}</p>
+          </li>
+        }
+      </ul>
+    </div>
+    <div>
+      <p class="text-xs font-medium text-slate-500 mb-2">Backend</p>
+      <ul class="space-y-2">
+        @for (item of release().backend; track item.title) {
+          <li>
+            <p class="font-medium text-slate-800">{{ item.title }}</p>
+            <p class="text-xs text-slate-500 mt-0.5">{{ item.detail }}</p>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>
+
 <div class="role-view" [class.hidden]="role() !== 'admin'">
   <app-stat-cards [items]="kpis" />
 
@@ -145,7 +176,32 @@
 </div>
 
 <div class="role-view" [class.hidden]="role() !== 'teacher'">
-  <app-stat-cards [items]="teacherKpis" />
+  <app-stat-cards [items]="teacherKpis()" />
+  <div class="bg-white rounded-2xl border border-slate-100 p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <p class="text-[15px] font-semibold text-slate-900">Staff clock</p>
+      @if (clock.open(); as open) {
+        <p class="text-sm text-slate-500 mt-1">On campus since <span class="font-medium text-slate-800">{{ open.inAt }}</span></p>
+      } @else {
+        <p class="text-sm text-slate-500 mt-1">Not clocked in yet. Clock in when you arrive, clock out when you leave.</p>
+      }
+      @if (clock.mine().today.length) {
+        <p class="text-xs text-slate-400 mt-2">
+          Today
+          @for (p of clock.mine().today; track p.id) {
+            <span class="ml-2">{{ p.inAt }}–{{ p.outAt || 'now' }}@if (p.hours) { · {{ p.hours }} }</span>
+          }
+        </p>
+      }
+    </div>
+    <div class="flex gap-2 shrink-0">
+      @if (clock.open()) {
+        <button type="button" (click)="punch('out')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800 disabled:opacity-60">Clock out</button>
+      } @else {
+        <button type="button" (click)="punch('in')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800 disabled:opacity-60">Clock in</button>
+      }
+    </div>
+  </div>
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
     <div class="bg-white rounded-2xl border border-slate-100 p-5 lg:col-span-2">
       <h3 class="text-[15px] font-semibold text-slate-900 mb-3">Today's classes — Mr. Ssentongo</h3>
