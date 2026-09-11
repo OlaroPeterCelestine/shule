@@ -17,6 +17,18 @@ export const RELEASES: Release[] = [
     version: '0.0.1',
     frontend: [
       {
+        title: 'Timetable and exam sittings',
+        detail: 'Timetable & Exams is two tabs: the weekly class timetable, and exam sittings with papers and rooms.',
+      },
+      {
+        title: 'School crest in the tab',
+        detail: 'The browser icon is the Little Royals crest.',
+      },
+      {
+        title: 'Addressed documents',
+        detail: 'Documents are opened for a chosen pupil and printed as addressed to the guardian at the home address on file.',
+      },
+      {
         title: 'Pupil file',
         detail: 'Each pupil opens a file with overview, guardian, medical, campus, fees, attendance, sickbay, reports, behaviour and documents. Health rows link into the same file.',
       },

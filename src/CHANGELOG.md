@@ -4,6 +4,9 @@ Angular School OS. Same dates and titles as [backend/CHANGELOG.md](../backend/CH
 
 ## 11 Sep 2026 · v0.0.1
 
+### Timetable and exam sittings
+Timetable & Exams is two tabs: the weekly class timetable, and exam sittings with papers and rooms. The browser icon is the school crest.
+
 ### Pupil file
 Each pupil opens a file with overview, guardian, medical, campus, fees, attendance, sickbay, reports, behaviour and documents.
 

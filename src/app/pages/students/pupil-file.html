@@ -208,14 +208,21 @@
 
   @if (pane() === 'documents') {
     <section class="bg-white rounded-2xl border border-slate-100 p-5">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-3">
         <h2 class="text-[15px] font-semibold text-slate-900">Documents for this pupil</h2>
         <a routerLink="/documents" class="text-xs text-primary hover:underline">All documents →</a>
+      </div>
+      <div class="border border-slate-100 rounded-xl p-3 mb-4 text-sm">
+        <p class="text-[11px] tracking-wide text-slate-400">Addressed to</p>
+        <p class="font-semibold text-slate-900 mt-1">{{ addressee().name }}</p>
+        @for (line of addressee().lines; track line) {
+          <p class="text-slate-500 mt-0.5">{{ line }}</p>
+        }
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <button type="button" (click)="openReportPdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
           <p class="text-sm font-medium text-slate-900">Report card</p>
-          <p class="text-xs text-slate-400 mt-1">End-of-term official PDF</p>
+          <p class="text-xs text-slate-400 mt-1">See and print, addressed to the guardian</p>
         </button>
         <button type="button" (click)="openIdPdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
           <p class="text-sm font-medium text-slate-900">Student ID</p>
@@ -225,10 +232,20 @@
           <p class="text-sm font-medium text-slate-900">Fee statement</p>
           <p class="text-xs text-slate-400 mt-1">Balance on the school ledger</p>
         </button>
+        <button type="button" (click)="openTransferPdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
+          <p class="text-sm font-medium text-slate-900">Transfer certificate</p>
+          <p class="text-xs text-slate-400 mt-1">Release letter if the pupil leaves</p>
+        </button>
         <button type="button" (click)="openFeedbackPdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
           <p class="text-sm font-medium text-slate-900">Parent feedback form</p>
           <p class="text-xs text-slate-400 mt-1">Print for Parents’ day or PTM</p>
         </button>
+        @for (v of visits(); track v.id) {
+          <button type="button" (click)="openSickPdf(v.id)" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
+            <p class="text-sm font-medium text-slate-900">Sickbay note</p>
+            <p class="text-xs text-slate-400 mt-1">{{ v.reason }} · {{ v.time }}</p>
+          </button>
+        }
       </div>
     </section>
   }

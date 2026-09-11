@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api.service';
+import type { Student } from '../../core/models';
 import { PdfViewerService } from '../../core/pdf-viewer.service';
 import { reportsFor } from '../../core/report-cards';
 import { StudentsStore } from '../../core/students.store';
@@ -51,7 +52,7 @@ export class DocumentsPage {
   private api = inject(ApiService);
   private pdf = inject(PdfViewerService);
   private toast = inject(ToastService);
-  private pupils = inject(StudentsStore);
+  protected pupils = inject(StudentsStore);
 
   protected readonly types = signal<DocType[]>(FALLBACK);
   protected readonly students = signal<{ adm: string; name: string; cls: string }[]>([]);
@@ -63,6 +64,9 @@ export class DocumentsPage {
   protected readonly previewKey = signal('');
   protected readonly tab = signal<'all' | 'letters' | 'reports'>('all');
   protected readonly page = signal(1);
+  protected readonly selectedAdm = signal('');
+  protected readonly selectedStaff = signal('');
+  protected readonly selectedApplicant = signal('');
 
   protected readonly cards = computed(() => reportsFor(this.pupils.students()));
   protected readonly paged = computed(() => paginate(this.cards(), this.page()));
@@ -73,6 +77,11 @@ export class DocumentsPage {
       .map((group) => ({ group, items: list.filter((t) => t.group === group) }))
       .filter((g) => g.items.length);
   });
+  protected readonly selectedPupil = computed(() => {
+    const adm = this.selectedAdm();
+    return this.pupils.students().find((s) => s.adm === adm) || this.pupils.students()[0] || null;
+  });
+  protected readonly addressee = computed(() => addresseeFor(this.selectedPupil()));
   protected readonly previewHtml = computed(() => SAMPLE_HTML[this.previewKey()] || '');
   protected readonly stats = computed(() => [
     { label: 'Official PDFs', value: String(this.types().length), change: this.live() ? 'From the API' : 'Sample list', bars: [4, 5, 5, 6, 6, 6, 6] },
@@ -88,6 +97,8 @@ export class DocumentsPage {
   async load() {
     if (!this.api.token()) {
       this.students.set(this.pupils.students());
+      const first = this.pupils.students()[0];
+      if (first) this.selectedAdm.set(first.adm);
       return;
     }
     try {
@@ -106,9 +117,18 @@ export class DocumentsPage {
       this.applicants.set(applicants);
       this.visits.set(visits);
       this.live.set(true);
+      if (!this.selectedAdm() && students[0]) this.selectedAdm.set(students[0].adm);
+      if (!this.selectedStaff() && staff[0]) this.selectedStaff.set(String(staff[0].id));
+      if (!this.selectedApplicant() && applicants[0]) this.selectedApplicant.set(String(applicants[0].id));
     } catch {
       this.students.set(this.pupils.students());
+      const first = this.pupils.students()[0];
+      if (first && !this.selectedAdm()) this.selectedAdm.set(first.adm);
     }
+  }
+
+  pickPupil(adm: string) {
+    this.selectedAdm.set(adm);
   }
 
   hasLayout(key: string) {
@@ -145,11 +165,33 @@ export class DocumentsPage {
 
   private sampleQuery(type: DocType) {
     const params = new URLSearchParams();
-    if (type.pick === 'student') params.set('adm', this.students()[0]?.adm || this.pupils.students()[0]?.adm || '');
-    if (type.pick === 'staff') params.set('staff', String(this.staff()[0]?.id ?? 'LR-ST-014'));
-    if (type.pick === 'applicant') params.set('applicant', String(this.applicants()[0]?.id ?? '1'));
-    if (type.pick === 'visit') params.set('visit', String(this.visits()[0]?.id ?? '1'));
+    const pupil = this.selectedPupil();
+    if (type.pick === 'student' || type.key === 'feedback') {
+      params.set('adm', this.selectedAdm() || pupil?.adm || this.pupils.students()[0]?.adm || '');
+    }
+    if (type.pick === 'staff') params.set('staff', this.selectedStaff() || String(this.staff()[0]?.id ?? 'LR-ST-014'));
+    if (type.pick === 'applicant') params.set('applicant', this.selectedApplicant() || String(this.applicants()[0]?.id ?? '1'));
+    if (type.pick === 'visit') {
+      const visit = this.visits().find((v) => v.adm === this.selectedAdm()) || this.visits()[0];
+      if (visit) params.set('visit', String(visit.id));
+      if (this.selectedAdm()) params.set('adm', this.selectedAdm());
+    }
+    if (pupil?.guardian) params.set('to', pupil.guardian);
+    if (pupil?.address) params.set('address', pupil.address);
     const q = params.toString();
     return q ? '?' + q : '';
   }
+}
+
+function addresseeFor(s: Student | null) {
+  if (!s) return { name: 'Choose a pupil', lines: ['The letter will be addressed once you pick someone.'] };
+  return {
+    name: s.guardian || 'Parent / guardian of ' + s.name,
+    lines: [
+      s.guardianRelation ? s.guardianRelation : 'Guardian',
+      s.address || 'Home address not on file',
+      s.guardianPhone || '',
+      s.name + ' · ' + s.adm + ' · ' + s.cls,
+    ].filter(Boolean),
+  };
 }

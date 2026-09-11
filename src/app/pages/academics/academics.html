@@ -1,125 +1,195 @@
-<h1 class="font-display text-2xl text-ink mb-1">Timetable & Exams</h1>
-<p class="text-sm text-slate2/60 mb-5">{{ os.school().name }} · {{ os.school().term }}, {{ os.school().year }} · {{ os.school().motto }}</p>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Timetable &amp; exams</h1>
+    <p class="text-sm text-slate-400 mt-1">{{ os.school().name }} · {{ os.school().term }}, {{ os.school().year }} · weekly lessons and exam sittings are separate</p>
+  </div>
+</div>
+
 <app-stat-cards [items]="stats()" />
 
-<div class="bg-white border border-line rounded-sm p-5 mb-5">
-  <div class="flex items-center justify-between gap-3 mb-3">
-    <div>
-      <h3 class="font-display text-lg text-ink">Create exam sitting</h3>
-      <p class="text-xs text-slate2/50">Schedules one paper per subject on weekdays, starting from the date you pick. Kindergarten uses learning areas; primary uses UNEB subjects.</p>
-    </div>
-  </div>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-    <label class="block">
-      <span class="text-xs text-slate2/50">Kind</span>
-      <select class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().kind" (ngModelChange)="patchSitting('kind', $event)">
-        @for (k of kinds; track k) { <option [value]="k">{{ k }}</option> }
-      </select>
-    </label>
-    <label class="block">
-      <span class="text-xs text-slate2/50">Class / section</span>
-      <select class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().cls" (ngModelChange)="patchSitting('cls', $event)">
-        @for (c of scopes; track c) { <option [value]="c">{{ c }}</option> }
-      </select>
-    </label>
-    <label class="block">
-      <span class="text-xs text-slate2/50">First paper</span>
-      <input type="date" class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().startDate" (ngModelChange)="patchSitting('startDate', $event)" />
-    </label>
-    <label class="block">
-      <span class="text-xs text-slate2/50">Start time</span>
-      <input type="time" class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().startTime" (ngModelChange)="patchSitting('startTime', $event)" />
-    </label>
-    <label class="block">
-      <span class="text-xs text-slate2/50">Minutes</span>
-      <input class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().duration" (ngModelChange)="patchSitting('duration', $event)" />
-    </label>
-    <label class="block">
-      <span class="text-xs text-slate2/50">Room</span>
-      <input class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().room" (ngModelChange)="patchSitting('room', $event)" />
-    </label>
-    <label class="block">
-      <span class="text-xs text-slate2/50">Invigilator</span>
-      <input class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().invigilator" (ngModelChange)="patchSitting('invigilator', $event)" />
-    </label>
-    <div class="flex items-end">
-      <button type="button" class="w-full text-sm bg-ink text-white rounded-sm px-3 py-2 disabled:opacity-50" [disabled]="saving() || !access.can('academics', 'create')" (click)="createSitting()">
-        {{ saving() ? 'Scheduling…' : 'Create sitting' }}
-      </button>
-    </div>
-  </div>
+<div class="flex flex-wrap gap-2 mb-5">
+  <button type="button" (click)="setTab('timetable')" class="h-8 px-3 text-xs rounded-full border"
+    [class.bg-slate-900]="tab() === 'timetable'" [class.text-white]="tab() === 'timetable'"
+    [class.bg-white]="tab() !== 'timetable'" [class.text-slate-600]="tab() !== 'timetable'" [class.border-slate-200]="true">Timetable</button>
+  <button type="button" (click)="setTab('sittings')" class="h-8 px-3 text-xs rounded-full border"
+    [class.bg-slate-900]="tab() === 'sittings'" [class.text-white]="tab() === 'sittings'"
+    [class.bg-white]="tab() !== 'sittings'" [class.text-slate-600]="tab() !== 'sittings'" [class.border-slate-200]="true">Exam sittings</button>
 </div>
 
-<div class="bg-white border border-line rounded-sm overflow-hidden mb-5">
-  <div class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-line">
-    <h3 class="font-display text-lg text-ink">Exam papers</h3>
-    <div class="flex flex-wrap gap-2">
-      <select class="border border-line rounded-sm px-3 py-1.5 text-xs bg-white" [ngModel]="filter()" (ngModelChange)="setFilter($event)">
-        <option value="">All classes</option>
-        @for (c of classes; track c) { <option [value]="c">{{ c }}</option> }
-      </select>
-      @if (access.can('academics', 'create')) {
-        <button type="button" (click)="addPaper()" class="text-xs bg-ink text-white rounded-sm px-3 py-1.5">+ One paper</button>
-      }
+@if (tab() === 'timetable') {
+  <section class="bg-white rounded-2xl border border-slate-100 overflow-hidden mb-5">
+    <div class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100">
+      <div>
+        <h2 class="text-[15px] font-semibold text-slate-900">Weekly timetable</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Class lessons · Monday to Friday. Exam papers live on the Exam sittings tab.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <select class="border border-slate-200 rounded-full px-3 py-1.5 text-xs bg-white" [ngModel]="timetableClass()" (ngModelChange)="timetableClass.set($event)">
+          @for (c of classes; track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+        @if (access.can('academics', 'create')) {
+          <button type="button" (click)="addLesson()" class="h-8 px-3 text-xs bg-slate-900 text-white rounded-full">+ Lesson</button>
+        }
+      </div>
     </div>
-  </div>
-  <table class="w-full text-sm">
-    <thead class="text-xs text-slate2/50 text-left border-b border-line bg-canvas">
-      <tr>
-        <th class="px-4 py-2 font-normal">Date</th>
-        <th class="px-4 py-2 font-normal">Class</th>
-        <th class="px-4 py-2 font-normal">Paper</th>
-        <th class="px-4 py-2 font-normal">Kind</th>
-        <th class="px-4 py-2 font-normal">Room</th>
-        <th class="px-4 py-2 font-normal">Status</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-line">
-      @for (e of paged().rows; track e.id) {
-        <tr>
-          <td class="px-4 py-2 text-slate2/70 whitespace-nowrap">{{ e.examDate }} · {{ e.startTime }}</td>
-          <td class="px-4 py-2">{{ e.cls }}</td>
-          <td class="px-4 py-2 font-medium text-ink">{{ e.subject }}<span class="block text-xs text-slate2/50">{{ e.duration }} min · {{ e.invigilator }}</span></td>
-          <td class="px-4 py-2"><span class="text-[11px] px-2 py-0.5 rounded-full bg-gold/10 text-ink">{{ e.kind }}</span></td>
-          <td class="px-4 py-2">{{ e.room }}</td>
-          <td class="px-4 py-2">
-            @if (access.can('academics', 'edit')) {
-              <select class="border border-line rounded-sm px-2 py-1 text-xs bg-white" [ngModel]="e.status" (ngModelChange)="setStatus(e, $event)">
-                <option>Scheduled</option>
-                <option>Running</option>
-                <option>Marked</option>
-                <option>Published</option>
-              </select>
-            } @else {
-              {{ e.status }}
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm min-w-[720px]">
+        <thead class="bg-slate-50 text-xs text-slate-400">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-medium w-24">Time</th>
+            @for (d of days; track d) {
+              <th class="px-4 py-3 font-medium">{{ d }}</th>
             }
-          </td>
-        </tr>
-      } @empty {
-        <tr><td colspan="6" class="px-4 py-6 text-sm text-slate2/50">No papers yet. Create an end-of-term sitting above.</td></tr>
-      }
-    </tbody>
-  </table>
-  <app-pager [total]="papers().length" [page]="paged().current" (pageChange)="page.set($event)" />
-</div>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          @for (row of week(); track row.time) {
+            <tr>
+              <td class="px-4 py-3 font-mono text-xs text-slate-500 align-top">{{ row.time }}</td>
+              @for (cell of row.cells; track $index) {
+                <td class="px-3 py-3 align-top">
+                  @if (cell) {
+                    <p class="font-medium text-slate-900">{{ cell.subject }}</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">{{ cell.teacher }}</p>
+                  } @else {
+                    <span class="text-slate-300">—</span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-  <div class="bg-white border border-line rounded-sm p-5">
-    <h3 class="font-display text-lg text-ink mb-3">Attendance — today</h3>
-    <p class="text-sm text-slate2/60 mb-2">Live from the morning register (Baby–P7).</p>
-    <p><span class="font-medium text-ink">{{ os.presentCount() }}</span> present or late</p>
-    <p><span class="font-medium text-maroon">{{ os.absentCount() }}</span> absent</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+      <h3 class="text-[15px] font-semibold text-slate-900 mb-2">Attendance — today</h3>
+      <p class="text-sm text-slate-500 mb-2">From the morning register (Baby–P7).</p>
+      <p><span class="font-medium text-slate-900">{{ os.presentCount() }}</span> present or late</p>
+      <p><span class="font-medium text-rose-600">{{ os.absentCount() }}</span> absent</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+      <h3 class="text-[15px] font-semibold text-slate-900 mb-2">This class</h3>
+      <p class="text-sm text-slate-600">{{ timetableClass() }} · {{ lessonCount() }} lessons this week</p>
+      <p class="text-xs text-slate-400 mt-2">Break after 09:20 · lunch before 14:00. Use Exam sittings for mid-term and end-of-term papers.</p>
+    </div>
   </div>
-  <div class="bg-white border border-line rounded-sm p-5">
+}
+
+@if (tab() === 'sittings') {
+  <div class="bg-white rounded-2xl border border-slate-100 p-5 mb-5">
+    <div class="mb-3">
+      <h2 class="text-[15px] font-semibold text-slate-900">Create exam sitting</h2>
+      <p class="text-xs text-slate-400 mt-1">Schedules one paper per subject on weekdays. This is not the weekly class timetable.</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+      <label class="block text-xs text-slate-500">
+        Kind
+        <select class="w-full border border-slate-200 rounded-xl px-3 py-2 mt-1 bg-white text-sm text-slate-800" [ngModel]="sitting().kind" (ngModelChange)="patchSitting('kind', $event)">
+          @for (k of kinds; track k) { <option [value]="k">{{ k }}</option> }
+        </select>
+      </label>
+      <label class="block text-xs text-slate-500">
+        Class / section
+        <select class="w-full border border-slate-200 rounded-xl px-3 py-2 mt-1 bg-white text-sm text-slate-800" [ngModel]="sitting().cls" (ngModelChange)="patchSitting('cls', $event)">
+          @for (c of scopes; track c) { <option [value]="c">{{ c }}</option> }
+        </select>
+      </label>
+      <label class="block text-xs text-slate-500">
+        First paper
+        <input type="date" class="w-full border border-slate-200 rounded-xl px-3 py-2 mt-1 text-sm" [ngModel]="sitting().startDate" (ngModelChange)="patchSitting('startDate', $event)" />
+      </label>
+      <label class="block text-xs text-slate-500">
+        Start time
+        <input type="time" class="w-full border border-slate-200 rounded-xl px-3 py-2 mt-1 text-sm" [ngModel]="sitting().startTime" (ngModelChange)="patchSitting('startTime', $event)" />
+      </label>
+      <label class="block text-xs text-slate-500">
+        Minutes
+        <input class="w-full border border-slate-200 rounded-xl px-3 py-2 mt-1 text-sm" [ngModel]="sitting().duration" (ngModelChange)="patchSitting('duration', $event)" />
+      </label>
+      <label class="block text-xs text-slate-500">
+        Room
+        <input class="w-full border border-slate-200 rounded-xl px-3 py-2 mt-1 text-sm" [ngModel]="sitting().room" (ngModelChange)="patchSitting('room', $event)" />
+      </label>
+      <label class="block text-xs text-slate-500">
+        Invigilator
+        <input class="w-full border border-slate-200 rounded-xl px-3 py-2 mt-1 text-sm" [ngModel]="sitting().invigilator" (ngModelChange)="patchSitting('invigilator', $event)" />
+      </label>
+      <div class="flex items-end">
+        <button type="button" class="w-full text-sm bg-slate-900 text-white rounded-full px-3 py-2 disabled:opacity-50" [disabled]="saving() || !access.can('academics', 'create')" (click)="createSitting()">
+          {{ saving() ? 'Scheduling…' : 'Create sitting' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden mb-5">
+    <div class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100">
+      <h2 class="text-[15px] font-semibold text-slate-900">Exam papers</h2>
+      <div class="flex flex-wrap gap-2">
+        <select class="border border-slate-200 rounded-full px-3 py-1.5 text-xs bg-white" [ngModel]="filter()" (ngModelChange)="setFilter($event)">
+          <option value="">All classes</option>
+          @for (c of classes; track c) { <option [value]="c">{{ c }}</option> }
+        </select>
+        @if (access.can('academics', 'create')) {
+          <button type="button" (click)="addPaper()" class="h-8 px-3 text-xs bg-slate-900 text-white rounded-full">+ One paper</button>
+        }
+      </div>
+    </div>
+    <table class="w-full text-sm">
+      <thead class="text-xs text-slate-400 text-left border-b border-slate-100 bg-slate-50">
+        <tr>
+          <th class="px-4 py-3 font-medium">Date</th>
+          <th class="px-4 py-3 font-medium">Class</th>
+          <th class="px-4 py-3 font-medium">Paper</th>
+          <th class="px-4 py-3 font-medium">Kind</th>
+          <th class="px-4 py-3 font-medium">Room</th>
+          <th class="px-4 py-3 font-medium">Status</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-50">
+        @for (e of paged().rows; track e.id) {
+          <tr>
+            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ e.examDate }} · {{ e.startTime }}</td>
+            <td class="px-4 py-3">{{ e.cls }}</td>
+            <td class="px-4 py-3 font-medium text-slate-900">{{ e.subject }}<span class="block text-xs text-slate-400">{{ e.duration }} min · {{ e.invigilator }}</span></td>
+            <td class="px-4 py-3"><span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 text-slate-800">{{ e.kind }}</span></td>
+            <td class="px-4 py-3">{{ e.room }}</td>
+            <td class="px-4 py-3">
+              @if (access.can('academics', 'edit')) {
+                <select class="border border-slate-200 rounded-full px-2 py-1 text-xs bg-white" [ngModel]="e.status" (ngModelChange)="setStatus(e, $event)">
+                  <option>Scheduled</option>
+                  <option>Running</option>
+                  <option>Marked</option>
+                  <option>Published</option>
+                </select>
+              } @else {
+                {{ e.status }}
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="px-4 py-6 text-sm text-slate-400">No papers yet. Create an end-of-term sitting above.</td></tr>
+        }
+      </tbody>
+    </table>
+    <app-pager [total]="papers().length" [page]="paged().current" (pageChange)="page.set($event)" />
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-100 p-5">
     <div class="flex items-center justify-between mb-3">
-      <h3 class="font-display text-lg text-ink">Exam rooms</h3>
+      <h2 class="text-[15px] font-semibold text-slate-900">Exam rooms</h2>
       @if (access.can('academics', 'create')) {
-        <button type="button" (click)="addRoom()" class="text-xs bg-ink text-white rounded-sm px-3 py-1.5">+ Room</button>
+        <button type="button" (click)="addRoom()" class="h-8 px-3 text-xs bg-slate-900 text-white rounded-full">+ Room</button>
       }
     </div>
     <table class="w-full text-sm">
-      <thead class="text-xs text-slate2/50 text-left border-b border-line"><tr><th class="pb-2 font-normal">Room</th><th class="pb-2 font-normal">Paper</th><th class="pb-2 font-normal">Invigilator</th></tr></thead>
-      <tbody class="divide-y divide-line">
+      <thead class="text-xs text-slate-400 text-left border-b border-slate-100"><tr><th class="pb-2 font-medium">Room</th><th class="pb-2 font-medium">Paper</th><th class="pb-2 font-medium">Invigilator</th></tr></thead>
+      <tbody class="divide-y divide-slate-50">
         @for (r of os.examRooms(); track r.id) {
           <tr>
             <td class="py-2">{{ r.room }}</td>
@@ -130,4 +200,4 @@
       </tbody>
     </table>
   </div>
-</div>
+}

@@ -1,5 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccessService } from '../../core/access.service';
 import { ApiService } from '../../core/api.service';
 import { ModalService } from '../../core/modal.service';
@@ -10,8 +12,44 @@ import { paginate } from '../../core/page';
 import { Pager } from '../../shared/pager';
 import { StatCards } from '../../shared/stat-cards';
 
+export type AcadTab = 'timetable' | 'sittings';
+
 const KINDS = ['End of term', 'Mid-term', 'Continuous'];
 const SCOPES = ['Whole school', 'Kindergarten', 'Primary', ...SCHOOL_CLASSES];
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const PERIODS = ['08:00', '08:40', '09:20', '10:20', '11:00', '11:40', '14:00', '14:40'];
+
+export interface Lesson {
+  cls: string;
+  day: string;
+  time: string;
+  subject: string;
+  teacher: string;
+}
+
+const SAMPLE_LESSONS: Lesson[] = [
+  { cls: 'Primary Five', day: 'Mon', time: '08:00', subject: 'English', teacher: 'B. Ssentongo' },
+  { cls: 'Primary Five', day: 'Mon', time: '08:40', subject: 'Mathematics', teacher: 'B. Ssentongo' },
+  { cls: 'Primary Five', day: 'Mon', time: '09:20', subject: 'Science', teacher: 'J. Namutebi' },
+  { cls: 'Primary Five', day: 'Mon', time: '10:20', subject: 'Social Studies', teacher: 'S. Achieng' },
+  { cls: 'Primary Five', day: 'Tue', time: '08:00', subject: 'Mathematics', teacher: 'B. Ssentongo' },
+  { cls: 'Primary Five', day: 'Tue', time: '08:40', subject: 'English', teacher: 'B. Ssentongo' },
+  { cls: 'Primary Five', day: 'Tue', time: '10:20', subject: 'Literacy', teacher: 'J. Namutebi' },
+  { cls: 'Primary Five', day: 'Wed', time: '08:00', subject: 'Science', teacher: 'J. Namutebi' },
+  { cls: 'Primary Five', day: 'Wed', time: '11:00', subject: 'Religious Education', teacher: 'S. Achieng' },
+  { cls: 'Primary Five', day: 'Thu', time: '08:00', subject: 'English', teacher: 'B. Ssentongo' },
+  { cls: 'Primary Five', day: 'Thu', time: '14:00', subject: 'Art & Technology', teacher: 'S. Achieng' },
+  { cls: 'Primary Five', day: 'Fri', time: '08:00', subject: 'Physical Education', teacher: 'B. Ssentongo' },
+  { cls: 'Primary Five', day: 'Fri', time: '08:40', subject: 'Mathematics', teacher: 'B. Ssentongo' },
+  { cls: 'Baby class', day: 'Mon', time: '08:00', subject: 'Oral language', teacher: 'Namuli Grace' },
+  { cls: 'Baby class', day: 'Mon', time: '08:40', subject: 'Number work', teacher: 'Namuli Grace' },
+  { cls: 'Baby class', day: 'Tue', time: '08:00', subject: 'Creative activity', teacher: 'Namuli Grace' },
+  { cls: 'Baby class', day: 'Wed', time: '08:00', subject: 'Social & personal habits', teacher: 'Namuli Grace' },
+  { cls: 'Primary Seven', day: 'Mon', time: '08:00', subject: 'English', teacher: 'S. Achieng' },
+  { cls: 'Primary Seven', day: 'Mon', time: '08:40', subject: 'Mathematics', teacher: 'J. Namutebi' },
+  { cls: 'Primary Seven', day: 'Wed', time: '08:00', subject: 'Science', teacher: 'J. Namutebi' },
+  { cls: 'Primary Seven', day: 'Fri', time: '08:00', subject: 'Social Studies', teacher: 'S. Achieng' },
+];
 
 @Component({
   selector: 'app-academics',
@@ -24,10 +62,17 @@ export class AcademicsPage {
   private modal = inject(ModalService);
   private toast = inject(ToastService);
   private api = inject(ApiService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   protected readonly kinds = KINDS;
   protected readonly scopes = SCOPES;
   protected readonly classes = SCHOOL_CLASSES;
+  protected readonly days = DAYS;
+  protected readonly periods = PERIODS;
+  protected readonly tab = signal<AcadTab>('timetable');
+  protected readonly lessons = signal<Lesson[]>(SAMPLE_LESSONS);
+  protected readonly timetableClass = signal('Primary Five');
   protected readonly sitting = signal({
     kind: 'End of term',
     cls: 'Primary',
@@ -46,6 +91,29 @@ export class AcademicsPage {
     return this.os.exams().filter((e) => !cls || e.cls === cls);
   });
   protected readonly paged = computed(() => paginate(this.papers(), this.page()));
+  protected readonly week = computed(() => {
+    const cls = this.timetableClass();
+    const rows = this.lessons().filter((l) => l.cls === cls);
+    return PERIODS.map((time) => ({
+      time,
+      cells: DAYS.map((day) => rows.find((l) => l.day === day && l.time === time) ?? null),
+    }));
+  });
+  protected readonly lessonCount = computed(() =>
+    this.week().reduce((n, row) => n + row.cells.filter((cell) => !!cell).length, 0),
+  );
+
+  constructor() {
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const q = params.get('tab');
+      if (q === 'sittings' || q === 'timetable') this.tab.set(q);
+    });
+  }
+
+  setTab(next: AcadTab) {
+    this.tab.set(next);
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { tab: next }, queryParamsHandling: 'merge' });
+  }
 
   setFilter(value: string) {
     this.filter.set(value);
@@ -147,6 +215,37 @@ export class AcademicsPage {
         }
         this.toast.show(body.cls + ' ' + body.subject + ' scheduled');
         return;
+      },
+    });
+  }
+
+  addLesson() {
+    if (!this.access.can('academics', 'create')) return;
+    this.modal.open({
+      title: 'Add a lesson',
+      confirmLabel: 'Add to timetable',
+      select: { key: 'cls', options: SCHOOL_CLASSES },
+      fields: [
+        { key: 'day', placeholder: 'Day (Mon–Fri) *', required: true },
+        { key: 'time', placeholder: 'Start (08:00) *', required: true },
+        { key: 'subject', placeholder: 'Subject *', required: true },
+        { key: 'teacher', placeholder: 'Teacher' },
+      ],
+      onConfirm: (v) => {
+        const day = String(v['day'] || 'Mon').slice(0, 3);
+        const lesson: Lesson = {
+          cls: String(v['cls'] || this.timetableClass()),
+          day: DAYS.includes(day) ? day : 'Mon',
+          time: String(v['time'] || '08:00'),
+          subject: String(v['subject']),
+          teacher: String(v['teacher'] || 'TBA'),
+        };
+        this.lessons.update((list) => [
+          ...list.filter((l) => !(l.cls === lesson.cls && l.day === lesson.day && l.time === lesson.time)),
+          lesson,
+        ]);
+        this.timetableClass.set(lesson.cls);
+        this.toast.show(lesson.subject + ' added on ' + lesson.day);
       },
     });
   }

@@ -14,6 +14,8 @@ export interface PdfQuery {
   cls?: string;
   scores?: string;
   note?: string;
+  to?: string;
+  address?: string;
   download?: string;
 }
 
@@ -37,23 +39,23 @@ export class PdfService {
   private async render(key: string, school: Record<string, string>, q: PdfQuery) {
     switch (key) {
       case 'report-card':
-        return this.reportCard(school, await this.requireStudent(q.adm));
+        return this.reportCard(school, await this.requireStudent(q.adm), q);
       case 'sick-leave':
-        return this.sickLeave(school, await this.requireVisit(q.visit, q.adm));
+        return this.sickLeave(school, await this.requireVisit(q.visit, q.adm), q);
       case 'staff-leave':
-        return this.staffLeave(school, await this.requireStaff(q.staff));
+        return this.staffLeave(school, await this.requireStaff(q.staff), q);
       case 'student-id':
-        return this.studentId(school, await this.requireStudent(q.adm));
+        return this.studentId(school, await this.requireStudent(q.adm), q);
       case 'admission-letter':
-        return this.admissionLetter(school, await this.requireApplicant(q.applicant));
+        return this.admissionLetter(school, await this.requireApplicant(q.applicant), q);
       case 'transfer-certificate':
-        return this.transfer(school, await this.requireStudent(q.adm));
+        return this.transfer(school, await this.requireStudent(q.adm), q);
       case 'completion-certificate':
-        return this.completion(school, await this.requireStudent(q.adm));
+        return this.completion(school, await this.requireStudent(q.adm), q);
       case 'fee-statement':
-        return this.fees(school, await this.requireStudent(q.adm));
+        return this.fees(school, await this.requireStudent(q.adm), q);
       case 'payslip':
-        return this.payslip(school, await this.requireStaff(q.staff));
+        return this.payslip(school, await this.requireStaff(q.staff), q);
       case 'visitor-badge':
         return this.visitor(school, q.name || 'Campus visitor');
       case 'feedback':
@@ -99,10 +101,11 @@ export class PdfService {
     return row as VisitRow;
   }
 
-  private reportCard(school: Record<string, string>, s: StudentRow) {
+  private reportCard(school: Record<string, string>, s: StudentRow, q: PdfQuery) {
     const subjects = subjectsFor(s.cls, s.adm);
     const avg = Math.round(subjects.reduce((n, x) => n + x.score, 0) / subjects.length);
     return draw(school, 'End of term report', (doc) => {
+      addressed(doc, pupilAddressee(s, q));
       kv(doc, [
         ['Name', s.name],
         ['Admission no.', s.adm],
@@ -120,8 +123,13 @@ export class PdfService {
     });
   }
 
-  private sickLeave(school: Record<string, string>, v: VisitRow) {
+  private sickLeave(school: Record<string, string>, v: VisitRow, q: PdfQuery) {
     return draw(school, 'Sickbay / sick leave note', (doc) => {
+      addressed(doc, [
+        q.to || 'Parent / guardian of ' + v.name,
+        q.address || '',
+        'Pupil: ' + v.name + ' · ' + v.adm,
+      ]);
       kv(doc, [
         ['Pupil', v.name],
         ['Admission no.', v.adm],
@@ -137,8 +145,9 @@ export class PdfService {
     });
   }
 
-  private staffLeave(school: Record<string, string>, s: StaffRow) {
+  private staffLeave(school: Record<string, string>, s: StaffRow, q: PdfQuery) {
     return draw(school, 'Staff leave letter', (doc) => {
+      addressed(doc, [q.to || s.name, q.address || s.dept, s.role]);
       kv(doc, [
         ['Staff', s.name],
         ['Staff ID', s.id],
@@ -154,8 +163,9 @@ export class PdfService {
     });
   }
 
-  private studentId(school: Record<string, string>, s: StudentRow) {
+  private studentId(school: Record<string, string>, s: StudentRow, q: PdfQuery) {
     return draw(school, 'Student identity card', (doc) => {
+      addressed(doc, pupilAddressee(s, q));
       kv(doc, [
         ['Name', s.name],
         ['Admission no.', s.adm],
@@ -167,8 +177,9 @@ export class PdfService {
     }, { size: [400, 280], margin: 28 });
   }
 
-  private admissionLetter(school: Record<string, string>, a: ApplicantRow) {
+  private admissionLetter(school: Record<string, string>, a: ApplicantRow, q: PdfQuery) {
     return draw(school, 'Offer of admission', (doc) => {
+      addressed(doc, [q.to || 'Parent / guardian of ' + a.name, q.address || '', a.cls]);
       doc.font('Helvetica').text(`Dear Parent / Guardian of ${a.name},`).moveDown(0.5);
       doc.text(
         `We are pleased to offer ${a.name} a place in ${a.cls} at Little Royals for ${school.term}, ${school.year}.`,
@@ -184,8 +195,9 @@ export class PdfService {
     });
   }
 
-  private transfer(school: Record<string, string>, s: StudentRow) {
+  private transfer(school: Record<string, string>, s: StudentRow, q: PdfQuery) {
     return draw(school, 'Transfer certificate', (doc) => {
+      addressed(doc, pupilAddressee(s, q));
       doc.text(`This is to certify that ${s.name}, admission no. ${s.adm}, was a bona fide pupil of ${s.cls} and is released in good standing.`);
       kv(doc, [
         ['Fees', String(s.feeLabel || s.fee)],
@@ -196,8 +208,9 @@ export class PdfService {
     });
   }
 
-  private completion(school: Record<string, string>, s: StudentRow) {
+  private completion(school: Record<string, string>, s: StudentRow, q: PdfQuery) {
     return draw(school, 'Certificate of completion', (doc) => {
+      addressed(doc, pupilAddressee(s, q));
       doc.fontSize(16).font('Helvetica-Bold').text(s.name, { align: 'center' });
       doc.fontSize(11).font('Helvetica').moveDown(0.6).text(
         `has completed the course of study for ${s.cls} in the academic year ${school.year}.`,
@@ -207,8 +220,9 @@ export class PdfService {
     });
   }
 
-  private fees(school: Record<string, string>, s: StudentRow) {
+  private fees(school: Record<string, string>, s: StudentRow, q: PdfQuery) {
     return draw(school, 'Fee statement', (doc) => {
+      addressed(doc, pupilAddressee(s, q));
       kv(doc, [
         ['Pupil', s.name],
         ['Admission no.', s.adm],
@@ -221,8 +235,9 @@ export class PdfService {
     });
   }
 
-  private payslip(school: Record<string, string>, s: StaffRow) {
+  private payslip(school: Record<string, string>, s: StaffRow, q: PdfQuery) {
     return draw(school, 'Staff payslip', (doc) => {
+      addressed(doc, [q.to || s.name, q.address || s.dept, s.id]);
       kv(doc, [
         ['Employee', s.name],
         ['Staff ID', s.id],
@@ -256,6 +271,9 @@ export class PdfService {
     const pupilName = (pupil?.name || '').trim();
     const note = (q.note || '').trim().slice(0, 600);
     return draw(school, form.title, (doc) => {
+      addressed(doc, pupil
+        ? pupilAddressee(pupil, q)
+        : [q.to || form.who, q.address || '', occasion]);
       doc.fontSize(10).font('Helvetica').fillColor('#475569').text(form.intro);
       kv(doc, [
         ['Occasion', occasion],
@@ -287,6 +305,8 @@ interface StudentRow {
   gender?: string;
   attendance?: string;
   guardian?: string;
+  guardianPhone?: string;
+  address?: string;
   fee?: string;
   feeLabel?: string;
 }
@@ -330,13 +350,32 @@ function draw(
     doc.on('error', reject);
     doc.fillColor('#14213D').fontSize(14).font('Helvetica-Bold').text(school.name);
     doc.fontSize(9).font('Helvetica').fillColor('#64748b').text(school.address);
-    doc.text(school.phone + '  ·  ' + school.motto);
+    doc.text([school.phone, school.email, school.motto].filter(Boolean).join('  ·  '));
     doc.moveDown(0.4).fillColor('#14213D').fontSize(13).font('Helvetica-Bold').text(subtitle);
     doc.moveTo(doc.page.margins.left, doc.y + 6).lineTo(doc.page.width - doc.page.margins.right, doc.y + 6).stroke('#e2e8f0');
     doc.moveDown(1).fontSize(11).font('Helvetica').fillColor('#0f172a');
     body(doc);
     doc.end();
   });
+}
+
+function pupilAddressee(s: StudentRow, q: PdfQuery) {
+  return [
+    q.to || s.guardian || 'Parent / guardian of ' + s.name,
+    q.address || s.address || '',
+    s.guardianPhone || '',
+    s.name + ' · ' + s.adm + ' · ' + s.cls,
+  ];
+}
+
+function addressed(doc: PDFKit.PDFDocument, lines: string[]) {
+  const clean = lines.map((l) => String(l || '').trim()).filter(Boolean);
+  if (!clean.length) return;
+  doc.fontSize(9).fillColor('#64748b').font('Helvetica').text('Addressed to');
+  doc.fontSize(11).fillColor('#14213D').font('Helvetica-Bold').text(clean[0]);
+  doc.font('Helvetica').fontSize(10).fillColor('#475569');
+  for (const line of clean.slice(1)) doc.text(line);
+  doc.moveDown(0.55).fontSize(11).fillColor('#0f172a');
 }
 
 function kv(doc: PDFKit.PDFDocument, rows: [string, string][]) {

@@ -1,12 +1,32 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
     <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Documents & samples</h1>
-    <p class="text-sm text-slate-400 mt-1">Every official letter, card and report Little Royals can print. Open a sample PDF or a paper layout.</p>
+    <p class="text-sm text-slate-400 mt-1">See every official letter, then address it to a pupil’s guardian before you open or print.</p>
   </div>
   <a routerLink="/reports" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">All report cards →</a>
 </div>
 
 <app-stat-cards [items]="stats()" />
+
+<section class="bg-white rounded-2xl border border-slate-100 p-5 mb-5">
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-4">
+    <label class="block text-xs text-slate-500">
+      Address this pack to
+      <select class="mt-1 w-full h-10 px-3 text-sm text-slate-800 border border-slate-200 rounded-xl bg-white" [value]="selectedAdm()" (change)="pickPupil($any($event.target).value)">
+        @for (s of pupils.students(); track s.adm) {
+          <option [value]="s.adm">{{ s.name }} · {{ s.adm }} · {{ s.cls }}</option>
+        }
+      </select>
+    </label>
+    <div class="border border-slate-100 rounded-xl p-3 text-sm">
+      <p class="text-[11px] tracking-wide text-slate-400">Addressed to</p>
+      <p class="font-semibold text-slate-900 mt-1">{{ addressee().name }}</p>
+      @for (line of addressee().lines; track line) {
+        <p class="text-slate-500 mt-0.5">{{ line }}</p>
+      }
+    </div>
+  </div>
+</section>
 
 <div class="flex flex-wrap gap-2 mb-5">
   <button type="button" (click)="tab.set('all')" class="h-8 px-3 text-xs rounded-full" [class.bg-slate-900]="tab() === 'all'" [class.text-white]="tab() === 'all'" [class.bg-white]="tab() !== 'all'" [class.border]="tab() !== 'all'" [class.border-slate-200]="tab() !== 'all'">All samples</button>
@@ -26,7 +46,7 @@
             <p class="text-xs text-slate-500 mt-1 flex-1">{{ t.description }}</p>
             <div class="flex flex-wrap gap-2 mt-4">
               <button type="button" (click)="openPdf(t)" [disabled]="busyKey() === t.key" class="h-9 px-3 text-xs bg-slate-900 text-white rounded-full disabled:opacity-60">
-                {{ busyKey() === t.key ? 'Opening…' : 'Open sample PDF' }}
+                {{ busyKey() === t.key ? 'Opening…' : 'See addressed PDF' }}
               </button>
               @if (t.key === 'report-card') {
                 <a routerLink="/reports" class="h-9 px-3 text-xs border border-slate-200 rounded-full inline-flex items-center">All cards</a>

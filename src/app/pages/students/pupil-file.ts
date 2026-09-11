@@ -140,26 +140,49 @@ export class PupilFilePage {
     }
   }
 
+  addressee() {
+    const s = this.student();
+    if (!s) return { name: '—', lines: [] as string[] };
+    return {
+      name: s.guardian || 'Parent / guardian of ' + s.name,
+      lines: [s.address || 'Home address not on file', s.guardianPhone || ''].filter(Boolean),
+    };
+  }
+
+  private addressedQuery(extra: Record<string, string> = {}) {
+    const s = this.student();
+    const params = new URLSearchParams({ adm: this.adm(), ...extra });
+    if (s?.guardian) params.set('to', s.guardian);
+    if (s?.address) params.set('address', s.address);
+    return params.toString();
+  }
+
   openReportPdf() {
-    return this.openDoc('Report card', '/documents/report-card/pdf?adm=' + encodeURIComponent(this.adm()));
+    return this.openDoc('Report card', '/documents/report-card/pdf?' + this.addressedQuery());
   }
 
   openIdPdf() {
-    return this.openDoc('Student ID', '/documents/student-id/pdf?adm=' + encodeURIComponent(this.adm()));
+    return this.openDoc('Student ID', '/documents/student-id/pdf?' + this.addressedQuery());
   }
 
   openFeePdf() {
-    return this.openDoc('Fee statement', '/documents/fee-statement/pdf?adm=' + encodeURIComponent(this.adm()));
+    return this.openDoc('Fee statement', '/documents/fee-statement/pdf?' + this.addressedQuery());
+  }
+
+  openTransferPdf() {
+    return this.openDoc('Transfer certificate', '/documents/transfer-certificate/pdf?' + this.addressedQuery());
   }
 
   openSickPdf(id: number) {
-    return this.openDoc('Sickbay note', '/documents/sick-leave/pdf?visit=' + id);
+    return this.openDoc('Sickbay note', '/documents/sick-leave/pdf?' + this.addressedQuery({ visit: String(id) }));
   }
 
   openFeedbackPdf() {
     const s = this.student();
-    const q = new URLSearchParams({ kind: 'parent', event: 'Parents’ day', adm: this.adm() });
-    if (s?.cls) q.set('cls', s.cls);
-    return this.openDoc('Parent feedback', '/documents/feedback/pdf?' + q.toString());
+    return this.openDoc('Parent feedback', '/documents/feedback/pdf?' + this.addressedQuery({
+      kind: 'parent',
+      event: 'Parents’ day',
+      ...(s?.cls ? { cls: s.cls } : {}),
+    }));
   }
 }

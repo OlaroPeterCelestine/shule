@@ -181,8 +181,8 @@ export class DashboardPage {
     });
   }
 
-  go(path: string) {
-    this.router.navigate(['/', path]);
+  go(path: string, query?: Record<string, string>) {
+    this.router.navigate(['/', path], query ? { queryParams: query } : {});
   }
 
   markAttendance() {

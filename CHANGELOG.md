@@ -12,6 +12,8 @@ Keep those two `releases.ts` files identical. Staff actions (sign-in, enrol, clo
 
 ## 11 Sep 2026 — App
 
+- Timetable and exam sittings are separate tabs; the browser icon is the school crest
+- Documents can be addressed to a pupil’s guardian
 - Pupil file: each student has reports, behaviour, health, fees, attendance and documents on one page
 - Feedback forms: generate parent, teacher or visitor PDFs (blank pack or filled scores)
 - Inventory / Stores on the web home and Flutter app (teachers stock in and issue; accountants can view)
