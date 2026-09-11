@@ -1,0 +1,15 @@
+# Vercel hosts the Angular School OS only.
+/backend
+/mobile
+/deploy
+/Dockerfile
+/docker-compose.yml
+/dist
+/tmp
+/.angular
+/.github
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
