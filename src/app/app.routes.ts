@@ -4,6 +4,7 @@ import { authGuard, guestGuard, permGuard } from './core/auth.guard';
 const report = () => import('./pages/entity/entity-report').then((m) => m.EntityReportPage);
 const detail = () => import('./pages/entity/entity-detail').then((m) => m.EntityDetailPage);
 const pupilCard = () => import('./pages/reports/student-report-card').then((m) => m.StudentReportCardPage);
+const pupilFile = () => import('./pages/students/pupil-file').then((m) => m.PupilFilePage);
 
 function moduleRoutes(
   path: string,
@@ -17,9 +18,11 @@ function moduleRoutes(
       { path: '', loadComponent: () => loadList().then((m) => m[exportName]) },
       { path: 'report', data: { module: path }, loadComponent: report },
       ...(path === 'students'
-        ? [{ path: ':id/card', data: { module: path }, loadComponent: pupilCard }]
-        : []),
-      { path: ':id', data: { module: path }, loadComponent: detail },
+        ? [
+            { path: ':id/card', data: { module: path }, loadComponent: pupilCard },
+            { path: ':id', data: { module: path }, loadComponent: pupilFile },
+          ]
+        : [{ path: ':id', data: { module: path }, loadComponent: detail }]),
     ],
   };
 }

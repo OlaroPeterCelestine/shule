@@ -21,7 +21,10 @@
     <tbody class="divide-y divide-slate-50">
       @for (v of paged().rows; track v.id) {
         <tr>
-          <td class="px-4 py-3"><p class="font-medium text-slate-900">{{ v.name }}</p><p class="font-mono text-[11px] text-slate-400">{{ v.adm }}</p></td>
+          <td class="px-4 py-3">
+            <a [routerLink]="['/students', v.adm]" [queryParams]="{ tab: 'health' }" class="font-medium text-slate-900 hover:underline">{{ v.name }}</a>
+            <p class="font-mono text-[11px] text-slate-400">{{ v.adm }}</p>
+          </td>
           <td class="px-4 py-3 text-slate-700">{{ v.reason }}</td>
           <td class="px-4 py-3 text-slate-600">{{ v.action }}</td>
           <td class="px-4 py-3 text-slate-500">{{ v.time }}</td>

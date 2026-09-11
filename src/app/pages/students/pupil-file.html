@@ -1,0 +1,240 @@
+@if (student(); as s) {
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+    <div>
+      <p class="text-xs text-slate-400">
+        <a routerLink="/students" class="hover:text-slate-700">Pupils</a>
+        <span class="mx-1">›</span> Pupil file
+      </p>
+      <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 mt-1">{{ s.name }}</h1>
+      <p class="text-sm text-slate-400 mt-1 font-mono">{{ s.adm }} · {{ s.cls }}@if (s.admissionDate) { · Admitted {{ s.admissionDate }} }</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a routerLink="/students" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">All pupils</a>
+      <a [routerLink]="['/students', s.adm, 'card']" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">Report card</a>
+      <button type="button" (click)="openReportPdf()" [disabled]="busy() !== ''" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">
+        {{ busy().includes('report-card') ? 'Opening…' : 'Generate report PDF' }}
+      </button>
+    </div>
+  </div>
+
+  <app-stat-cards [items]="stats()" />
+
+  <div class="flex flex-wrap gap-2 mb-5">
+    @for (p of panes; track p.key) {
+      <button type="button" (click)="setPane(p.key)" class="h-8 px-3 text-xs rounded-full border"
+        [class.bg-slate-900]="pane() === p.key" [class.text-white]="pane() === p.key"
+        [class.bg-white]="pane() !== p.key" [class.text-slate-600]="pane() !== p.key" [class.border-slate-200]="true">{{ p.label }}</button>
+    }
+  </div>
+
+  @if (pane() === 'overview') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5">
+      <h2 class="text-[15px] font-semibold text-slate-900 mb-4">Overview</h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Gender</p><p class="font-medium text-slate-800 mt-1">{{ s.gender || '—' }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Date of birth</p><p class="font-medium text-slate-800 mt-1">{{ s.dob || '—' }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Nationality</p><p class="font-medium text-slate-800 mt-1">{{ s.nationality || '—' }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Religion</p><p class="font-medium text-slate-800 mt-1">{{ s.religion || '—' }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Admission type</p><p class="font-medium text-slate-800 mt-1">{{ s.admissionType || '—' }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Previous school</p><p class="font-medium text-slate-800 mt-1">{{ s.previousSchool || '—' }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Attendance</p><p class="font-medium text-slate-800 mt-1">{{ s.attendance }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Fees</p><p class="font-medium mt-1" [class.text-emerald-600]="s.fee === 'cleared'" [class.text-rose-600]="s.fee === 'due'">{{ s.feeLabel }}</p></div>
+      </div>
+      @if (s.notes) {
+        <p class="text-sm text-slate-600 mt-4 bg-slate-50 rounded-xl px-3 py-2">{{ s.notes }}</p>
+      }
+    </section>
+  }
+
+  @if (pane() === 'guardian') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4 text-sm">
+      <h2 class="text-[15px] font-semibold text-slate-900">Guardian &amp; home</h2>
+      <div>
+        <p class="text-xs text-slate-400 mb-1">Primary guardian</p>
+        <p class="font-medium text-slate-900">{{ s.guardian }}@if (s.guardianRelation) { — {{ s.guardianRelation }} }</p>
+        <p class="text-slate-500 mt-1">{{ s.guardianPhone || '—' }}@if (s.guardianEmail) { · {{ s.guardianEmail }} }</p>
+      </div>
+      <div>
+        <p class="text-xs text-slate-400 mb-1">Home address</p>
+        <p class="text-slate-700">{{ s.address || '—' }}</p>
+      </div>
+      <div>
+        <p class="text-xs text-slate-400 mb-1">Emergency contact</p>
+        <p class="text-slate-700">{{ s.emergencyName || '—' }}@if (s.emergencyPhone) { · {{ s.emergencyPhone }} }</p>
+      </div>
+    </section>
+  }
+
+  @if (pane() === 'medical') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4 text-sm">
+      <h2 class="text-[15px] font-semibold text-slate-900">Medical file</h2>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Blood group</p><p class="font-medium text-slate-800 mt-1">{{ s.bloodGroup || '—' }}</p></div>
+        <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Allergies</p><p class="font-medium text-slate-800 mt-1">{{ s.allergies || 'None recorded' }}</p></div>
+      </div>
+      <div>
+        <p class="text-xs text-slate-400 mb-1">Medical notes</p>
+        <p class="text-slate-700">{{ s.medicalNotes || 'None' }}</p>
+      </div>
+      <p class="text-xs text-slate-400">Sickbay visits sit on the Health tab of this same file.</p>
+    </section>
+  }
+
+  @if (pane() === 'campus') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3 text-sm">
+      <h2 class="text-[15px] font-semibold text-slate-900 mb-2">Campus</h2>
+      <p><span class="text-slate-400">Resident type:</span> <span class="font-medium text-slate-800">{{ s.residentType || '—' }}</span></p>
+      <p><span class="text-slate-400">Transport:</span> <span class="text-slate-800">{{ s.transportRoute || 'Not assigned' }}</span></p>
+      <p><span class="text-slate-400">Hostel:</span> <span class="text-slate-800">{{ s.hostel || '—' }}</span></p>
+    </section>
+  }
+
+  @if (pane() === 'fees') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3 text-sm">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[15px] font-semibold text-slate-900">Fees</h2>
+        @if (access.canView('finance')) {
+          <a routerLink="/finance" class="text-xs text-primary hover:underline">Fees &amp; Payroll →</a>
+        }
+      </div>
+      <div class="border border-slate-100 rounded-xl p-3 flex justify-between items-center">
+        <span>Fee status</span>
+        <span class="font-medium" [class.text-emerald-600]="s.fee === 'cleared'" [class.text-rose-600]="s.fee === 'due'">{{ s.feeLabel }}</span>
+      </div>
+      <p class="text-xs text-slate-400">Same ledger as Fees &amp; Payroll — not a second account.</p>
+      <button type="button" (click)="openFeePdf()" class="h-9 px-3 text-xs border border-slate-200 rounded-full">Fee statement PDF</button>
+    </section>
+  }
+
+  @if (pane() === 'attendance') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3 text-sm">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[15px] font-semibold text-slate-900">Attendance</h2>
+        <a routerLink="/attendance" class="text-xs text-primary hover:underline">Today’s register →</a>
+      </div>
+      @if (mark()) {
+        <div class="border border-slate-100 rounded-xl p-3">
+          <p class="text-xs text-slate-400">Today’s mark</p>
+          <p class="text-lg font-semibold text-slate-900 mt-1">{{ markLabel() }}</p>
+        </div>
+      } @else {
+        <p class="text-slate-400">No register mark yet today.</p>
+      }
+      <p class="text-xs text-slate-400">Term rate on file: {{ s.attendance }}</p>
+    </section>
+  }
+
+  @if (pane() === 'health') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3 text-sm">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[15px] font-semibold text-slate-900">Health &amp; sickbay</h2>
+        @if (access.canView('health')) {
+          <a routerLink="/health" class="text-xs text-primary hover:underline">Sickbay log →</a>
+        }
+      </div>
+      <p class="text-xs text-slate-400">Allergies: <span class="text-slate-800">{{ s.allergies || 'None' }}</span> · Blood group: <span class="text-slate-800">{{ s.bloodGroup || '—' }}</span></p>
+      @for (v of visits(); track v.id) {
+        <div class="border border-slate-100 rounded-xl p-3 flex items-start justify-between gap-3">
+          <div>
+            <p class="font-medium text-slate-800">{{ v.reason }}</p>
+            <p class="text-xs text-slate-400 mt-1">{{ v.action }} · {{ v.time }} · {{ v.notified ? 'Parent notified' : 'Parent not yet notified' }}</p>
+          </div>
+          <button type="button" (click)="openSickPdf(v.id)" class="text-xs text-slate-700 hover:underline shrink-0">PDF</button>
+        </div>
+      }
+      @if (!visits().length) {
+        <p class="text-slate-400">No sickbay visits on this file.</p>
+      }
+    </section>
+  }
+
+  @if (pane() === 'reports') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 text-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-[15px] font-semibold text-slate-900">Reports &amp; exams</h2>
+        <a [routerLink]="['/students', s.adm, 'card']" class="text-xs text-primary hover:underline">Open full card →</a>
+      </div>
+      @if (report(); as c) {
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Average</p><p class="font-medium text-slate-800 mt-1">{{ c.average }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Grade</p><p class="font-medium text-slate-800 mt-1">{{ c.grade }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Position</p><p class="font-medium text-slate-800 mt-1">{{ c.position }} of {{ c.classSize }}</p></div>
+          <div class="border border-slate-100 rounded-xl p-3"><p class="text-xs text-slate-400">Period</p><p class="font-medium text-slate-800 mt-1">{{ c.term }}, {{ c.year }}</p></div>
+        </div>
+        <table class="w-full text-sm mb-4">
+          <thead class="text-xs text-slate-400"><tr class="text-left"><th class="py-2 font-medium">Area</th><th class="py-2 font-medium">Score</th><th class="py-2 font-medium">Grade</th><th class="py-2 font-medium">Remark</th></tr></thead>
+          <tbody class="divide-y divide-slate-50">
+            @for (m of c.subjects; track m.subject) {
+              <tr><td class="py-2">{{ m.subject }}</td><td class="py-2">{{ m.score }}</td><td class="py-2">{{ m.grade }}</td><td class="py-2 text-slate-500">{{ m.remark }}</td></tr>
+            }
+          </tbody>
+        </table>
+        <p class="text-slate-600 mb-3">{{ c.classRemark }}</p>
+        <button type="button" (click)="openReportPdf()" class="h-9 px-3 text-xs bg-slate-900 text-white rounded-full">Generate report PDF</button>
+      }
+      @if (exams().length) {
+        <h3 class="text-[13px] font-semibold text-slate-900 mt-6 mb-2">Class papers this term</h3>
+        <ul class="space-y-2">
+          @for (e of exams(); track e.id) {
+            <li class="border border-slate-100 rounded-xl px-3 py-2">{{ e.title }} · {{ e.examDate }}</li>
+          }
+        </ul>
+      }
+    </section>
+  }
+
+  @if (pane() === 'behaviour') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3 text-sm">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[15px] font-semibold text-slate-900">Behaviour &amp; welfare</h2>
+        @if (access.canView('welfare')) {
+          <a routerLink="/welfare" class="text-xs text-primary hover:underline">Welfare log →</a>
+        }
+      </div>
+      @for (n of behaviour(); track n.title + n.when) {
+        <div class="border border-slate-100 rounded-xl p-3">
+          <div class="flex items-center justify-between gap-2">
+            <p class="font-medium text-slate-800">{{ n.title }}</p>
+            <span class="text-[11px] rounded-full px-2 py-0.5 bg-slate-50 text-slate-500">{{ n.status }} · {{ n.kind }}</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">{{ n.action }} · {{ n.when }}</p>
+        </div>
+      }
+      @if (!behaviour().length) {
+        <p class="text-slate-400">No discipline or pastoral notes on this file.</p>
+      }
+    </section>
+  }
+
+  @if (pane() === 'documents') {
+    <section class="bg-white rounded-2xl border border-slate-100 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-[15px] font-semibold text-slate-900">Documents for this pupil</h2>
+        <a routerLink="/documents" class="text-xs text-primary hover:underline">All documents →</a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button type="button" (click)="openReportPdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
+          <p class="text-sm font-medium text-slate-900">Report card</p>
+          <p class="text-xs text-slate-400 mt-1">End-of-term official PDF</p>
+        </button>
+        <button type="button" (click)="openIdPdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
+          <p class="text-sm font-medium text-slate-900">Student ID</p>
+          <p class="text-xs text-slate-400 mt-1">Admission number and class</p>
+        </button>
+        <button type="button" (click)="openFeePdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
+          <p class="text-sm font-medium text-slate-900">Fee statement</p>
+          <p class="text-xs text-slate-400 mt-1">Balance on the school ledger</p>
+        </button>
+        <button type="button" (click)="openFeedbackPdf()" class="text-left border border-slate-100 rounded-xl p-4 hover:bg-slate-50">
+          <p class="text-sm font-medium text-slate-900">Parent feedback form</p>
+          <p class="text-xs text-slate-400 mt-1">Print for Parents’ day or PTM</p>
+        </button>
+      </div>
+    </section>
+  }
+} @else {
+  <div class="bg-white rounded-2xl border border-slate-100 p-10 text-center">
+    <p class="text-slate-500">That pupil is not on file.</p>
+    <a routerLink="/students" class="inline-block mt-3 text-sm text-slate-900 underline">Return to pupils</a>
+  </div>
+}

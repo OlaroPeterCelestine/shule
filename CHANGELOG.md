@@ -12,6 +12,7 @@ Keep those two `releases.ts` files identical. Staff actions (sign-in, enrol, clo
 
 ## 11 Sep 2026 — App
 
+- Pupil file: each student has reports, behaviour, health, fees, attendance and documents on one page
 - Feedback forms: generate parent, teacher or visitor PDFs (blank pack or filled scores)
 - Inventory / Stores on the web home and Flutter app (teachers stock in and issue; accountants can view)
 - Home, sidebar, write buttons and the Flutter tabs follow the signed-in role and its permissions (nurse and registrar demos included)

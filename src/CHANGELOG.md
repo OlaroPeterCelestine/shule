@@ -4,6 +4,9 @@ Angular School OS. Same dates and titles as [backend/CHANGELOG.md](../backend/CH
 
 ## 11 Sep 2026 · v0.0.1
 
+### Pupil file
+Each pupil opens a file with overview, guardian, medical, campus, fees, attendance, sickbay, reports, behaviour and documents.
+
 ### Feedback forms
 Feedback generates parent, teacher or visitor PDFs. Print a blank pack or fill scores first. Also listed on Documents and linked from Meetings.
 

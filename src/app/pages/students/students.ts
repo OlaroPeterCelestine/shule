@@ -77,9 +77,6 @@ export class StudentsPage {
   protected readonly classFilter = signal('');
   protected readonly feeFilter = signal('');
   protected readonly page = signal(1);
-  protected readonly panelOpen = signal(false);
-  protected readonly selected = signal<Student | null>(null);
-  protected readonly pane = signal('overview');
   protected readonly drawerOpen = signal(false);
   protected readonly successOpen = signal(false);
   protected readonly created = signal<Student | null>(null);
@@ -142,14 +139,6 @@ export class StudentsPage {
     if (this.errors()[key]) this.errors.update((e) => ({ ...e, [key]: false }));
   }
 
-  marksFor(adm: string) {
-    return this.os.register().find((r) => r.adm === adm);
-  }
-
-  visitsFor(adm: string) {
-    return this.os.visits().filter((v) => v.adm === adm);
-  }
-
   openStudent(s: Student) {
     this.router.navigate(['/students', s.adm]);
   }
@@ -157,10 +146,6 @@ export class StudentsPage {
   openCard(s: Student, ev: Event) {
     ev.stopPropagation();
     this.router.navigate(['/students', s.adm, 'card']);
-  }
-
-  close() {
-    this.panelOpen.set(false);
   }
 
   openAdd() {
@@ -296,7 +281,6 @@ export class StudentsPage {
   onEscape() {
     if (this.successOpen()) this.closeSuccess();
     else if (this.drawerOpen()) this.closeDrawer();
-    else if (this.panelOpen()) this.close();
   }
 }
 

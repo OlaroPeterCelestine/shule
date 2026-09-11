@@ -17,6 +17,10 @@ export const RELEASES: Release[] = [
     version: '0.0.1',
     frontend: [
       {
+        title: 'Pupil file',
+        detail: 'Each pupil opens a file with overview, guardian, medical, campus, fees, attendance, sickbay, reports, behaviour and documents. Health rows link into the same file.',
+      },
+      {
         title: 'Feedback forms',
         detail: 'Feedback generates parent, teacher or visitor PDFs. Print a blank pack or fill scores first. Also listed on Documents and linked from Meetings.',
       },

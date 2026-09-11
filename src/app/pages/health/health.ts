@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AccessService } from '../../core/access.service';
 import { ApiService } from '../../core/api.service';
 import { ModalService } from '../../core/modal.service';
@@ -12,7 +13,7 @@ import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-health',
-  imports: [StatCards, Pager],
+  imports: [StatCards, Pager, RouterLink],
   templateUrl: './health.html',
 })
 export class HealthPage {
