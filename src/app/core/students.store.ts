@@ -1,19 +1,23 @@
 import { Injectable, signal } from '@angular/core';
 import { SCHOOL_ABBREV, type Student } from './models';
 
+export function yearCode(year = '2026'): string {
+  return String(year).replace(/\D/g, '').slice(-2).padStart(2, '0');
+}
+
 export function parseAdmNum(adm: string, year?: string): number {
   if (year) {
-    const m = String(adm).match(new RegExp('^' + SCHOOL_ABBREV + year + '(\\d{3})$'));
+    const m = String(adm).match(new RegExp('^' + SCHOOL_ABBREV + yearCode(year) + '(\\d{3})$'));
     return m ? parseInt(m[1], 10) : 0;
   }
-  const m = String(adm).match(new RegExp('^' + SCHOOL_ABBREV + '\\d{4}(\\d{3})$'));
+  const m = String(adm).match(new RegExp('^' + SCHOOL_ABBREV + '\\d{2}(\\d{3})$'));
   if (m) return parseInt(m[1], 10);
   const n = parseInt(String(adm).replace(/\D/g, ''), 10);
   return Number.isFinite(n) ? n : 0;
 }
 
 export function formatAdm(n: number, year = '2026'): string {
-  return SCHOOL_ABBREV + year + String(Math.max(1, Math.floor(n))).padStart(3, '0');
+  return SCHOOL_ABBREV + yearCode(year) + String(Math.max(1, Math.floor(n))).padStart(3, '0');
 }
 
 @Injectable({ providedIn: 'root' })

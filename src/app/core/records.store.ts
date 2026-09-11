@@ -1,4 +1,5 @@
 import { Injectable, computed, inject } from '@angular/core';
+import { AuthService } from './auth.service';
 import { MODULE_DEFS, type ModuleDef, type RecordRow } from './records.catalog';
 import { SchoolOsStore } from './school-os.store';
 import { StudentsStore } from './students.store';
@@ -7,6 +8,7 @@ import { StudentsStore } from './students.store';
 export class RecordsStore {
   private os = inject(SchoolOsStore);
   private students = inject(StudentsStore);
+  private auth = inject(AuthService);
 
   readonly live = computed(() => ({
     students: this.studentRows(),
@@ -19,6 +21,10 @@ export class RecordsStore {
     academics: this.examRows(),
     assessments: this.questionRows(),
     school: this.schoolRows(),
+    finance: this.financeRows(),
+    dashboard: this.dashboardRows(),
+    reports: this.reportRows(),
+    system: this.systemRows(),
   }));
 
   def(key: string): ModuleDef {
@@ -167,6 +173,113 @@ export class RecordsStore {
         text: q.text,
       },
     }));
+  }
+
+  private financeRows(): RecordRow[] {
+    return this.students.students().map((s) => ({
+      id: s.adm,
+      title: s.name,
+      subtitle: s.cls,
+      status: s.fee === 'cleared' ? 'Cleared' : 'Due',
+      cells: {
+        ref: s.adm,
+        name: s.name,
+        total: s.feeLabel,
+        paid: s.fee === 'cleared' ? s.feeLabel : '—',
+        balance: s.fee === 'due' ? s.feeLabel : '0',
+        status: s.fee === 'cleared' ? 'Cleared' : 'Due',
+        due: s.fee === 'due' ? 'This term' : '—',
+      },
+    }));
+  }
+
+  private dashboardRows(): RecordRow[] {
+    const due = this.students.students().filter((s) => s.fee === 'due');
+    const absent = this.os.register().filter((r) => r.status === 'A');
+    const pending = this.os.applicants().filter((a) => a.stage === 'applied' || a.stage === 'review' || a.stage === 'interview');
+    const sick = this.os.visits().filter((v) => !v.notified);
+    const rows: RecordRow[] = [];
+    if (due.length) {
+      rows.push({
+        id: 'act-fees',
+        title: 'Fee balances due',
+        subtitle: due.length + ' families',
+        status: 'Urgent',
+        href: '/finance/report',
+        cells: { area: 'Finance', item: due.length + ' balances due', owner: 'Accounts', when: 'Today', status: 'Urgent', impact: 'Follow up from the fees report' },
+      });
+    }
+    if (absent.length) {
+      rows.push({
+        id: 'act-abs',
+        title: 'Absent students',
+        subtitle: absent.map((r) => r.name).join(', '),
+        status: 'Open',
+        href: '/attendance/report',
+        cells: { area: 'Attendance', item: absent.map((r) => r.name).join(', '), owner: 'Class teacher', when: 'Morning', status: 'Open', impact: 'SMS parent if not in' },
+      });
+    }
+    if (pending.length) {
+      rows.push({
+        id: 'act-adm',
+        title: 'Applications in pipeline',
+        subtitle: pending.length + ' open',
+        status: 'Review',
+        href: '/admissions/report',
+        cells: { area: 'Admissions', item: pending.length + ' applications to move', owner: 'Registrar', when: 'Today', status: 'Review', impact: 'Open the admissions report' },
+      });
+    }
+    if (sick.length) {
+      rows.push({
+        id: 'act-health',
+        title: 'Sickbay follow-up',
+        subtitle: sick[0].name,
+        status: 'Pending',
+        href: '/health/report',
+        cells: { area: 'Health', item: sick[0].name + ' — ' + sick[0].reason, owner: 'Nurse', when: sick[0].time, status: 'Pending', impact: 'Notify parent' },
+      });
+    }
+    rows.push({
+      id: 'act-cards',
+      title: 'Report cards ready',
+      subtitle: this.students.students().length + ' pupils',
+      status: 'Ready',
+      href: '/reports',
+      cells: { area: 'Reports', item: this.students.students().length + ' term cards', owner: 'Academics', when: 'Term 2', status: 'Ready', impact: 'Print or download CSV' },
+    });
+    return rows;
+  }
+
+  private reportRows(): RecordRow[] {
+    const pupils = this.students.students().length;
+    const due = this.students.students().filter((s) => s.fee === 'due').length;
+    const marked = this.os.register().length;
+    const apps = this.os.applicants().length;
+    const year = this.os.school().year || '2026';
+    const term = this.os.school().term || 'Term 2';
+    return [
+      { id: 'rpt-cards', title: 'Term report cards', subtitle: 'All pupils', status: pupils + ' ready', href: '/reports', cells: { name: 'Term report cards', audience: 'All pupils', period: term + ', ' + year, status: pupils + ' ready', owner: 'Academics' } },
+      { id: 'rpt-enr', title: 'Enrolment census', subtitle: 'Registrar', status: String(pupils), href: '/students/report', cells: { name: 'Enrolment census', audience: 'Registrar', period: term, status: pupils + ' on roll', owner: 'Admin' } },
+      { id: 'rpt-adm', title: 'Admissions pipeline', subtitle: 'Applications', status: String(apps), href: '/admissions/report', cells: { name: 'Admissions pipeline', audience: 'Registrar', period: term, status: apps + ' applications', owner: 'Admin' } },
+      { id: 'rpt-fees', title: 'Fee collection summary', subtitle: 'Accounts', status: due + ' due', href: '/finance/report', cells: { name: 'Fee collection summary', audience: 'Accounts + Board', period: term, status: due + ' due', owner: 'Accountant' } },
+      { id: 'rpt-att', title: 'Daily attendance', subtitle: 'Heads of class', status: String(marked), href: '/attendance/report', cells: { name: 'Daily attendance', audience: 'Heads of class', period: 'Today', status: marked + ' marked', owner: 'Admin' } },
+      { id: 'rpt-sys', title: 'System & audit', subtitle: 'Permissions', status: 'Live', href: '/system/report', cells: { name: 'System & audit', audience: 'Admin', period: term, status: 'Live', owner: this.auth.user()?.name || 'Admin' } },
+    ];
+  }
+
+  private systemRows(): RecordRow[] {
+    const who = this.auth.user()?.name || 'Admin';
+    const pupils = this.students.students().length;
+    const apps = this.os.applicants().length;
+    const due = this.students.students().filter((s) => s.fee === 'due').length;
+    const perms = this.os.perms().length;
+    return [
+      { id: 'au-auth', title: who + ' signed in', subtitle: 'Auth', status: 'OK', cells: { who, action: 'Signed in', module: 'Auth', when: 'This session', status: 'OK' } },
+      { id: 'au-stu', title: pupils + ' pupils on roll', subtitle: 'Students', status: 'OK', cells: { who, action: pupils + ' pupils on roll', module: 'Students', when: 'Live', status: 'OK' } },
+      { id: 'au-adm', title: apps + ' applications on file', subtitle: 'Admissions', status: 'OK', cells: { who, action: apps + ' applications on file', module: 'Admissions', when: 'Live', status: 'OK' } },
+      { id: 'au-fee', title: due + ' fee balances due', subtitle: 'Finance', status: due ? 'Review' : 'OK', cells: { who, action: due + ' fee balances due', module: 'Finance', when: 'Live', status: due ? 'Review' : 'OK' } },
+      { id: 'au-rbac', title: perms + ' permission rows', subtitle: 'RBAC', status: 'OK', cells: { who, action: perms + ' permission rows', module: 'RBAC', when: 'Live', status: 'OK' } },
+    ];
   }
 
   private schoolRows(): RecordRow[] {

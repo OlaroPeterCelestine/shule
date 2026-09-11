@@ -38,4 +38,8 @@ export class ReportsPage {
     }
     this.download.csv('little-royals-report-cards-term2-2026.csv', rows);
   }
+
+  print() {
+    window.print();
+  }
 }

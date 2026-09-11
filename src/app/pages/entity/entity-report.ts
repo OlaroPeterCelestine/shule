@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DownloadService } from '../../core/download.service';
 import { RecordsStore } from '../../core/records.store';
+import { SchoolOsStore } from '../../core/school-os.store';
 import { StatCards } from '../../shared/stat-cards';
 
 @Component({
@@ -16,7 +17,7 @@ import { StatCards } from '../../shared/stat-cards';
           <span class="mx-1">›</span> Report
         </p>
         <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 mt-1">{{ def().title }} report</h1>
-        <p class="text-sm text-slate-400 mt-1">{{ def().subtitle }} · Term 2, 2026 · generated 9 Sep 2026</p>
+        <p class="text-sm text-slate-400 mt-1">{{ def().subtitle }} · {{ period() }} · generated {{ generated() }}</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <a [routerLink]="'/' + key()" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">Back to list</a>
@@ -62,12 +63,20 @@ export class EntityReportPage {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private records = inject(RecordsStore);
+  private os = inject(SchoolOsStore);
   private download = inject(DownloadService);
   private data = toSignal(this.route.data, { requireSync: true });
 
   protected readonly key = computed(() => (this.data()?.['module'] as string) || 'dashboard');
   protected readonly def = computed(() => this.records.def(this.key()));
   protected readonly rows = computed(() => this.records.rows(this.key()));
+  protected readonly generated = computed(() =>
+    new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+  );
+  protected readonly period = computed(() => {
+    const school = this.os.school();
+    return (school.term || 'Term 2') + ', ' + (school.year || '2026');
+  });
 
   protected readonly stats = computed(() => {
     const rows = this.rows();
@@ -76,11 +85,16 @@ export class EntityReportPage {
       { label: 'Records', value: String(rows.length), change: 'In this report', bars: [4, 5, 6, 7, 8, 8, 9] },
       { label: 'Statuses', value: String(statuses.size), change: 'Distinct', bars: [3, 4, 4, 5, 6, 5, 6] },
       { label: 'Module', value: this.def().singular, change: this.def().title, bars: [5, 6, 7, 6, 8, 7, 9] },
-      { label: 'Period', value: 'Term 2', change: '2026 · Week 8', bars: [6, 6, 7, 7, 8, 8, 9] },
+      { label: 'Period', value: this.os.school().term || 'Term 2', change: this.os.school().year || '2026', bars: [6, 6, 7, 7, 8, 8, 9] },
     ];
   });
 
   open(id: string) {
+    const row = this.rows().find((r) => r.id === id);
+    if (row?.href) {
+      this.router.navigateByUrl(row.href);
+      return;
+    }
     this.router.navigate(['/', this.key(), id]);
   }
 
@@ -88,7 +102,8 @@ export class EntityReportPage {
     const def = this.def();
     const header = def.columns.map((c) => c.label);
     const body = this.rows().map((row) => def.columns.map((c) => row.cells[c.key] || row.status));
-    this.download.csv(this.key() + '-report-term2-2026.csv', [header, ...body]);
+    const year = this.os.school().year || '2026';
+    this.download.csv(this.key() + '-report-' + year + '.csv', [header, ...body]);
   }
 
   print() {

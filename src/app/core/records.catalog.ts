@@ -15,6 +15,7 @@ export interface RecordRow {
   status: string;
   cells: Record<string, string>;
   notes?: string;
+  href?: string;
 }
 
 export interface ModuleDef {

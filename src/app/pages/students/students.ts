@@ -1,6 +1,7 @@
 import { Component, computed, effect, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { allowed, cleanText, isEmail, isIsoDate, isPhone } from '../../core/form-safe';
 import { SearchService } from '../../core/search.service';
 import { StudentsStore } from '../../core/students.store';
 import { SchoolOsStore } from '../../core/school-os.store';
@@ -45,6 +46,14 @@ const EMPTY: StudentForm = {
 };
 
 const REQUIRED: (keyof StudentForm)[] = ['firstName', 'lastName', 'dob', 'cls', 'admissionDate', 'guardian', 'guardianPhone'];
+const GENDERS = ['Female', 'Male', 'Other'] as const;
+const CLASSES = ['Baby class', 'Middle class', 'Top class', 'Primary One', 'Primary Two', 'Primary Three', 'Primary Four', 'Primary Five', 'Primary Six', 'Primary Seven'] as const;
+const ADMISSION_TYPES = ['New', 'Transfer', 'Continuing'] as const;
+const RELATIONS = ['Mother', 'Father', 'Aunt', 'Uncle', 'Grandparent', 'Guardian'] as const;
+const BLOOD = ['', 'O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'] as const;
+const RESIDENT = ['Day', 'Boarder'] as const;
+const ROUTES = ['', 'Route 1 — Ntinda', 'Route 2 — Kireka', 'Route 3 — Bweyogerere', 'Route 4 — Namugongo'] as const;
+const HOSTELS = ['', "St. Mary's Block (Girls)", "St. Peter's Block (Boys)", 'Junior Block (Mixed)'] as const;
 
 @Component({
   selector: 'app-students',
@@ -71,9 +80,9 @@ export class StudentsPage {
   protected readonly errors = signal<Partial<Record<keyof StudentForm, boolean>>>({});
   protected readonly saving = signal(false);
 
-  protected readonly classOptions = ['Baby class', 'Middle class', 'Top class', 'Primary One', 'Primary Two', 'Primary Three', 'Primary Four', 'Primary Five', 'Primary Six', 'Primary Seven'];
-  protected readonly routes = ['', 'Route 1 — Ntinda', 'Route 2 — Kireka', 'Route 3 — Bweyogerere', 'Route 4 — Namugongo'];
-  protected readonly hostels = ['', "St. Mary's Block (Girls)", "St. Peter's Block (Boys)", 'Junior Block (Mixed)'];
+  protected readonly classOptions = CLASSES;
+  protected readonly routes = ROUTES;
+  protected readonly hostels = HOSTELS;
 
   constructor() {
     effect(() => {
@@ -122,6 +131,11 @@ export class StudentsPage {
     this.router.navigate(['/students', s.adm]);
   }
 
+  openCard(s: Student, ev: Event) {
+    ev.stopPropagation();
+    this.router.navigate(['/students', s.adm, 'card']);
+  }
+
   close() {
     this.panelOpen.set(false);
   }
@@ -152,49 +166,88 @@ export class StudentsPage {
   }
 
   submit() {
-    const f = this.form();
+    if (this.saving()) return;
+    const raw = this.form();
+    const f: StudentForm = {
+      firstName: cleanText(raw.firstName, 40),
+      lastName: cleanText(raw.lastName, 40),
+      gender: allowed(raw.gender, GENDERS) ? raw.gender : '',
+      dob: cleanText(raw.dob, 10),
+      nationality: cleanText(raw.nationality, 40) || 'Ugandan',
+      religion: cleanText(raw.religion, 40),
+      cls: allowed(raw.cls, CLASSES) ? raw.cls : '',
+      admissionDate: cleanText(raw.admissionDate, 10),
+      admissionType: allowed(raw.admissionType, ADMISSION_TYPES) ? raw.admissionType : 'New',
+      previousSchool: cleanText(raw.previousSchool, 80),
+      guardian: cleanText(raw.guardian, 60),
+      guardianRelation: allowed(raw.guardianRelation, RELATIONS) ? raw.guardianRelation : 'Guardian',
+      guardianPhone: cleanText(raw.guardianPhone, 16),
+      guardianEmail: cleanText(raw.guardianEmail, 80).toLowerCase(),
+      address: cleanText(raw.address, 80),
+      emergencyName: cleanText(raw.emergencyName, 60),
+      emergencyPhone: cleanText(raw.emergencyPhone, 16),
+      bloodGroup: allowed(raw.bloodGroup, BLOOD) ? raw.bloodGroup : '',
+      allergies: cleanText(raw.allergies, 80),
+      medicalNotes: cleanText(raw.medicalNotes, 240),
+      residentType: allowed(raw.residentType, RESIDENT) ? raw.residentType : 'Day',
+      transportRoute: allowed(raw.transportRoute, ROUTES) ? raw.transportRoute : '',
+      hostel: allowed(raw.hostel, HOSTELS) ? raw.hostel : '',
+      notes: cleanText(raw.notes, 240),
+    };
     const invalid: Partial<Record<keyof StudentForm, boolean>> = {};
     for (const key of REQUIRED) {
       if (!String(f[key] ?? '').trim()) invalid[key] = true;
     }
-    if (f.guardianEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.guardianEmail.trim())) invalid.guardianEmail = true;
+    if (!isIsoDate(f.dob, 2008, 2026)) invalid.dob = true;
+    if (!isIsoDate(f.admissionDate, 2020, 2026)) invalid.admissionDate = true;
+    if (!f.gender) invalid.gender = true;
+    if (!isPhone(f.guardianPhone)) invalid.guardianPhone = true;
+    if (f.emergencyPhone && !isPhone(f.emergencyPhone)) invalid.emergencyPhone = true;
+    if (f.guardianEmail && !isEmail(f.guardianEmail)) invalid.guardianEmail = true;
     this.errors.set(invalid);
     if (Object.keys(invalid).length) {
       this.toast.show('Please complete the highlighted fields');
       return;
     }
     this.saving.set(true);
-    const adm = this.store.nextAdm([], this.os.school().year || '2026');
+    const year = this.os.school().year || '2026';
+    const extra = this.os.applicants().map((a) => a.adm ?? '');
+    const adm = this.store.nextAdm(extra, year);
+    if (this.store.hasAdm(adm) || extra.includes(adm)) {
+      this.saving.set(false);
+      this.toast.show('Could not issue a unique admission number');
+      return;
+    }
     const student: Student = {
       adm,
-      firstName: f.firstName.trim(),
-      lastName: f.lastName.trim(),
-      name: f.firstName.trim() + ' ' + f.lastName.trim(),
+      firstName: f.firstName,
+      lastName: f.lastName,
+      name: f.firstName + ' ' + f.lastName,
       cls: f.cls,
       gender: f.gender,
       dob: f.dob,
-      nationality: f.nationality.trim() || 'Ugandan',
-      religion: f.religion.trim(),
+      nationality: f.nationality,
+      religion: f.religion,
       admissionDate: f.admissionDate,
       admissionType: f.admissionType,
-      previousSchool: f.previousSchool.trim(),
-      guardian: f.guardian.trim(),
+      previousSchool: f.previousSchool,
+      guardian: f.guardian,
       guardianRelation: f.guardianRelation,
-      guardianPhone: f.guardianPhone.trim(),
-      guardianEmail: f.guardianEmail.trim(),
-      address: f.address.trim(),
-      emergencyName: f.emergencyName.trim(),
-      emergencyPhone: f.emergencyPhone.trim(),
+      guardianPhone: f.guardianPhone,
+      guardianEmail: f.guardianEmail,
+      address: f.address,
+      emergencyName: f.emergencyName,
+      emergencyPhone: f.emergencyPhone,
       bloodGroup: f.bloodGroup,
-      allergies: f.allergies.trim(),
-      medicalNotes: f.medicalNotes.trim(),
+      allergies: f.allergies,
+      medicalNotes: f.medicalNotes,
       residentType: f.residentType,
       transportRoute: f.residentType === 'Day' ? f.transportRoute : '',
       hostel: f.residentType === 'Boarder' ? f.hostel : '',
       attendance: '—',
       fee: 'due',
       feeLabel: 'Not yet invoiced',
-      notes: f.notes.trim(),
+      notes: f.notes,
     };
     this.store.add(student);
     this.created.set(student);

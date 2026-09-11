@@ -3,12 +3,15 @@
     <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Report cards</h1>
     <p class="text-sm text-slate-400 mt-1">Term 2, 2026 · one card for every kindergarten and primary pupil</p>
   </div>
-  <button type="button" (click)="genBatch()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">Download all (CSV)</button>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" (click)="genBatch()" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full">Download all (CSV)</button>
+    <button type="button" (click)="print()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">Print report</button>
+  </div>
 </div>
 
 <app-stat-cards [items]="stats()" />
 
-<div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+<div id="module-report" class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
   <table class="w-full text-sm">
     <thead class="bg-slate-50 text-xs text-slate-400">
       <tr class="text-left">

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
 import { DownloadService } from '../../core/download.service';
@@ -16,6 +17,7 @@ export class SystemPage {
   private modal = inject(ModalService);
   private download = inject(DownloadService);
   private students = inject(StudentsStore);
+  private router = inject(Router);
   protected os = inject(SchoolOsStore);
 
   protected readonly stats = [
@@ -60,11 +62,33 @@ export class SystemPage {
     });
   }
 
+  generateReport() {
+    this.router.navigate(['/system', 'report']);
+  }
+
   exportData() {
-    const rows: string[][] = [['Admission No.', 'Name', 'Class', 'Guardian', 'Attendance', 'Fee status']];
+    const year = this.os.school().year || '2026';
+    const rows: string[][] = [
+      ['Little Royals system report', this.os.school().term || 'Term 2', year],
+      [],
+      ['Students'],
+      ['Admission No.', 'Name', 'Class', 'Guardian', 'Attendance', 'Fee status'],
+    ];
     for (const s of this.students.students()) {
       rows.push([s.adm, s.name, s.cls, s.guardian, s.attendance, s.feeLabel]);
     }
-    this.download.csv('students-export.csv', rows);
+    rows.push([], ['Admissions'], ['Adm. No.', 'Name', 'Class', 'Stage', 'Notes']);
+    for (const a of this.os.applicants()) {
+      rows.push([a.adm || '—', a.name, a.cls, a.stage, a.meta]);
+    }
+    rows.push([], ['Attendance'], ['Adm. No.', 'Name', 'Class', 'Status']);
+    for (const r of this.os.register()) {
+      rows.push([r.adm, r.name, r.cls, r.status]);
+    }
+    rows.push([], ['Permissions'], ['Role', 'Module', 'View', 'Create', 'Edit', 'Approve']);
+    for (const p of this.os.perms()) {
+      rows.push([p.role, p.module, p.view ? 'Yes' : 'No', p.create ? 'Yes' : 'No', p.edit ? 'Yes' : 'No', p.approve ? 'Yes' : 'No']);
+    }
+    this.download.csv('little-royals-system-report-' + year + '.csv', rows);
   }
 }

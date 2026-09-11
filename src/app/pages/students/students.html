@@ -39,7 +39,9 @@
           <td class="px-4 py-3 text-slate-600">{{ s.guardian }}</td>
           <td class="px-4 py-3 text-slate-600">{{ s.attendance }}</td>
           <td class="px-4 py-3" [class.text-emerald-600]="s.fee === 'cleared'" [class.text-rose-600]="s.fee === 'due'">{{ s.feeLabel }}</td>
-          <td class="px-4 py-3 text-slate-700 text-xs whitespace-nowrap">View · Card</td>
+          <td class="px-4 py-3 text-slate-700 text-xs whitespace-nowrap">
+            View · <button type="button" class="hover:text-slate-900" (click)="openCard(s, $event)">Card</button>
+          </td>
         </tr>
       }
     </tbody>
@@ -177,15 +179,15 @@
         </div>
         <button type="button" (click)="closeDrawer()" class="text-slate-400 hover:text-slate-800"><svg class="ic-lg"><use href="#i-x"/></svg></button>
       </div>
-      <form class="flex-1 overflow-y-auto px-6 py-5 space-y-7" (ngSubmit)="$event.preventDefault(); submit()">
+      <form class="flex-1 overflow-y-auto px-6 py-5 space-y-7" autocomplete="off" novalidate (ngSubmit)="$event.preventDefault(); submit()">
         <section>
           <h3 class="text-sm font-semibold text-slate-900 mb-3">Personal details</h3>
           <div class="grid grid-cols-2 gap-3">
             <label class="text-xs text-slate-500">First name *
-              <input name="firstName" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().firstName" [class.border-slate-200]="!errors().firstName" />
+              <input name="firstName" maxlength="40" autocomplete="given-name" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().firstName" [class.border-slate-200]="!errors().firstName" />
             </label>
             <label class="text-xs text-slate-500">Last name *
-              <input name="lastName" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().lastName" [class.border-slate-200]="!errors().lastName" />
+              <input name="lastName" maxlength="40" autocomplete="family-name" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().lastName" [class.border-slate-200]="!errors().lastName" />
             </label>
             <label class="text-xs text-slate-500">Gender
               <select name="gender" [ngModel]="form().gender" (ngModelChange)="set('gender', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
@@ -193,13 +195,13 @@
               </select>
             </label>
             <label class="text-xs text-slate-500">Date of birth *
-              <input type="date" name="dob" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().dob" [class.border-slate-200]="!errors().dob" />
+              <input type="date" name="dob" min="2008-01-01" max="2026-12-31" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().dob" [class.border-slate-200]="!errors().dob" />
             </label>
             <label class="text-xs text-slate-500">Nationality
-              <input name="nationality" [ngModel]="form().nationality" (ngModelChange)="set('nationality', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+              <input name="nationality" maxlength="40" [ngModel]="form().nationality" (ngModelChange)="set('nationality', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
             </label>
             <label class="text-xs text-slate-500">Religion
-              <input name="religion" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Optional" />
+              <input name="religion" maxlength="40" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Optional" />
             </label>
           </div>
         </section>
@@ -216,7 +218,7 @@
               </select>
             </label>
             <label class="text-xs text-slate-500">Admission date *
-              <input type="date" name="admissionDate" [ngModel]="form().admissionDate" (ngModelChange)="set('admissionDate', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().admissionDate" [class.border-slate-200]="!errors().admissionDate" />
+              <input type="date" name="admissionDate" min="2020-01-01" max="2026-12-31" [ngModel]="form().admissionDate" (ngModelChange)="set('admissionDate', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().admissionDate" [class.border-slate-200]="!errors().admissionDate" />
             </label>
             <label class="text-xs text-slate-500">Admission type
               <select name="admissionType" [ngModel]="form().admissionType" (ngModelChange)="set('admissionType', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
@@ -224,7 +226,7 @@
               </select>
             </label>
             <label class="text-xs text-slate-500">Previous school
-              <input name="previousSchool" [ngModel]="form().previousSchool" (ngModelChange)="set('previousSchool', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="If transferring" />
+              <input name="previousSchool" maxlength="80" [ngModel]="form().previousSchool" (ngModelChange)="set('previousSchool', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="If transferring" />
             </label>
           </div>
         </section>
@@ -233,7 +235,7 @@
           <h3 class="text-sm font-semibold text-slate-900 mb-3">Guardian & emergency</h3>
           <div class="grid grid-cols-2 gap-3">
             <label class="text-xs text-slate-500">Guardian name *
-              <input name="guardian" [ngModel]="form().guardian" (ngModelChange)="set('guardian', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().guardian" [class.border-slate-200]="!errors().guardian" />
+              <input name="guardian" maxlength="60" [ngModel]="form().guardian" (ngModelChange)="set('guardian', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().guardian" [class.border-slate-200]="!errors().guardian" />
             </label>
             <label class="text-xs text-slate-500">Relationship
               <select name="guardianRelation" [ngModel]="form().guardianRelation" (ngModelChange)="set('guardianRelation', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
@@ -241,19 +243,19 @@
               </select>
             </label>
             <label class="text-xs text-slate-500">Phone *
-              <input name="guardianPhone" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" placeholder="+256 …" [class.border-rose-400]="errors().guardianPhone" [class.border-slate-200]="!errors().guardianPhone" />
+              <input name="guardianPhone" type="tel" maxlength="16" autocomplete="tel" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" placeholder="07xxxxxxxx or +2567xxxxxxxx" [class.border-rose-400]="errors().guardianPhone" [class.border-slate-200]="!errors().guardianPhone" />
             </label>
             <label class="text-xs text-slate-500">Email
-              <input type="email" name="guardianEmail" [ngModel]="form().guardianEmail" (ngModelChange)="set('guardianEmail', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().guardianEmail" [class.border-slate-200]="!errors().guardianEmail" />
+              <input type="email" name="guardianEmail" maxlength="80" autocomplete="off" [ngModel]="form().guardianEmail" (ngModelChange)="set('guardianEmail', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().guardianEmail" [class.border-slate-200]="!errors().guardianEmail" />
             </label>
             <label class="text-xs text-slate-500 col-span-2">Home address
-              <input name="address" [ngModel]="form().address" (ngModelChange)="set('address', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+              <input name="address" maxlength="80" [ngModel]="form().address" (ngModelChange)="set('address', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
             </label>
             <label class="text-xs text-slate-500">Emergency contact
-              <input name="emergencyName" [ngModel]="form().emergencyName" (ngModelChange)="set('emergencyName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+              <input name="emergencyName" maxlength="60" [ngModel]="form().emergencyName" (ngModelChange)="set('emergencyName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
             </label>
             <label class="text-xs text-slate-500">Emergency phone
-              <input name="emergencyPhone" [ngModel]="form().emergencyPhone" (ngModelChange)="set('emergencyPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+              <input name="emergencyPhone" type="tel" maxlength="16" [ngModel]="form().emergencyPhone" (ngModelChange)="set('emergencyPhone', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().emergencyPhone" [class.border-slate-200]="!errors().emergencyPhone" />
             </label>
           </div>
         </section>
@@ -268,10 +270,10 @@
               </select>
             </label>
             <label class="text-xs text-slate-500">Allergies
-              <input name="allergies" [ngModel]="form().allergies" (ngModelChange)="set('allergies', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="e.g. Peanuts, dust" />
+              <input name="allergies" maxlength="80" [ngModel]="form().allergies" (ngModelChange)="set('allergies', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="e.g. Peanuts, dust" />
             </label>
             <label class="text-xs text-slate-500 col-span-2">Medical notes
-              <textarea name="medicalNotes" [ngModel]="form().medicalNotes" (ngModelChange)="set('medicalNotes', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Asthma, medication, nurse instructions…"></textarea>
+              <textarea name="medicalNotes" maxlength="240" [ngModel]="form().medicalNotes" (ngModelChange)="set('medicalNotes', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Asthma, medication, nurse instructions…"></textarea>
             </label>
           </div>
         </section>
@@ -304,7 +306,7 @@
               </label>
             }
             <label class="text-xs text-slate-500 col-span-2">Staff notes
-              <textarea name="notes" [ngModel]="form().notes" (ngModelChange)="set('notes', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Any extra enrollment notes"></textarea>
+              <textarea name="notes" maxlength="240" [ngModel]="form().notes" (ngModelChange)="set('notes', $event)" rows="2" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Any extra enrollment notes"></textarea>
             </label>
           </div>
         </section>
