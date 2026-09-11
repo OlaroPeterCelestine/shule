@@ -1,10 +1,12 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { ApiService } from './api.service';
 import { DEMO_ACCOUNTS, type RoleKey, type SessionUser } from './models';
 
 const KEY = 'littleroyals.session';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private api = inject(ApiService);
   private readonly session = signal<SessionUser | null>(readSession());
   readonly user = this.session.asReadonly();
   readonly isLoggedIn = computed(() => this.session() !== null);
@@ -14,31 +16,49 @@ export class AuthService {
     return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase() || 'U';
   }
 
-  demoLogin(role: RoleKey, remember = true) {
-    const acct = DEMO_ACCOUNTS[role];
-    this.setUser({ name: acct.name, email: acct.email, role: acct.role, label: acct.label }, remember);
+  async demoLogin(role: RoleKey, remember = true) {
+    try {
+      const res = await this.api.post<{ token: string; user: SessionUser }>('/auth/demo', { role });
+      this.setUser(res.user, remember);
+      this.api.setToken(res.token, remember);
+      return res.user;
+    } catch {
+      const acct = DEMO_ACCOUNTS[role];
+      this.setUser({ name: acct.name, email: acct.email, role: acct.role, label: acct.label }, remember);
+      return this.session()!;
+    }
   }
 
-  login(email: string, remember = true): SessionUser {
-    const matched = (Object.values(DEMO_ACCOUNTS) as typeof DEMO_ACCOUNTS[RoleKey][]).find(
-      (a) => a.email.toLowerCase() === email.toLowerCase(),
-    );
-    let user: SessionUser;
-    if (matched) {
-      user = { name: matched.name, email: matched.email, role: matched.role, label: matched.label };
-    } else {
-      const namePart = email.split('@')[0].replace(/[._]/g, ' ');
-      const name = namePart.replace(/\b\w/g, (c) => c.toUpperCase());
-      user = { name, email, role: 'admin', label: 'Admin' };
+  async login(email: string, password: string, remember = true): Promise<SessionUser> {
+    try {
+      const res = await this.api.post<{ token: string; user: SessionUser }>('/auth/login', { email, password });
+      this.setUser(res.user, remember);
+      this.api.setToken(res.token, remember);
+      return res.user;
+    } catch (err) {
+      if (err instanceof Error && /required|password|invalid|expired/i.test(err.message)) throw err;
+      const matched = (Object.values(DEMO_ACCOUNTS) as typeof DEMO_ACCOUNTS[RoleKey][]).find(
+        (a) => a.email.toLowerCase() === email.toLowerCase(),
+      );
+      let user: SessionUser;
+      if (matched) {
+        user = { name: matched.name, email: matched.email, role: matched.role, label: matched.label };
+      } else {
+        const namePart = email.split('@')[0].replace(/[._]/g, ' ');
+        const name = namePart.replace(/\b\w/g, (c) => c.toUpperCase());
+        user = { name, email, role: 'admin', label: 'Admin' };
+      }
+      this.setUser(user, remember);
+      return this.session()!;
     }
-    this.setUser(user, remember);
-    return this.session()!;
   }
 
   logout() {
     this.session.set(null);
     sessionStorage.removeItem(KEY);
     localStorage.removeItem(KEY);
+    this.api.clearToken();
+    void this.api.post('/auth/logout').catch(() => undefined);
   }
 
   updateProfile(patch: Partial<SessionUser>) {

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+import { OsSyncService } from '../../core/os-sync.service';
 import { ToastService } from '../../core/toast.service';
 import type { RoleKey } from '../../core/models';
 
@@ -12,6 +13,7 @@ import type { RoleKey } from '../../core/models';
 })
 export class LoginPage {
   private auth = inject(AuthService);
+  private sync = inject(OsSyncService);
   private router = inject(Router);
   protected toast = inject(ToastService);
 
@@ -24,14 +26,16 @@ export class LoginPage {
   protected readonly pwError = signal(false);
   protected readonly formError = signal('');
 
-  demo(role: string) {
-    this.auth.demoLogin(role as RoleKey, this.remember());
-    const user = this.auth.user();
+  async demo(role: string) {
+    this.busy.set(true);
+    const user = await this.auth.demoLogin(role as RoleKey, this.remember());
+    await this.sync.load();
+    this.busy.set(false);
     this.toast.show('Signed in as ' + (user?.name ?? '') + ' (' + (user?.label ?? '') + ')');
     this.router.navigate(['/dashboard']);
   }
 
-  submit() {
+  async submit() {
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim());
     const pwOk = this.password().length > 0;
     this.emailError.set(!emailOk);
@@ -42,11 +46,15 @@ export class LoginPage {
     }
     this.formError.set('');
     this.busy.set(true);
-    setTimeout(() => {
-      const user = this.auth.login(this.email().trim(), this.remember());
-      this.busy.set(false);
+    try {
+      const user = await this.auth.login(this.email().trim(), this.password(), this.remember());
+      await this.sync.load();
       this.toast.show('Signed in as ' + user.name + ' (' + user.label + ')');
       this.router.navigate(['/dashboard']);
-    }, 500);
+    } catch (err) {
+      this.formError.set(err instanceof Error ? err.message : 'Could not sign in');
+    } finally {
+      this.busy.set(false);
+    }
   }
 }

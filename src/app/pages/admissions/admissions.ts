@@ -1,5 +1,6 @@
 import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../core/api.service';
 import { allowed, cleanText, isIsoDate, isLin, isNin, isPhone, isSchoolpay } from '../../core/form-safe';
 import type { Student } from '../../core/models';
 import { SCHOOL_ABBREV } from '../../core/models';
@@ -75,6 +76,7 @@ const EMPTY: ApplicationForm = {
 export class AdmissionsPage {
   protected os = inject(SchoolOsStore);
   private students = inject(StudentsStore);
+  private api = inject(ApiService);
   private toast = inject(ToastService);
   protected readonly stages = STAGES;
   protected readonly classes = CLASSES;
@@ -261,6 +263,9 @@ export class AdmissionsPage {
       lastName: f.lastName,
       meta: 'Adm. no. ' + adm,
     });
+    if (this.api.token()) {
+      void this.api.post('/admissions', { ...f, adm }).catch(() => undefined);
+    }
     this.saving.set(false);
     this.drawerOpen.set(false);
     this.toast.show(f.firstName + ' ' + f.lastName + ' — ' + adm);
@@ -285,6 +290,9 @@ export class AdmissionsPage {
       this.enrollStudent({ ...a, adm, stage: next, meta });
     } else {
       this.os.moveApplicant(a.id, next, meta);
+    }
+    if (this.api.token()) {
+      void this.api.patch('/admissions/' + a.id, { stage: next, meta, adm }).catch(() => undefined);
     }
     this.toast.show(a.name + ' moved to ' + next + (adm && next === 'enrolled' ? ' · ' + adm : ''));
     if (this.viewing()?.id === a.id) this.viewing.set({ ...a, adm, stage: next, meta });

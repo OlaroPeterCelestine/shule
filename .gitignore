@@ -46,5 +46,4 @@ Thumbs.db
 !.env.example
 .vercel
 .env*
-/backend
 tmp-dashboard.png

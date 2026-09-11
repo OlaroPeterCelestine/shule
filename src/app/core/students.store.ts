@@ -139,6 +139,10 @@ export class StudentsStore {
     this.students.update((list) => [student, ...list]);
   }
 
+  replace(list: Student[]) {
+    this.students.set(list);
+  }
+
   hasAdm(adm: string) {
     return this.students().some((s) => s.adm === adm);
   }

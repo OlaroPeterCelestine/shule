@@ -1,6 +1,7 @@
 import { Component, computed, effect, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ApiService } from '../../core/api.service';
 import { allowed, cleanText, isEmail, isIsoDate, isPhone } from '../../core/form-safe';
 import { SearchService } from '../../core/search.service';
 import { StudentsStore } from '../../core/students.store';
@@ -63,6 +64,7 @@ const HOSTELS = ['', "St. Mary's Block (Girls)", "St. Peter's Block (Boys)", 'Ju
 export class StudentsPage {
   private store = inject(StudentsStore);
   protected os = inject(SchoolOsStore);
+  private api = inject(ApiService);
   private toast = inject(ToastService);
   private search = inject(SearchService);
   private router = inject(Router);
@@ -250,6 +252,9 @@ export class StudentsPage {
       notes: f.notes,
     };
     this.store.add(student);
+    if (this.api.token()) {
+      void this.api.post('/students', student).catch(() => undefined);
+    }
     this.created.set(student);
     this.saving.set(false);
     this.drawerOpen.set(false);

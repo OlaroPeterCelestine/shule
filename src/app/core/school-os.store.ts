@@ -296,6 +296,14 @@ export class SchoolOsStore {
     this.cms.update((list) => list.map((p) => (p.id === id ? { ...p, status: 'Published', updated: today } : p)));
   }
 
+  replaceApplicants(rows: Applicant[]) {
+    this.applicants.set(rows);
+  }
+
+  replaceRegister(rows: AttendanceRow[]) {
+    this.register.set(rows);
+  }
+
   addApplicant(row: Omit<Applicant, 'id' | 'stage' | 'meta'> & Partial<Pick<Applicant, 'stage' | 'meta'>>) {
     const name = (row.firstName + ' ' + row.lastName).trim() || row.name;
     this.applicants.update((list) => [

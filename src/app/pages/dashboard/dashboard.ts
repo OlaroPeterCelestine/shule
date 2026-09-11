@@ -117,7 +117,7 @@ export class DashboardPage {
   setRole(role: string) {
     const next = role as RoleKey;
     this.role.set(next);
-    this.auth.demoLogin(next);
+    void this.auth.demoLogin(next);
   }
 
   setTrend(t: Trend) {
