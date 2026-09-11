@@ -27,6 +27,14 @@
   font-family: Georgia, 'Times New Roman', serif;
 }
 
+.paper-sheet input,
+.paper-sheet select,
+.paper-sheet textarea,
+.paper-sheet button,
+.paper-sheet label {
+  font-family: Inter, sans-serif;
+}
+
 .paper-school {
   color: #14532d;
   font-weight: 800;
@@ -41,69 +49,6 @@
   letter-spacing: 0.06em;
   text-decoration: underline;
   text-underline-offset: 4px;
-}
-
-.paper-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin: 9px 0;
-}
-
-.paper-label {
-  font-weight: 700;
-  font-size: 14.5px;
-  color: #111;
-  white-space: nowrap;
-}
-
-.paper-line,
-.paper-form .paper-line {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  border-bottom: 1px dotted #334155;
-  border-radius: 0;
-  background: transparent;
-  padding: 3px 2px;
-  font-family: 'Segoe Script', 'Bradley Hand', 'Comic Sans MS', cursive;
-  font-size: 16px;
-  color: #1d4ed8;
-}
-
-.paper-form .paper-line:focus {
-  outline: none !important;
-  box-shadow: none;
-  border-bottom-color: #b91c1c;
-}
-
-.paper-form select.paper-line {
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-}
-
-.paper-area {
-  width: 100%;
-  min-height: 42px;
-  resize: vertical;
-}
-
-.paper-ink {
-  text-align: center;
-  font-family: 'Segoe Script', 'Bradley Hand', 'Comic Sans MS', cursive;
-  color: #1d4ed8;
-  font-size: 18px;
-  border: 0;
-  border-bottom: 1px dotted #93c5fd;
-  background: transparent;
-  width: 100%;
-  padding: 2px 4px;
-}
-
-.paper-form .paper-ink:focus {
-  outline: none !important;
-  border-bottom-color: #b91c1c;
 }
 
 .paper-welcome {

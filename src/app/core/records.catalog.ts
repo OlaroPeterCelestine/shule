@@ -84,8 +84,8 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     title: 'Admissions',
     singular: 'Applicant',
     subtitle: 'Paper applications moving through the pipeline',
-    columns: cols(['name', 'Name'], ['cls', 'Class'], ['stage', 'Stage'], ['meta', 'Notes']),
-    fields: fields(['name', 'Name'], ['cls', 'Class'], ['stage', 'Stage'], ['meta', 'Notes']),
+    columns: cols(['adm', 'Adm. No.'], ['name', 'Name'], ['cls', 'Class'], ['stage', 'Stage'], ['meta', 'Notes']),
+    fields: fields(['adm', 'Admission no.'], ['name', 'Name'], ['cls', 'Class'], ['stage', 'Stage'], ['meta', 'Notes']),
     rows: [],
   },
   finance: {

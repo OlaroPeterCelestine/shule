@@ -164,7 +164,7 @@ export class StudentsPage {
       return;
     }
     this.saving.set(true);
-    const adm = 'LR-' + Math.floor(1000 + Math.random() * 8999);
+    const adm = this.store.nextAdm([], this.os.school().year || '2026');
     const student: Student = {
       adm,
       firstName: f.firstName.trim(),

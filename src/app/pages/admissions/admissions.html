@@ -1,11 +1,11 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
     <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Admissions</h1>
-    <p class="text-sm text-slate-400 mt-1">The same APPLICATION FORM used at the school office</p>
+    <p class="text-sm text-slate-400 mt-1">Fill the application form to add a new admission</p>
   </div>
   <div class="flex flex-wrap gap-2">
     <button type="button" (click)="previewOpen.set(true)" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full">View paper scan</button>
-    <button type="button" (click)="blankForm()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">New blank form</button>
+    <button type="button" (click)="blankForm()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full">+ New admission</button>
   </div>
 </div>
 
@@ -13,7 +13,7 @@
 
 @if (viewing(); as a) {
   <div class="max-w-[820px] mx-auto mb-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm">
-    <p class="text-amber-900">Viewing {{ a.name }} · {{ a.cls }} · {{ a.stage }}</p>
+    <p class="text-amber-900">Viewing {{ a.name }} · {{ a.cls }} · {{ a.stage }}@if (a.adm) { · {{ a.adm }} }</p>
     <div class="flex gap-2">
       @if (a.stage !== 'enrolled' && a.stage !== 'waitlist') {
         <button type="button" (click)="advance(a)" class="text-xs bg-slate-900 text-white rounded-full px-3 py-1.5">Advance</button>
@@ -21,7 +21,7 @@
       @if (a.stage !== 'waitlist' && a.stage !== 'enrolled') {
         <button type="button" (click)="waitlist(a)" class="text-xs text-rose-600">Waitlist</button>
       }
-      <button type="button" (click)="blankForm()" class="text-xs text-slate-500">Clear</button>
+      <button type="button" (click)="blankForm()" class="text-xs text-slate-500">New admission</button>
     </div>
   </div>
 }
@@ -34,13 +34,6 @@
   </div>
 
   <div class="paper-sheet">
-    <input
-      name="transport"
-      class="paper-ink mb-2"
-      placeholder="van — pick & drop"
-      [ngModel]="form().transport"
-      (ngModelChange)="set('transport', $event)" />
-
     <div class="flex items-start gap-3 mb-2">
       <img src="logo.png" alt="Little Royals logo" class="w-16 h-16 rounded-full object-contain bg-white shrink-0" />
       <div class="flex-1 text-center pr-2">
@@ -54,116 +47,133 @@
 
     <h2 class="paper-title text-center my-3">APPLICATION FORM</h2>
 
-    <p class="paper-label mb-1">Particulars of the child</p>
-
-    <div class="paper-row">
-      <span class="paper-label">First name:</span>
-      <input name="firstName" class="paper-line" [class.border-rose-500]="errors().firstName" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">Last name:</span>
-      <input name="lastName" class="paper-line" [class.border-rose-500]="errors().lastName" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">Date of birth:</span>
-      <input type="date" name="dob" class="paper-line" [class.border-rose-500]="errors().dob" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">Sex:</span>
-      <select name="sex" class="paper-line" [ngModel]="form().sex" (ngModelChange)="set('sex', $event)">
-        <option>Female</option>
-        <option>Male</option>
+    <label class="text-xs text-slate-500 block mb-5">Transport
+      <select name="transport" [ngModel]="form().transport" (ngModelChange)="set('transport', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+        <option>Van — pick &amp; drop</option>
+        <option>Day scholar — own transport</option>
       </select>
-      <span class="paper-label">Religion:</span>
-      <input name="religion" class="paper-line" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" />
+    </label>
+
+    <p class="text-sm font-semibold text-slate-900 mb-3">Particulars of the child</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+      <label class="text-xs text-slate-500">First name *
+        <input name="firstName" placeholder="e.g. Nailah" [ngModel]="form().firstName" (ngModelChange)="set('firstName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().firstName" [class.border-slate-200]="!errors().firstName" />
+      </label>
+      <label class="text-xs text-slate-500">Last name *
+        <input name="lastName" placeholder="e.g. Kasumbakali" [ngModel]="form().lastName" (ngModelChange)="set('lastName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().lastName" [class.border-slate-200]="!errors().lastName" />
+      </label>
+      <label class="text-xs text-slate-500">Date of birth *
+        <input type="date" name="dob" [ngModel]="form().dob" (ngModelChange)="set('dob', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().dob" [class.border-slate-200]="!errors().dob" />
+      </label>
+      <label class="text-xs text-slate-500">Sex
+        <select name="sex" [ngModel]="form().sex" (ngModelChange)="set('sex', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+          <option>Female</option>
+          <option>Male</option>
+        </select>
+      </label>
+      <label class="text-xs text-slate-500 sm:col-span-2">Religion
+        <input name="religion" placeholder="e.g. Muslim" [ngModel]="form().religion" (ngModelChange)="set('religion', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
     </div>
 
-    <p class="paper-label mt-4 mb-1">Home address</p>
-    <div class="paper-row">
-      <span class="paper-label">Location:</span>
-      <input name="location" class="paper-line" [ngModel]="form().location" (ngModelChange)="set('location', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">L C Area Zone:</span>
-      <input name="lcZone" class="paper-line" [ngModel]="form().lcZone" (ngModelChange)="set('lcZone', $event)" />
-    </div>
-
-    <p class="paper-label mt-4">Any peculiar illness (of the child should be disclosed)</p>
-    <textarea name="illness" rows="2" class="paper-line paper-area mt-1" [ngModel]="form().illness" (ngModelChange)="set('illness', $event)"></textarea>
-
-    <div class="paper-row mt-3">
-      <span class="paper-label">Class applied for:</span>
-      <select name="cls" class="paper-line" [class.border-rose-500]="errors().cls" [ngModel]="form().cls" (ngModelChange)="set('cls', $event)">
-        <option value=""> </option>
-        @for (c of classes; track c) {
-          <option [value]="c">{{ c }}</option>
-        }
-      </select>
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">LIN:</span>
-      <input name="lin" class="paper-line" [ngModel]="form().lin" (ngModelChange)="set('lin', $event)" />
+    <p class="text-sm font-semibold text-slate-900 mb-3">Home address</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+      <label class="text-xs text-slate-500">Location
+        <input name="location" placeholder="e.g. Kigo" [ngModel]="form().location" (ngModelChange)="set('location', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500">L C Area Zone
+        <input name="lcZone" placeholder="LC area / zone" [ngModel]="form().lcZone" (ngModelChange)="set('lcZone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
     </div>
 
-    <div class="paper-row mt-5">
-      <span class="paper-label">Name of father:</span>
-      <input name="fatherName" class="paper-line" [class.border-rose-500]="errors().fatherName" [ngModel]="form().fatherName" (ngModelChange)="set('fatherName', $event)" />
-      <span class="paper-label">Signature:</span>
-      <input name="fatherSig" class="paper-line" [ngModel]="form().fatherSig" (ngModelChange)="set('fatherSig', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">Telephone No.</span>
-      <input name="fatherPhone" class="paper-line" [ngModel]="form().fatherPhone" (ngModelChange)="set('fatherPhone', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">NIN:</span>
-      <input name="fatherNin" class="paper-line" [ngModel]="form().fatherNin" (ngModelChange)="set('fatherNin', $event)" />
-    </div>
+    <p class="text-sm font-semibold text-slate-900 mb-3">Health</p>
+    <label class="text-xs text-slate-500 block mb-5">Any peculiar illness of the child should be disclosed
+      <textarea name="illness" rows="2" placeholder="None" [ngModel]="form().illness" (ngModelChange)="set('illness', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
+    </label>
 
-    <div class="paper-row mt-4">
-      <span class="paper-label">Name of the mother:</span>
-      <input name="motherName" class="paper-line" [ngModel]="form().motherName" (ngModelChange)="set('motherName', $event)" />
-      <span class="paper-label">Signature:</span>
-      <input name="motherSig" class="paper-line" [ngModel]="form().motherSig" (ngModelChange)="set('motherSig', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">Telephone No.</span>
-      <input name="motherPhone" class="paper-line" [ngModel]="form().motherPhone" (ngModelChange)="set('motherPhone', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">NIN:</span>
-      <input name="motherNin" class="paper-line" [ngModel]="form().motherNin" (ngModelChange)="set('motherNin', $event)" />
-    </div>
-
-    <div class="paper-row mt-4">
-      <span class="paper-label">Name of guardian:</span>
-      <input name="guardianName" class="paper-line" [ngModel]="form().guardianName" (ngModelChange)="set('guardianName', $event)" />
-      <span class="paper-label">Signature:</span>
-      <input name="guardianSig" class="paper-line" [ngModel]="form().guardianSig" (ngModelChange)="set('guardianSig', $event)" />
-    </div>
-    <div class="paper-row">
-      <span class="paper-label">Telephone No.</span>
-      <input name="guardianPhone" class="paper-line" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" />
-    </div>
-
-    <div class="flex items-end justify-between gap-3 mt-8">
-      <div class="paper-row flex-1 mb-0">
-        <span class="paper-label">Schoolpay code:</span>
-        <input name="schoolpay" class="paper-line" [ngModel]="form().schoolpay" (ngModelChange)="set('schoolpay', $event)" />
+    <p class="text-sm font-semibold text-slate-900 mb-3">Admission number</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+      <label class="text-xs text-slate-500">Next number
+        <input type="number" min="1" name="admSeq" [ngModel]="admSeq()" (ngModelChange)="setSeq($event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+      </label>
+      <label class="text-xs text-slate-500">Admission no.
+        <input name="adm" placeholder="LR2026001" [ngModel]="form().adm" (ngModelChange)="set('adm', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+      </label>
+      <div class="flex items-end">
+        <button type="button" (click)="generateAdm()" class="h-10 w-full px-4 text-sm bg-slate-900 text-white rounded-full">Generate {{ generatedAdm() }}</button>
       </div>
+    </div>
+    <p class="text-xs text-slate-400 -mt-3 mb-5">Format is school + year + 001, e.g. {{ nextAdmPreview() }}. Type 1, 2, 3… and generate.</p>
+
+    <p class="text-sm font-semibold text-slate-900 mb-3">Class applied for</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+      <label class="text-xs text-slate-500">Class *
+        <select name="cls" [ngModel]="form().cls" (ngModelChange)="set('cls', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm bg-white" [class.border-rose-400]="errors().cls" [class.border-slate-200]="!errors().cls">
+          <option value="">Select class</option>
+          @for (c of classes; track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </label>
+      <label class="text-xs text-slate-500">LIN
+        <input name="lin" placeholder="Learner Identification Number" [ngModel]="form().lin" (ngModelChange)="set('lin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+      </label>
+    </div>
+
+    <p class="text-sm font-semibold text-slate-900 mb-3">Parents / guardians</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+      <label class="text-xs text-slate-500">Name of father
+        <input name="fatherName" placeholder="Father’s full name" [ngModel]="form().fatherName" (ngModelChange)="set('fatherName', $event)" class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" [class.border-rose-400]="errors().fatherName" [class.border-slate-200]="!errors().fatherName" />
+      </label>
+      <label class="text-xs text-slate-500">Signature (father)
+        <input name="fatherSig" placeholder="Type name to sign" [ngModel]="form().fatherSig" (ngModelChange)="set('fatherSig', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500">Telephone No. (father)
+        <input name="fatherPhone" type="tel" placeholder="07…" [ngModel]="form().fatherPhone" (ngModelChange)="set('fatherPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500">NIN of father
+        <input name="fatherNin" placeholder="National ID number" [ngModel]="form().fatherNin" (ngModelChange)="set('fatherNin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+      </label>
+      <label class="text-xs text-slate-500">Name of the mother
+        <input name="motherName" placeholder="Mother’s full name" [ngModel]="form().motherName" (ngModelChange)="set('motherName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500">Signature (mother)
+        <input name="motherSig" placeholder="Type name to sign" [ngModel]="form().motherSig" (ngModelChange)="set('motherSig', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500">Telephone No. (mother)
+        <input name="motherPhone" type="tel" placeholder="07…" [ngModel]="form().motherPhone" (ngModelChange)="set('motherPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500">NIN of mother
+        <input name="motherNin" placeholder="National ID number" [ngModel]="form().motherNin" (ngModelChange)="set('motherNin', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+      </label>
+      <label class="text-xs text-slate-500">Name of guardian
+        <input name="guardianName" placeholder="If different from parents" [ngModel]="form().guardianName" (ngModelChange)="set('guardianName', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500">Signature (guardian)
+        <input name="guardianSig" placeholder="Type name to sign" [ngModel]="form().guardianSig" (ngModelChange)="set('guardianSig', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+      <label class="text-xs text-slate-500 sm:col-span-2">Telephone No. (guardian)
+        <input name="guardianPhone" type="tel" placeholder="07…" [ngModel]="form().guardianPhone" (ngModelChange)="set('guardianPhone', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+      </label>
+    </div>
+
+    <p class="text-sm font-semibold text-slate-900 mb-3">Schoolpay</p>
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
+      <label class="text-xs text-slate-500 flex-1">Schoolpay code
+        <input name="schoolpay" placeholder="e.g. 1012331836" [ngModel]="form().schoolpay" (ngModelChange)="set('schoolpay', $event)" class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-mono" />
+      </label>
       <div class="flex items-end gap-2 shrink-0">
         <span class="paper-sun" aria-hidden="true">☀</span>
         <p class="paper-welcome">YOU ARE<br />WELCOME</p>
       </div>
     </div>
 
-    @if (!viewing()) {
-      <div class="mt-6 flex justify-center">
-        <button type="submit" [disabled]="saving()" class="h-10 px-6 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">
-          {{ saving() ? 'Saving…' : 'Submit application' }}
-        </button>
-      </div>
-    }
+    <div class="flex justify-center gap-2 pt-2">
+      <button type="button" (click)="blankForm()" class="h-10 px-5 text-sm border border-slate-200 bg-white rounded-full">Clear</button>
+      <button type="submit" [disabled]="saving() || !!viewing()" class="h-10 px-6 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">
+        {{ viewing() ? 'Open a new admission to save' : saving() ? 'Saving…' : 'Add admission' }}
+      </button>
+    </div>
   </div>
 
   <div class="paper-rail" aria-hidden="true">
@@ -182,7 +192,7 @@
         @for (a of inStage(col.key); track a.id) {
           <button type="button" (click)="openApplicant(a)" class="w-full text-left border rounded-xl p-2.5 text-xs bg-slate-50 hover:bg-white" [class.border-slate-900]="viewing()?.id === a.id" [class.border-slate-100]="viewing()?.id !== a.id">
             <p class="font-medium text-slate-900">{{ a.name }}</p>
-            <p class="text-slate-400 mt-1">{{ a.cls }} · {{ a.meta }}</p>
+            <p class="text-slate-400 mt-1">{{ a.adm || 'No adm. no.' }} · {{ a.cls }} · {{ a.meta }}</p>
           </button>
         }
       </div>

@@ -1,5 +1,20 @@
 import { Injectable, signal } from '@angular/core';
-import type { Student } from './models';
+import { SCHOOL_ABBREV, type Student } from './models';
+
+export function parseAdmNum(adm: string, year?: string): number {
+  if (year) {
+    const m = String(adm).match(new RegExp('^' + SCHOOL_ABBREV + year + '(\\d{3})$'));
+    return m ? parseInt(m[1], 10) : 0;
+  }
+  const m = String(adm).match(new RegExp('^' + SCHOOL_ABBREV + '\\d{4}(\\d{3})$'));
+  if (m) return parseInt(m[1], 10);
+  const n = parseInt(String(adm).replace(/\D/g, ''), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+export function formatAdm(n: number, year = '2026'): string {
+  return SCHOOL_ABBREV + year + String(Math.max(1, Math.floor(n))).padStart(3, '0');
+}
 
 @Injectable({ providedIn: 'root' })
 export class StudentsStore {
@@ -118,5 +133,21 @@ export class StudentsStore {
 
   add(student: Student) {
     this.students.update((list) => [student, ...list]);
+  }
+
+  hasAdm(adm: string) {
+    return this.students().some((s) => s.adm === adm);
+  }
+
+  nextNumber(extra: string[] = [], year = '2026'): number {
+    const nums = [
+      ...this.students().map((s) => parseAdmNum(s.adm, year)),
+      ...extra.map((a) => parseAdmNum(a, year)),
+    ];
+    return Math.max(0, ...nums) + 1;
+  }
+
+  nextAdm(extra: string[] = [], year = '2026'): string {
+    return formatAdm(this.nextNumber(extra, year), year);
   }
 }

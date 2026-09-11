@@ -64,6 +64,7 @@ export class RecordsStore {
       subtitle: a.cls,
       status: a.stage,
       cells: {
+        adm: a.adm || '—',
         name: a.name,
         cls: a.cls,
         stage: a.stage,

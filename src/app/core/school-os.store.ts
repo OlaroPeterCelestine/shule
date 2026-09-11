@@ -121,6 +121,7 @@ export interface Applicant {
   schoolpay: string;
   transport: string;
   photo: string;
+  adm?: string;
   stage: ApplicantStage;
   meta: string;
 }
@@ -305,6 +306,10 @@ export class SchoolOsStore {
 
   moveApplicant(id: number, stage: ApplicantStage, meta: string) {
     this.applicants.update((list) => list.map((a) => (a.id === id ? { ...a, stage, meta } : a)));
+  }
+
+  patchApplicant(id: number, patch: Partial<Applicant>) {
+    this.applicants.update((list) => list.map((a) => (a.id === id ? { ...a, ...patch } : a)));
   }
 
   togglePerm(role: string, module: string, key: 'view' | 'create' | 'edit' | 'approve') {
