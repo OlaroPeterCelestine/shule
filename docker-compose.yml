@@ -1,0 +1,62 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports: ['6379:6379']
+    profiles: ['compose-redis']
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: littleroyals
+      MINIO_ROOT_PASSWORD: littleroyals
+    ports: ['9000:9000', '9001:9001']
+    volumes: ['minio:/data']
+
+  opensearch:
+    image: opensearchproject/opensearch:2.18.0
+    environment:
+      discovery.type: single-node
+      DISABLE_INSTALL_DEMO_CONFIG: 'true'
+      DISABLE_SECURITY_PLUGIN: 'true'
+      OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx512m'
+    ports: ['9200:9200']
+    volumes: ['opensearch:/usr/share/opensearch/data']
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    ports: ['9090:9090']
+    volumes: ['./deploy/observe/prometheus.yml:/etc/prometheus/prometheus.yml:ro']
+
+  loki:
+    image: grafana/loki:3.4.2
+    ports: ['3100:3100']
+    command: ['-config.file=/etc/loki/local-config.yaml']
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    ports: ['3101:3000']
+    environment:
+      GF_SECURITY_ADMIN_USER: littleroyals
+      GF_SECURITY_ADMIN_PASSWORD: littleroyals
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+    volumes: ['./deploy/observe/grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro']
+
+  vault:
+    image: hashicorp/vault:1.19
+    cap_add: ['IPC_LOCK']
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: littleroyals
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    ports: ['8200:8200']
+    command: server -dev
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.123.0
+    command: ['--config=/etc/otelcol/config.yaml']
+    ports: ['4318:4318']
+    volumes: ['./deploy/observe/otel-collector.yml:/etc/otelcol/config.yaml:ro']
+
+volumes:
+  minio:
+  opensearch:

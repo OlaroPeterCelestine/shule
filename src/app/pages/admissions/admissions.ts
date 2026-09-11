@@ -1,5 +1,6 @@
 import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AccessService } from '../../core/access.service';
 import { ApiService } from '../../core/api.service';
 import { allowed, cleanText, isIsoDate, isLin, isNin, isPhone, isSchoolpay } from '../../core/form-safe';
 import type { Student } from '../../core/models';
@@ -75,6 +76,7 @@ const EMPTY: ApplicationForm = {
 })
 export class AdmissionsPage {
   protected os = inject(SchoolOsStore);
+  protected access = inject(AccessService);
   private students = inject(StudentsStore);
   private api = inject(ApiService);
   private toast = inject(ToastService);
@@ -149,6 +151,7 @@ export class AdmissionsPage {
   }
 
   openAdd() {
+    if (!this.access.can('admissions', 'create')) return;
     const n = this.nextNumber();
     this.admSeq.set(n);
     this.form.set({ ...EMPTY, adm: formatAdm(n, this.year()) });
@@ -196,7 +199,7 @@ export class AdmissionsPage {
     this.drawerOpen.set(true);
   }
 
-  submit() {
+  async submit() {
     if (this.viewing() || this.saving()) return;
     const raw = this.form();
     const f: ApplicationForm = {
@@ -255,23 +258,32 @@ export class AdmissionsPage {
     }
 
     this.saving.set(true);
-    this.os.addApplicant({
+    const payload = {
       ...f,
       adm,
       name: f.firstName + ' ' + f.lastName,
       firstName: f.firstName,
       lastName: f.lastName,
       meta: 'Adm. no. ' + adm,
-    });
+    };
     if (this.api.token()) {
-      void this.api.post('/admissions', { ...f, adm }).catch(() => undefined);
+      try {
+        const row = await this.api.post<Applicant>('/admissions', { ...f, adm });
+        this.os.addApplicant({ ...payload, ...row });
+      } catch (err) {
+        this.saving.set(false);
+        this.toast.show(err instanceof Error ? err.message : 'Could not save that application');
+        return;
+      }
+    } else {
+      this.os.addApplicant(payload);
     }
     this.saving.set(false);
     this.drawerOpen.set(false);
     this.toast.show(f.firstName + ' ' + f.lastName + ' — ' + adm);
   }
 
-  advance(a: Applicant) {
+  async advance(a: Applicant) {
     const next = NEXT[a.stage];
     if (!next) {
       this.toast.show(a.name + ' is already at ' + a.stage);
@@ -283,7 +295,21 @@ export class AdmissionsPage {
       next === 'interview' ? 'Interview scheduled' :
       next === 'offered' ? 'Offer letter ready' :
       '';
-    if (next === 'enrolled') {
+    if (this.api.token()) {
+      try {
+        const row = await this.api.patch<Applicant>('/admissions/' + a.id, { stage: next, meta, adm });
+        adm = row.adm || adm;
+        meta = row.meta || meta;
+        this.os.patchApplicant(a.id, row);
+        if (next === 'enrolled') {
+          const student = this.enrollStudent({ ...a, ...row, adm, stage: next, meta });
+          if (student) await this.api.post('/students', student).catch(() => undefined);
+        }
+      } catch (err) {
+        this.toast.show(err instanceof Error ? err.message : 'Could not move that application');
+        return;
+      }
+    } else if (next === 'enrolled') {
       adm = adm || this.students.nextAdm(this.takenAdms(), this.year());
       meta = 'Adm. no. ' + adm;
       this.os.patchApplicant(a.id, { adm, stage: next, meta });
@@ -291,16 +317,13 @@ export class AdmissionsPage {
     } else {
       this.os.moveApplicant(a.id, next, meta);
     }
-    if (this.api.token()) {
-      void this.api.patch('/admissions/' + a.id, { stage: next, meta, adm }).catch(() => undefined);
-    }
     this.toast.show(a.name + ' moved to ' + next + (adm && next === 'enrolled' ? ' · ' + adm : ''));
     if (this.viewing()?.id === a.id) this.viewing.set({ ...a, adm, stage: next, meta });
   }
 
   private enrollStudent(a: Applicant) {
     const adm = a.adm;
-    if (!adm || this.students.hasAdm(adm)) return;
+    if (!adm || this.students.hasAdm(adm)) return null;
     const guardian = cleanText(a.motherName || a.fatherName || a.guardianName, 60);
     const phone = cleanText(a.motherPhone || a.fatherPhone || a.guardianPhone, 16);
     const student: Student = {
@@ -332,10 +355,20 @@ export class AdmissionsPage {
     };
     this.students.add(student);
     this.os.addToRegister({ adm, name: student.name, cls: student.cls, status: 'P' });
+    return student;
   }
 
-  waitlist(a: Applicant) {
+  async waitlist(a: Applicant) {
     this.os.moveApplicant(a.id, 'waitlist', 'Waitlisted today');
+    if (this.api.token()) {
+      try {
+        await this.api.patch('/admissions/' + a.id, { stage: 'waitlist', meta: 'Waitlisted today' });
+      } catch (err) {
+        this.os.moveApplicant(a.id, a.stage, a.meta);
+        this.toast.show(err instanceof Error ? err.message : 'Could not waitlist that application');
+        return;
+      }
+    }
     this.toast.show(a.name + ' waitlisted');
     if (this.viewing()?.id === a.id) this.viewing.set({ ...a, stage: 'waitlist', meta: 'Waitlisted today' });
   }

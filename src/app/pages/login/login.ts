@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { OsSyncService } from '../../core/os-sync.service';
 import { ToastService } from '../../core/toast.service';
-import type { RoleKey } from '../../core/models';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +27,7 @@ export class LoginPage {
 
   async demo(role: string) {
     this.busy.set(true);
-    const user = await this.auth.demoLogin(role as RoleKey, this.remember());
+    const user = await this.auth.demoLogin(role, this.remember());
     await this.sync.load();
     this.busy.set(false);
     this.toast.show('Signed in as ' + (user?.name ?? '') + ' (' + (user?.label ?? '') + ')');

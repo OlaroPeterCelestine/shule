@@ -106,5 +106,5 @@ export interface ModalOptions {
   select?: { key: string; options: string[] };
   file?: { key: string; accept: string };
   confirmLabel?: string;
-  onConfirm: (values: Record<string, string | File | undefined>) => boolean | void;
+  onConfirm: (values: Record<string, string | File | undefined>) => boolean | void | Promise<boolean | void>;
 }

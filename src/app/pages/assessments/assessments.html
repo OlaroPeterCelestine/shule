@@ -36,7 +36,7 @@
             <table class="w-full text-sm">
               <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Question</th><th class="px-4 py-3 font-normal">Subject</th><th class="px-4 py-3 font-normal">Difficulty</th><th class="px-4 py-3 font-normal">Marks</th></tr></thead>
               <tbody class="divide-y divide-line">
-                @for (q of os.questions(); track q.id) {
+                @for (q of pagedQuestions().rows; track q.id) {
                   <tr>
                     <td class="px-4 py-3">{{ q.text }}</td>
                     <td class="px-4 py-3">{{ q.subject }}</td>
@@ -46,6 +46,7 @@
                 }
               </tbody>
             </table>
+            <app-pager [total]="os.questions().length" [page]="pagedQuestions().current" (pageChange)="page.set($event)" />
           </div>
         </div>
 

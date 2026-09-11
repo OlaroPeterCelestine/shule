@@ -1,27 +1,87 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
     <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">School calendar</h1>
-    <p class="text-sm text-slate-400 mt-1">Terms, exams, PTMs, sports days and holidays</p>
+    <p class="text-sm text-slate-400 mt-1">{{ os.school().name }} · every exam, PTM, holiday and campus event</p>
   </div>
-  <button type="button" (click)="addEvent()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ Add event</button>
+  @if (access.can('calendar', 'create')) {
+    <button type="button" (click)="addEvent()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ Add event</button>
+  }
 </div>
 
 <app-stat-cards [items]="stats()" />
 
-<div class="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-slate-50 text-xs text-slate-400"><tr class="text-left">
-      <th class="px-4 py-3 font-medium">Date</th><th class="px-4 py-3 font-medium">Event</th><th class="px-4 py-3 font-medium">Type</th><th class="px-4 py-3 font-medium">Audience</th>
-    </tr></thead>
-    <tbody class="divide-y divide-slate-50">
-      @for (e of os.events(); track e.id) {
-        <tr>
-          <td class="px-4 py-3 text-slate-500">{{ e.date }}</td>
-          <td class="px-4 py-3 font-medium text-slate-900">{{ e.title }}</td>
-          <td class="px-4 py-3"><span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ e.type }}</span></td>
-          <td class="px-4 py-3 text-slate-600">{{ e.audience }}</td>
-        </tr>
+<div class="flex flex-wrap items-center gap-2 mb-4">
+  @for (t of types; track t) {
+    <button type="button" (click)="filter.set(t)" class="h-8 px-3 text-xs rounded-full border"
+      [class.bg-slate-900]="filter() === t" [class.text-white]="filter() === t"
+      [class.bg-white]="filter() !== t" [class.text-slate-600]="filter() !== t" [class.border-slate-200]="true">{{ t }}</button>
+  }
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4">
+  <div class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5">
+    <div class="flex items-center justify-between mb-4">
+      <button type="button" (click)="shift(-1)" class="h-9 px-3 text-sm border border-slate-200 rounded-full">←</button>
+      <h2 class="text-[17px] font-semibold text-slate-900">{{ monthLabel() }}</h2>
+      <button type="button" (click)="shift(1)" class="h-9 px-3 text-sm border border-slate-200 rounded-full">→</button>
+    </div>
+    <div class="grid grid-cols-7 gap-1 text-center text-[11px] text-slate-400 mb-1">
+      @for (d of weekdays; track d) {
+        <div class="py-1">{{ d }}</div>
       }
-    </tbody>
-  </table>
+    </div>
+    <div class="grid grid-cols-7 gap-1">
+      @for (c of cells(); track c.iso) {
+        <button type="button" (click)="pick(c.iso)"
+          class="min-h-[88px] rounded-xl border p-1.5 text-left align-top"
+          [class.border-slate-900]="selected() === c.iso"
+          [class.bg-slate-50]="selected() === c.iso"
+          [class.border-slate-100]="selected() !== c.iso"
+          [class.opacity-40]="!c.inMonth">
+          <span class="text-xs font-semibold text-slate-800">{{ c.day }}</span>
+          <span class="mt-1 flex flex-col gap-0.5">
+            @for (item of c.items.slice(0, 3); track item.key) {
+              <span class="block truncate rounded px-1 py-0.5 text-[10px] leading-tight" [class]="typeClass(item.type)">{{ item.title }}</span>
+            }
+            @if (c.items.length > 3) {
+              <span class="text-[10px] text-slate-400 px-1">+{{ c.items.length - 3 }} more</span>
+            }
+          </span>
+        </button>
+      }
+    </div>
+    <p class="text-[11px] text-slate-400 mt-3">Gold = exams · Green = PTM · Rose = holiday · Grey = other campus events</p>
+  </div>
+
+  <div class="space-y-4">
+    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+      <h3 class="text-[15px] font-semibold text-slate-900 mb-1">{{ selected() }}</h3>
+      <p class="text-xs text-slate-400 mb-3">Everything on this day</p>
+      <ul class="divide-y divide-slate-100 text-sm">
+        @for (item of dayItems(); track item.key) {
+          <li class="py-2.5">
+            <span class="inline-flex text-[10px] px-2 py-0.5 rounded-full mb-1" [class]="typeClass(item.type)">{{ item.type }}</span>
+            <p class="font-medium text-slate-800">{{ item.title }}</p>
+            <p class="text-xs text-slate-400">{{ item.time ? item.time + ' · ' : '' }}{{ item.audience }}</p>
+          </li>
+        } @empty {
+          <li class="py-6 text-sm text-slate-400">No events on this day. Add one, or create an exam sitting.</li>
+        }
+      </ul>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+      <h3 class="text-[15px] font-semibold text-slate-900 mb-3">Coming up</h3>
+      <ul class="divide-y divide-slate-100 text-sm">
+        @for (item of upcoming(); track item.key) {
+          <li class="py-2.5 cursor-pointer" (click)="goTo(item.iso)">
+            <p class="text-xs text-slate-400">{{ item.iso }}@if (item.time) { · {{ item.time }} }</p>
+            <p class="font-medium text-slate-800">{{ item.title }}</p>
+            <p class="text-xs text-slate-400">{{ item.type }} · {{ item.audience }}</p>
+          </li>
+        } @empty {
+          <li class="py-4 text-sm text-slate-400">Nothing after this date.</li>
+        }
+      </ul>
+    </div>
+  </div>
 </div>

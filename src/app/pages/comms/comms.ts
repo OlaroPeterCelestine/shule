@@ -16,14 +16,14 @@ export class CommsPage {
   protected readonly channel = signal('SMS');
   protected readonly campaigns = signal([
     { title: 'Fee reminder — Primary Seven', meta: 'Sent to 28 · Delivered 27' },
-    { title: 'Mid-term reports released', meta: 'Sent to 1,284 · Delivered 1,271' },
-    { title: 'Sports day — transport update', meta: 'Sent to 312 · Delivered 308' },
+    { title: 'Mid-term reports released', meta: 'Sent to 186 · Delivered 181' },
+    { title: 'Sports day — van update', meta: 'Sent to 62 · Delivered 60' },
   ]);
   protected readonly stats = computed(() => [
     { label: 'Campaigns', value: String(this.campaigns().length), change: 'This term', bars: [3, 4, 4, 5, 5, 6, 6] },
-    { label: 'SMS sent', value: '1,654', change: 'Delivered 98%', bars: [6, 7, 7, 8, 8, 9, 10] },
-    { label: 'Email', value: '1,284', change: 'Reports blast', bars: [5, 5, 6, 7, 6, 8, 8] },
-    { label: 'Push', value: '312', change: 'Transport alerts', bars: [2, 3, 3, 4, 4, 5, 4] },
+    { label: 'SMS sent', value: '412', change: 'Delivered 98%', bars: [6, 7, 7, 8, 8, 9, 10] },
+    { label: 'Email', value: '186', change: 'Report cards', bars: [5, 5, 6, 7, 6, 8, 8] },
+    { label: 'Push', value: '62', change: 'Van parents', bars: [2, 3, 3, 4, 4, 5, 4] },
   ]);
 
   sendCampaign() {

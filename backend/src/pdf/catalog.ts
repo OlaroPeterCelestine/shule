@@ -18,4 +18,5 @@ export const DOC_TYPES: DocType[] = [
   { key: 'fee-statement', title: 'Fee statement', description: 'Balance and payment status', pick: 'student' },
   { key: 'payslip', title: 'Staff payslip', description: 'Latest payroll line', pick: 'staff' },
   { key: 'visitor-badge', title: 'Visitor badge', description: 'Day pass for a campus visitor', pick: 'none' },
+  { key: 'feedback', title: 'Feedback form', description: 'Parent, teacher or visitor form you can print blank or filled', pick: 'none' },
 ];

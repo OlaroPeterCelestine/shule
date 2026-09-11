@@ -10,7 +10,7 @@
           <table class="w-full text-sm">
             <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Visitor</th><th class="px-4 py-3 font-normal">Purpose</th><th class="px-4 py-3 font-normal">Host</th><th class="px-4 py-3 font-normal">Badge</th><th class="px-4 py-3 font-normal">Status</th><th class="px-4 py-3 font-normal"></th></tr></thead>
             <tbody class="divide-y divide-line">
-              @for (v of visitors(); track v.id) {
+              @for (v of paged().rows; track v.id) {
                 <tr>
                   <td class="px-4 py-3">{{ v.name }}</td>
                   <td class="px-4 py-3">{{ v.purpose }}</td>
@@ -28,4 +28,5 @@
               }
             </tbody>
           </table>
+          <app-pager [total]="visitors().length" [page]="paged().current" (pageChange)="page.set($event)" />
         </div>

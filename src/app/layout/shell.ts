@@ -10,7 +10,7 @@ import { ToastService } from '../core/toast.service';
 import { RecordsBlock } from '../shared/records-block';
 
 const LABELS: Record<string, string> = {
-  dashboard: 'Overview',
+  dashboard: 'Home',
   students: 'Students',
   admissions: 'Admissions',
   hr: 'Staff & HR',
@@ -24,9 +24,10 @@ const LABELS: Record<string, string> = {
   visitors: 'Visitors',
   comms: 'Communication',
   meetings: 'Meetings',
+  feedback: 'Feedback',
   welfare: 'Welfare',
   lifecycle: 'Promotion & Alumni',
-  documents: 'Documents',
+  documents: 'Documents & reports',
   reports: 'Reports',
   report: 'Report',
   ai: 'AI Assistant',

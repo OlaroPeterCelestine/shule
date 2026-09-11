@@ -1,11 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
 import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-meetings',
-  imports: [StatCards],
+  imports: [StatCards, RouterLink],
   templateUrl: './meetings.html',
 })
 export class MeetingsPage {

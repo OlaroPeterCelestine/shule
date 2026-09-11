@@ -13,48 +13,55 @@ export interface NavSection {
 
 export const NAV_SECTIONS: NavSection[] = [
   {
-    title: 'MAIN MENU',
+    title: 'TODAY',
+    items: [{ path: 'dashboard', label: 'Home', icon: '#i-grid' }],
+  },
+  {
+    title: 'PEOPLE',
     items: [
-      { path: 'dashboard', label: 'Dashboard', icon: '#i-grid' },
-      { path: 'school', label: 'School setup', icon: '#i-layers' },
-      { path: 'students', label: 'Students', icon: '#i-cap' },
       { path: 'admissions', label: 'Admissions', icon: '#i-clipboard' },
-      { path: 'finance', label: 'Fees & Payroll', icon: '#i-coin' },
-      { path: 'reports', label: 'Report cards', icon: '#i-bar-chart' },
-      { path: 'comms', label: 'Communication', icon: '#i-mail' },
+      { path: 'students', label: 'Pupils', icon: '#i-cap' },
       { path: 'hr', label: 'Staff & HR', icon: '#i-users' },
     ],
   },
   {
-    title: 'ACADEMICS',
+    title: 'CLASSROOM',
     items: [
-      { path: 'curriculum', label: 'Curriculum', icon: '#i-layers' },
+      { path: 'attendance', label: 'Attendance', icon: '#i-clipboard' },
       { path: 'academics', label: 'Timetable & Exams', icon: '#i-book-open' },
       { path: 'assessments', label: 'Assessments', icon: '#i-list-check' },
-      { path: 'attendance', label: 'Attendance', icon: '#i-clipboard' },
+      { path: 'curriculum', label: 'Curriculum', icon: '#i-layers' },
+      { path: 'reports', label: 'Report cards', icon: '#i-bar-chart' },
     ],
+  },
+  {
+    title: 'MONEY',
+    items: [{ path: 'finance', label: 'Fees & Payroll', icon: '#i-coin' }],
   },
   {
     title: 'CAMPUS',
     items: [
+      { path: 'calendar', label: 'Calendar', icon: '#i-calendar' },
+      { path: 'health', label: 'Health', icon: '#i-heart-pulse' },
+      { path: 'meetings', label: 'Meetings', icon: '#i-calendar' },
+      { path: 'feedback', label: 'Feedback', icon: '#i-clipboard' },
+      { path: 'comms', label: 'Communication', icon: '#i-mail' },
       { path: 'transport', label: 'Transport', icon: '#i-bus' },
       { path: 'library', label: 'Library', icon: '#i-book' },
       { path: 'inventory', label: 'Inventory', icon: '#i-layers' },
       { path: 'hostel', label: 'Hostel', icon: '#i-bed' },
       { path: 'visitors', label: 'Visitors & Gate', icon: '#i-shield' },
-      { path: 'meetings', label: 'Meetings', icon: '#i-calendar' },
-      { path: 'calendar', label: 'Calendar', icon: '#i-calendar' },
       { path: 'welfare', label: 'Welfare', icon: '#i-heart-pulse' },
-      { path: 'health', label: 'Health', icon: '#i-heart-pulse' },
     ],
   },
   {
-    title: 'MANAGEMENT',
+    title: 'OFFICE',
     items: [
+      { path: 'documents', label: 'Documents & reports', icon: '#i-file' },
       { path: 'lifecycle', label: 'Promotion & Alumni', icon: '#i-award' },
-      { path: 'documents', label: 'Documents', icon: '#i-file' },
       { path: 'website', label: 'Website', icon: '#i-apps' },
       { path: 'ai', label: 'AI Assistant', icon: '#i-bot' },
+      { path: 'school', label: 'School setup', icon: '#i-layers' },
       { path: 'system', label: 'Permissions', icon: '#i-gear' },
       { path: 'profile', label: 'My profile', icon: '#i-users' },
     ],
@@ -63,22 +70,24 @@ export const NAV_SECTIONS: NavSection[] = [
 
 export const OPEN_PATHS = new Set(['dashboard', 'profile']);
 
-export const ROLE_VIEW: Record<RoleKey, Set<string>> = {
+export const ROLE_VIEW: Record<string, Set<string>> = {
   admin: new Set(NAV_SECTIONS.flatMap((s) => s.items.map((i) => i.path))),
   teacher: new Set([
-    'dashboard', 'students', 'reports', 'comms', 'curriculum', 'academics',
-    'assessments', 'attendance', 'library', 'meetings', 'calendar', 'health', 'ai', 'profile',
+    'dashboard', 'students', 'reports', 'documents', 'comms', 'curriculum', 'academics',
+    'assessments', 'attendance', 'library', 'meetings', 'feedback', 'calendar', 'health', 'inventory', 'ai', 'profile',
   ]),
   accountant: new Set([
-    'dashboard', 'students', 'finance', 'reports', 'comms', 'documents', 'calendar', 'profile',
+    'dashboard', 'students', 'finance', 'reports', 'comms', 'documents', 'calendar', 'inventory', 'profile',
   ]),
   parent: new Set([
     'dashboard', 'students', 'finance', 'reports', 'comms', 'transport',
-    'meetings', 'calendar', 'health', 'profile',
+    'meetings', 'feedback', 'calendar', 'health', 'profile',
   ]),
+  nurse: new Set(['dashboard', 'students', 'health', 'profile']),
+  registrar: new Set(['dashboard', 'admissions', 'students', 'feedback', 'profile']),
 };
 
-const TEACHER_WRITE = new Set(['students', 'admissions', 'attendance', 'health', 'clock']);
+const TEACHER_WRITE = new Set(['students', 'admissions', 'attendance', 'health', 'clock', 'academics', 'inventory']);
 
 export function defaultPerms(): PermRow[] {
   const extras: Array<[string, string, PermRow['view'], boolean, boolean, boolean]> = [

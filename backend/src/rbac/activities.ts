@@ -26,7 +26,7 @@ export const ACTIVITIES: Activity[] = [
   { key: 'comms', label: 'Communication', api: [] },
   { key: 'hr', label: 'Staff & HR', api: ['/api/staff'] },
   { key: 'curriculum', label: 'Curriculum', api: [] },
-  { key: 'academics', label: 'Timetable & Exams', api: [] },
+  { key: 'academics', label: 'Timetable & Exams', api: ['/api/exams'] },
   { key: 'assessments', label: 'Assessments', api: [] },
   { key: 'attendance', label: 'Attendance', api: ['/api/attendance'] },
   { key: 'transport', label: 'Transport', api: [] },
@@ -35,6 +35,7 @@ export const ACTIVITIES: Activity[] = [
   { key: 'hostel', label: 'Hostel', api: [] },
   { key: 'visitors', label: 'Visitors & Gate', api: [] },
   { key: 'meetings', label: 'Meetings', api: [] },
+  { key: 'feedback', label: 'Feedback', api: ['/api/documents/feedback'] },
   { key: 'calendar', label: 'Calendar', api: ['/api/calendar'] },
   { key: 'welfare', label: 'Welfare', api: [] },
   { key: 'health', label: 'Health', api: ['/api/health'] },
@@ -60,11 +61,11 @@ export const EXTRA_ROLES: RoleDef[] = [
 
 const TEACHER_VIEW = new Set([
   'students', 'reports', 'comms', 'curriculum', 'academics', 'assessments',
-  'attendance', 'library', 'meetings', 'calendar', 'health', 'ai', 'clock',
+  'attendance', 'library', 'meetings', 'feedback', 'calendar', 'health', 'inventory', 'ai', 'clock',
 ]);
-const TEACHER_WRITE = new Set(['students', 'admissions', 'attendance', 'health', 'clock']);
-const ACCOUNTANT_VIEW = new Set(['students', 'finance', 'reports', 'comms', 'documents', 'calendar']);
-const PARENT_VIEW = new Set(['students', 'finance', 'reports', 'comms', 'transport', 'meetings', 'calendar', 'health']);
+const TEACHER_WRITE = new Set(['students', 'admissions', 'attendance', 'health', 'clock', 'academics', 'inventory']);
+const ACCOUNTANT_VIEW = new Set(['students', 'finance', 'reports', 'comms', 'documents', 'calendar', 'inventory']);
+const PARENT_VIEW = new Set(['students', 'finance', 'reports', 'comms', 'transport', 'meetings', 'feedback', 'calendar', 'health']);
 
 export function defaultGrant(role: string, module: string): Grant {
   if (role === 'admin') return { view: true, create: true, edit: true, approve: true };
@@ -85,7 +86,7 @@ export function defaultGrant(role: string, module: string): Grant {
   }
   if (role === 'registrar') {
     const admissions = module === 'admissions';
-    return { view: admissions || module === 'students', create: admissions, edit: admissions, approve: admissions };
+    return { view: admissions || module === 'students' || module === 'feedback', create: admissions || module === 'feedback', edit: admissions, approve: admissions };
   }
   return { view: false, create: false, edit: false, approve: false };
 }

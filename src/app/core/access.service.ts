@@ -1,7 +1,6 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { NAV_SECTIONS, OPEN_PATHS, ROLE_VIEW } from './nav';
-import type { RoleKey } from './models';
 import { SchoolOsStore } from './school-os.store';
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +22,7 @@ export class AccessService {
     if (action === 'view' && OPEN_PATHS.has(module)) return true;
     const row = this.os.perms().find((p) => p.role === role && p.module === module);
     if (row) return row[action];
-    if (action === 'view') return ROLE_VIEW[role as RoleKey]?.has(module) ?? false;
+    if (action === 'view') return ROLE_VIEW[role]?.has(module) ?? false;
     return false;
   }
 

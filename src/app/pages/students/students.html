@@ -1,24 +1,26 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
-    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Students</h1>
-    <p class="text-sm text-slate-400 mt-1">{{ storeCount() }} enrolled · {{ filtered().length }} showing</p>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Pupils</h1>
+    <p class="text-sm text-slate-400 mt-1">{{ storeCount() }} on roll · Baby–P7 · {{ filtered().length }} showing</p>
   </div>
-  <button type="button" (click)="openAdd()" class="bg-slate-900 text-white text-sm px-4 py-2.5 rounded-full flex items-center justify-center gap-1.5 hover:bg-slate-800 shrink-0">
-    <svg class="ic text-white"><use href="#i-plus"/></svg> Add student
-  </button>
+  @if (access.can('students', 'create')) {
+    <button type="button" (click)="openAdd()" class="bg-slate-900 text-white text-sm px-4 py-2.5 rounded-full flex items-center justify-center gap-1.5 hover:bg-slate-800 shrink-0">
+      <svg class="ic text-white"><use href="#i-plus"/></svg> Add student
+    </button>
+  }
 </div>
 
 <app-stat-cards [items]="stats()" />
 
 <div class="flex flex-wrap gap-3 mb-4">
-  <input [ngModel]="q()" (ngModelChange)="q.set($event)" name="studentSearch" class="border border-slate-200 rounded-full px-4 py-2 text-sm w-full sm:w-64 bg-white" placeholder="Search by name or admission no.">
-  <select [ngModel]="classFilter()" (ngModelChange)="classFilter.set($event)" name="classFilter" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
+  <input [ngModel]="q()" (ngModelChange)="setQ($event)" name="studentSearch" class="border border-slate-200 rounded-full px-4 py-2 text-sm w-full sm:w-64 bg-white" placeholder="Search by name or admission no.">
+  <select [ngModel]="classFilter()" (ngModelChange)="setClass($event)" name="classFilter" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
     <option value="">All classes</option>
     @for (c of classes(); track c) {
       <option [value]="c">{{ c }}</option>
     }
   </select>
-  <select [ngModel]="feeFilter()" (ngModelChange)="feeFilter.set($event)" name="feeFilter" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
+  <select [ngModel]="feeFilter()" (ngModelChange)="setFee($event)" name="feeFilter" class="border border-slate-200 rounded-full px-3 py-2 text-sm bg-white">
     <option value="">Fee status: All</option>
     <option value="due">Balance due</option>
     <option value="cleared">Cleared</option>
@@ -31,7 +33,7 @@
       <th class="px-4 py-3 font-medium">Adm. No.</th><th class="px-4 py-3 font-medium">Name</th><th class="px-4 py-3 font-medium">Class</th><th class="px-4 py-3 font-medium">Guardian</th><th class="px-4 py-3 font-medium">Attendance</th><th class="px-4 py-3 font-medium">Fees</th><th class="px-4 py-3 font-medium"></th>
     </tr></thead>
     <tbody class="divide-y divide-slate-50">
-      @for (s of filtered(); track s.adm) {
+      @for (s of paged().rows; track s.adm) {
         <tr class="hover:bg-slate-50 cursor-pointer" (click)="openStudent(s)">
           <td class="px-4 py-3 font-mono text-xs text-slate-500">{{ s.adm }}</td>
           <td class="px-4 py-3 font-medium text-slate-900">{{ s.name }}</td>
@@ -49,6 +51,7 @@
   @if (filtered().length === 0) {
     <p class="text-sm text-slate-400 text-center py-8">No students match those filters.</p>
   }
+  <app-pager [total]="filtered().length" [page]="paged().current" (pageChange)="page.set($event)" />
 </div>
 
 <!-- Profile drawer -->

@@ -22,7 +22,7 @@ export class LifecyclePage {
   ]);
   protected readonly stats = computed(() => [
     { label: 'Pending', value: String(this.promos().filter((p) => p.decision === 'pending').length), change: 'Need a decision', bars: [3, 3, 4, 3, 2, 2, 2] },
-    { label: 'Graduating', value: String(this.promos().filter((p) => p.decision === 'graduated').length), change: 'Class of 2026', bars: [1, 1, 2, 2, 3, 4, 4] },
+    { label: 'Leaving', value: String(this.promos().filter((p) => p.decision === 'graduated').length), change: 'P7 to secondary', bars: [1, 1, 2, 2, 3, 4, 4] },
     { label: 'Held back', value: String(this.promos().filter((p) => p.decision === 'held').length), change: 'Clearance first', bars: [1, 2, 1, 1, 2, 1, 1] },
     { label: 'Alumni', value: String(this.alumni().length), change: 'In the directory', bars: [5, 6, 6, 7, 7, 8, 8] },
   ]);
@@ -31,8 +31,8 @@ export class LifecyclePage {
     const row = this.promos().find((p) => p.id === id);
     if (!row || row.decision !== 'pending') return;
     this.promos.update((list) => list.map((p) => (p.id === id ? { ...p, decision: 'graduated' } : p)));
-    this.alumni.update((list) => [{ name: row.name, year: '2026', cls: 'S6', now: 'Newly graduated' }, ...list]);
-    this.toast.show(row.name + ' marked as graduating — added to Alumni');
+    this.alumni.update((list) => [{ name: row.name, year: '2026', cls: 'Primary Seven', now: 'Leaving for secondary' }, ...list]);
+    this.toast.show(row.name + ' completed Primary Seven — added to Alumni');
   }
 
   hold(id: number) {
@@ -47,12 +47,12 @@ export class LifecyclePage {
       title: 'Add alumnus',
       fields: [
         { key: 'name', placeholder: 'Full name *', required: true },
-        { key: 'year', placeholder: 'Graduation year *', required: true },
-        { key: 'now', placeholder: 'Current pursuit' },
+        { key: 'year', placeholder: 'Year left (e.g. 2025) *', required: true },
+        { key: 'now', placeholder: 'Next school (e.g. Gayaza High School)' },
       ],
       onConfirm: (v) => {
         this.alumni.update((list) => [
-          { name: String(v['name']), year: String(v['year']), cls: 'S6', now: String(v['now'] || '—') },
+          { name: String(v['name']), year: String(v['year']), cls: 'Primary Seven', now: String(v['now'] || '—') },
           ...list,
         ]);
         this.toast.show(v['name'] + ' added to Alumni directory');

@@ -1,5 +1,5 @@
 <h1 class="font-display text-2xl text-ink mb-1">Fees & Payroll</h1>
-        <p class="text-sm text-slate2/60 mb-5">Term 2, 2026</p>
+        <p class="text-sm text-slate2/60 mb-5">Term 2, 2026 · kindergarten and primary fees</p>
         <app-stat-cards [items]="stats()" />
 
         <div class="flex gap-2 mb-4 text-sm border-b border-line overflow-x-auto">
@@ -15,11 +15,19 @@
             <table class="w-full text-sm">
               <thead class="bg-canvas text-xs text-slate2/60"><tr class="text-left"><th class="px-4 py-3 font-normal">Invoice</th><th class="px-4 py-3 font-normal">Student</th><th class="px-4 py-3 font-normal">Total</th><th class="px-4 py-3 font-normal">Paid</th><th class="px-4 py-3 font-normal">Balance</th><th class="px-4 py-3 font-normal">Status</th></tr></thead>
               <tbody class="divide-y divide-line">
-                <tr class="cursor-pointer hover:bg-canvas" (click)="open('INV-4471')"><td class="px-4 py-3 font-mono text-xs">INV-4471</td><td class="px-4 py-3">Nakiwala Faith</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">1,020,000</td><td class="px-4 py-3">0</td><td class="px-4 py-3 text-primary">Cleared</td></tr>
-                <tr class="cursor-pointer hover:bg-canvas" (click)="open('INV-4472')"><td class="px-4 py-3 font-mono text-xs">INV-4472</td><td class="px-4 py-3">Namutebi Racheal</td><td class="px-4 py-3">980,000</td><td class="px-4 py-3">360,000</td><td class="px-4 py-3 text-maroon">620,000</td><td class="px-4 py-3 text-maroon">Overdue</td></tr>
-                <tr class="cursor-pointer hover:bg-canvas" (click)="open('INV-4473')"><td class="px-4 py-3 font-mono text-xs">INV-4473</td><td class="px-4 py-3">Okello Derrick</td><td class="px-4 py-3">860,000</td><td class="px-4 py-3">320,000</td><td class="px-4 py-3 text-maroon">540,000</td><td class="px-4 py-3 text-gold">Due 20 Sep</td></tr>
+                @for (inv of paged().rows; track inv.id) {
+                  <tr class="cursor-pointer hover:bg-canvas" (click)="open(inv.id)">
+                    <td class="px-4 py-3 font-mono text-xs">{{ inv.id }}</td>
+                    <td class="px-4 py-3">{{ inv.student }}</td>
+                    <td class="px-4 py-3">{{ money(inv.total) }}</td>
+                    <td class="px-4 py-3">{{ money(inv.paid) }}</td>
+                    <td class="px-4 py-3" [class.text-maroon]="owed(inv.balance)">{{ money(inv.balance) }}</td>
+                    <td class="px-4 py-3" [class]="statusClass(inv.status)">{{ inv.status }}</td>
+                  </tr>
+                }
               </tbody>
             </table>
+            <app-pager [total]="invoices().length" [page]="paged().current" (pageChange)="page.set($event)" />
           </div>
         </div>
 
@@ -82,11 +90,11 @@
               <table id="accountingTable" class="w-full text-sm">
                 <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Account</th><th class="pb-2 font-normal">Type</th><th class="pb-2 font-normal text-right">Balance</th></tr></thead>
                 <tbody class="divide-y divide-line">
-                  <tr><td class="py-2">Tuition income</td><td class="py-2 text-slate2/60">Revenue</td><td class="py-2 text-right text-primary">812,000,000</td></tr>
-                  <tr><td class="py-2">Transport income</td><td class="py-2 text-slate2/60">Revenue</td><td class="py-2 text-right text-primary">64,500,000</td></tr>
-                  <tr><td class="py-2">Salaries & wages</td><td class="py-2 text-slate2/60">Expense</td><td class="py-2 text-right text-maroon">148,600,000</td></tr>
-                  <tr><td class="py-2">Utilities</td><td class="py-2 text-slate2/60">Expense</td><td class="py-2 text-right text-maroon">11,400,000</td></tr>
-                  <tr><td class="py-2">Bank — Stanbic operating</td><td class="py-2 text-slate2/60">Asset</td><td class="py-2 text-right text-ink font-medium">216,300,000</td></tr>
+                  <tr><td class="py-2">Tuition income</td><td class="py-2 text-slate2/60">Revenue</td><td class="py-2 text-right text-primary">142,000,000</td></tr>
+                  <tr><td class="py-2">Transport income</td><td class="py-2 text-slate2/60">Revenue</td><td class="py-2 text-right text-primary">8,400,000</td></tr>
+                  <tr><td class="py-2">Salaries & wages</td><td class="py-2 text-slate2/60">Expense</td><td class="py-2 text-right text-maroon">18,400,000</td></tr>
+                  <tr><td class="py-2">Utilities</td><td class="py-2 text-slate2/60">Expense</td><td class="py-2 text-right text-maroon">2,100,000</td></tr>
+                  <tr><td class="py-2">Bank — Stanbic operating</td><td class="py-2 text-slate2/60">Asset</td><td class="py-2 text-right text-ink font-medium">36,800,000</td></tr>
                 </tbody>
               </table>
             </div>

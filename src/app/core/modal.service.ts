@@ -7,6 +7,7 @@ export class ModalService {
   readonly values = signal<Record<string, string>>({});
   readonly file = signal<File | undefined>(undefined);
   readonly invalid = signal<Record<string, boolean>>({});
+  readonly busy = signal(false);
 
   open(options: ModalOptions) {
     const initial: Record<string, string> = {};
@@ -14,10 +15,12 @@ export class ModalService {
     this.values.set(initial);
     this.file.set(undefined);
     this.invalid.set({});
+    this.busy.set(false);
     this.options.set(options);
   }
 
   close() {
+    this.busy.set(false);
     this.options.set(null);
   }
 
@@ -25,9 +28,9 @@ export class ModalService {
     this.values.update((v) => ({ ...v, [key]: value }));
   }
 
-  confirm() {
+  async confirm() {
     const opts = this.options();
-    if (!opts) return;
+    if (!opts || this.busy()) return;
     const invalid: Record<string, boolean> = {};
     for (const field of opts.fields ?? []) {
       if (field.required && !(this.values()[field.key] ?? '').trim()) invalid[field.key] = true;
@@ -36,7 +39,12 @@ export class ModalService {
     if (Object.keys(invalid).length) return;
     const payload: Record<string, string | File | undefined> = { ...this.values() };
     if (opts.file) payload[opts.file.key] = this.file();
-    const ok = opts.onConfirm(payload);
-    if (ok !== false) this.close();
+    this.busy.set(true);
+    try {
+      const ok = await opts.onConfirm(payload);
+      if (ok !== false) this.close();
+    } finally {
+      this.busy.set(false);
+    }
   }
 }

@@ -26,7 +26,7 @@
       </tr>
     </thead>
     <tbody class="divide-y divide-slate-50">
-      @for (c of cards(); track c.student.adm) {
+      @for (c of paged().rows; track c.student.adm) {
         <tr class="hover:bg-slate-50 cursor-pointer" (click)="open(c.student.adm)">
           <td class="px-4 py-3 font-mono text-xs text-slate-500">{{ c.student.adm }}</td>
           <td class="px-4 py-3 font-medium text-slate-900">{{ c.student.name }}</td>
@@ -42,4 +42,5 @@
       }
     </tbody>
   </table>
+  <app-pager [total]="cards().length" [page]="paged().current" (pageChange)="page.set($event)" />
 </div>

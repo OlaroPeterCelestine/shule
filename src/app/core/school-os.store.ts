@@ -78,6 +78,22 @@ export interface Question {
   text: string;
 }
 
+export interface ExamSitting {
+  id: number;
+  kind: string;
+  title: string;
+  cls: string;
+  subject: string;
+  term: string;
+  year: string;
+  examDate: string;
+  startTime: string;
+  duration: number;
+  room: string;
+  invigilator: string;
+  status: string;
+}
+
 export interface ExamRoom {
   id: number;
   room: string;
@@ -154,10 +170,10 @@ export class SchoolOsStore {
   ]);
 
   readonly houses = signal<House[]>([
-    { id: 1, name: 'Eagle', colour: 'Gold', members: 312 },
-    { id: 2, name: 'Lion', colour: 'Maroon', members: 298 },
-    { id: 3, name: 'Gazelle', colour: 'Green', members: 274 },
-    { id: 4, name: 'Crane', colour: 'Blue', members: 400 },
+    { id: 1, name: 'Eagle', colour: 'Gold', members: 48 },
+    { id: 2, name: 'Lion', colour: 'Maroon', members: 46 },
+    { id: 3, name: 'Gazelle', colour: 'Green', members: 44 },
+    { id: 4, name: 'Crane', colour: 'Blue', members: 48 },
   ]);
 
   readonly events = signal<SchoolEvent[]>([
@@ -192,6 +208,12 @@ export class SchoolOsStore {
     { id: 1, subject: 'Mathematics', topic: 'Place value', type: 'Short answer', difficulty: 'Medium', marks: 4, text: 'Write 347 in expanded form.' },
     { id: 2, subject: 'Science', topic: 'Parts of a plant', type: 'MCQ', difficulty: 'Easy', marks: 2, text: 'Which part of the plant makes food?' },
     { id: 3, subject: 'English', topic: 'Comprehension', type: 'Long answer', difficulty: 'Hard', marks: 10, text: 'Retell the story in your own words.' },
+  ]);
+
+  readonly exams = signal<ExamSitting[]>([
+    { id: 1, kind: 'Mid-term', title: 'Primary Five Mathematics — mid-term', cls: 'Primary Five', subject: 'Mathematics', term: 'Term 2', year: '2026', examDate: '2026-09-15', startTime: '08:00', duration: 90, room: 'Hall A', invigilator: 'B. Ssentongo', status: 'Scheduled' },
+    { id: 2, kind: 'Mid-term', title: 'Primary Five Science — mid-term', cls: 'Primary Five', subject: 'Science', term: 'Term 2', year: '2026', examDate: '2026-09-16', startTime: '08:00', duration: 90, room: 'Hall A', invigilator: 'J. Namutebi', status: 'Scheduled' },
+    { id: 3, kind: 'End of term', title: 'Primary Seven English — end of term', cls: 'Primary Seven', subject: 'English', term: 'Term 2', year: '2026', examDate: '2026-11-02', startTime: '08:00', duration: 120, room: 'Hall A', invigilator: 'S. Achieng', status: 'Scheduled' },
   ]);
 
   readonly examRooms = signal<ExamRoom[]>([
@@ -270,19 +292,27 @@ export class SchoolOsStore {
     this.register.update((list) => (list.some((r) => r.adm === row.adm) ? list : [...list, row]));
   }
 
-  addStock(name: string, category: string, qty: number, location: string) {
-    this.stock.update((list) => [{ id: Date.now(), name, category, qty, location }, ...list]);
+  addStock(name: string, category: string, qty: number, location: string, id = Date.now()) {
+    this.stock.update((list) => [{ id, name, category, qty, location }, ...list]);
+  }
+
+  replaceStock(rows: StockItem[]) {
+    this.stock.set(rows);
   }
 
   issueStock(id: number, qty: number) {
     this.stock.update((list) => list.map((i) => (i.id === id ? { ...i, qty: Math.max(0, i.qty - qty) } : i)));
   }
 
-  addVisit(adm: string, name: string, reason: string, action: string) {
+  addVisit(adm: string, name: string, reason: string, action: string, id = Date.now()) {
     this.visits.update((list) => [
-      { id: Date.now(), adm, name, reason, action, time: 'Just now', notified: false },
+      { id, adm, name, reason, action, time: 'Just now', notified: false },
       ...list,
     ]);
+  }
+
+  replaceVisits(rows: SickVisit[]) {
+    this.visits.set(rows);
   }
 
   notifyParent(id: number) {
@@ -295,6 +325,22 @@ export class SchoolOsStore {
 
   addExamRoom(room: string, exam: string, capacity: number, invigilator: string) {
     this.examRooms.update((list) => [{ id: Date.now(), room, exam, capacity, seated: 0, invigilator }, ...list]);
+  }
+
+  addExam(row: Omit<ExamSitting, 'id'> & Partial<Pick<ExamSitting, 'id'>>) {
+    this.exams.update((list) => [{ ...row, id: row.id ?? Date.now() }, ...list]);
+  }
+
+  replaceExams(rows: ExamSitting[]) {
+    this.exams.set(rows);
+  }
+
+  replaceEvents(rows: SchoolEvent[]) {
+    this.events.set(rows);
+  }
+
+  patchExam(id: number, patch: Partial<ExamSitting>) {
+    this.exams.update((list) => list.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   }
 
   addCms(title: string) {
@@ -313,10 +359,10 @@ export class SchoolOsStore {
     this.register.set(rows);
   }
 
-  addApplicant(row: Omit<Applicant, 'id' | 'stage' | 'meta'> & Partial<Pick<Applicant, 'stage' | 'meta'>>) {
+  addApplicant(row: Omit<Applicant, 'id' | 'stage' | 'meta'> & Partial<Pick<Applicant, 'id' | 'stage' | 'meta'>>) {
     const name = (row.firstName + ' ' + row.lastName).trim() || row.name;
     this.applicants.update((list) => [
-      { ...row, id: Date.now(), name, stage: row.stage ?? 'applied', meta: row.meta ?? 'Submitted today' },
+      { ...row, id: row.id ?? Date.now(), name, stage: row.stage ?? 'applied', meta: row.meta ?? 'Submitted today' },
       ...list,
     ]);
   }

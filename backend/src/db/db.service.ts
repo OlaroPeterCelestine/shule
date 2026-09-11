@@ -4,6 +4,7 @@ import {
   APPLICANTS,
   DEMO_ACCOUNTS,
   EVENTS,
+  EXAMS,
   INVOICES,
   REGISTER,
   SCHOOL,
@@ -36,6 +37,7 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
     await this.seedIfEmpty();
     await this.seedChangelogIfEmpty();
     await this.seedClockIfEmpty();
+    await this.seedExamsIfEmpty();
     this.log.log('Postgres ready');
   }
 
@@ -181,6 +183,19 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
          (date_trunc('day', now() AT TIME ZONE 'Africa/Kampala') - interval '1 day' + interval '7 hours 40 minutes') AT TIME ZONE 'Africa/Kampala',
          (date_trunc('day', now() AT TIME ZONE 'Africa/Kampala') - interval '1 day' + interval '16 hours 15 minutes') AT TIME ZONE 'Africa/Kampala')`,
     );
+  }
+
+  private async seedExamsIfEmpty() {
+    const row = await this.one<{ n: string }>('SELECT count(*)::text AS n FROM exams');
+    if (Number(row?.n) > 0) return;
+    const school = await this.one<{ term: string; year: string }>('SELECT term, year FROM school WHERE id = 1');
+    for (const e of EXAMS) {
+      await this.query(
+        `INSERT INTO exams (kind, title, cls, subject, term, year, exam_date, start_time, duration, room, invigilator, status)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        [e.kind, e.title, e.cls, e.subject, school?.term || 'Term 2', school?.year || '2026', e.examDate, e.startTime, e.duration, e.room, e.invigilator, e.status],
+      );
+    }
   }
 
   private async seedChangelogIfEmpty() {

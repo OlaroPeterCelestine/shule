@@ -46,6 +46,17 @@ export class RbacService {
         );
       }
     }
+    await this.db.query(
+      `UPDATE perms SET can_view = true, can_create = true, can_edit = true
+       WHERE role = 'teacher' AND module = 'academics'`,
+    );
+    await this.db.query(
+      `UPDATE perms SET can_view = true, can_create = true, can_edit = true
+       WHERE role = 'teacher' AND module = 'inventory'`,
+    );
+    await this.db.query(
+      `UPDATE perms SET can_view = true WHERE role = 'accountant' AND module = 'inventory'`,
+    );
   }
 
   async roles() {
@@ -72,6 +83,22 @@ export class RbacService {
       edit: !!p.can_edit,
       approve: !!p.can_approve,
     }));
+  }
+
+  async forRole(role: string) {
+    if (role === 'admin') {
+      return ACTIVITIES.map((a) => ({
+        role: 'admin',
+        roleLabel: 'Admin',
+        module: a.key,
+        label: a.label,
+        view: true,
+        create: true,
+        edit: true,
+        approve: true,
+      }));
+    }
+    return (await this.perms()).filter((p) => p.role === role);
   }
 
   async createRole(label: string, requested = '') {

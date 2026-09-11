@@ -1,276 +1,276 @@
-<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
+<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
   <div class="min-w-0">
-    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Welcome back, {{ firstName() }}</h1>
-    <p class="text-sm text-slate-400 mt-1">Wednesday, 9 September 2026 · Term 2, Week 8</p>
+    <p class="text-[11px] tracking-[0.14em] font-medium text-primary">LITTLE ROYALS · SEGUKU</p>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 mt-1">Good day, {{ firstName() }}</h1>
+    <p class="text-sm text-slate-500 mt-1">{{ auth.user()?.label || role() }} · {{ schoolLine() }}</p>
   </div>
-  <div class="flex flex-wrap items-center gap-2">
-    <div class="flex bg-white border border-slate-200 rounded-full p-1 overflow-x-auto">
-      <button type="button" (click)="setRole('admin')" class="px-3 py-1.5 text-xs rounded-full shrink-0" [class.bg-slate-900]="role() === 'admin'" [class.text-white]="role() === 'admin'" [class.text-slate-500]="role() !== 'admin'">Admin</button>
-      <button type="button" (click)="setRole('teacher')" class="px-3 py-1.5 text-xs rounded-full shrink-0" [class.bg-slate-900]="role() === 'teacher'" [class.text-white]="role() === 'teacher'" [class.text-slate-500]="role() !== 'teacher'">Teacher</button>
-      <button type="button" (click)="setRole('accountant')" class="px-3 py-1.5 text-xs rounded-full shrink-0" [class.bg-slate-900]="role() === 'accountant'" [class.text-white]="role() === 'accountant'" [class.text-slate-500]="role() !== 'accountant'">Accountant</button>
-      <button type="button" (click)="setRole('parent')" class="px-3 py-1.5 text-xs rounded-full shrink-0" [class.bg-slate-900]="role() === 'parent'" [class.text-white]="role() === 'parent'" [class.text-slate-500]="role() !== 'parent'">Parent</button>
-    </div>
-    <button type="button" class="hidden sm:inline-flex h-9 px-3 text-xs border border-slate-200 bg-white rounded-full text-slate-600">9 Sep 2026</button>
-    <select [ngModel]="frequency()" (ngModelChange)="frequency.set($event)" name="frequency" class="h-9 px-3 text-xs border border-slate-200 bg-white rounded-full text-slate-600">
-      <option>Daily</option>
-      <option>Weekly</option>
-      <option>Monthly</option>
-    </select>
-    <button type="button" (click)="exportCsv()" class="h-9 px-4 text-xs bg-slate-900 text-white rounded-full hover:bg-slate-800">Export CSV</button>
+  <div class="flex bg-white border border-slate-200 rounded-full p-1 overflow-x-auto shrink-0">
+    @for (r of demoRoles; track r.key) {
+      <button type="button" (click)="setRole(r.key)" class="px-3 py-1.5 text-xs rounded-full shrink-0" [class.bg-slate-900]="role() === r.key" [class.text-white]="role() === r.key" [class.text-slate-500]="role() !== r.key">{{ r.label }}</button>
+    }
   </div>
 </div>
 
-<div class="bg-white rounded-2xl border border-slate-100 p-5 mb-4">
-  <div class="flex items-center justify-between gap-3 mb-3">
-    <p class="text-[15px] font-semibold text-slate-900">What’s new</p>
-    <p class="text-xs text-slate-400">{{ release().date }} · v{{ release().version }} · app and API</p>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
-    <div>
-      <p class="text-xs font-medium text-slate-500 mb-2">Frontend</p>
-      <ul class="space-y-2">
-        @for (item of release().frontend; track item.title) {
-          <li>
-            <p class="font-medium text-slate-800">{{ item.title }}</p>
-            <p class="text-xs text-slate-500 mt-0.5">{{ item.detail }}</p>
-          </li>
-        }
-      </ul>
-    </div>
-    <div>
-      <p class="text-xs font-medium text-slate-500 mb-2">Backend</p>
-      <ul class="space-y-2">
-        @for (item of release().backend; track item.title) {
-          <li>
-            <p class="font-medium text-slate-800">{{ item.title }}</p>
-            <p class="text-xs text-slate-500 mt-0.5">{{ item.detail }}</p>
-          </li>
-        }
-      </ul>
-    </div>
-  </div>
-</div>
-
-<div class="role-view" [class.hidden]="role() !== 'admin'">
-  <app-stat-cards [items]="kpis" />
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-[0_1px_2px_rgba(16,24,40,0.04)] p-5">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <div>
-          <p class="text-[15px] font-semibold text-slate-900">Collection trend</p>
-          <p class="text-xs text-slate-400 mt-0.5">New vs returning fee payers · {{ trend() }}</p>
-        </div>
-        <div class="flex bg-slate-50 rounded-full p-1 self-start">
-          <button type="button" (click)="setTrend('weekly')" class="px-3 py-1 text-xs rounded-full" [class.bg-white]="trend() === 'weekly'" [class.shadow-sm]="trend() === 'weekly'" [class.text-slate-900]="trend() === 'weekly'" [class.text-slate-400]="trend() !== 'weekly'">Weekly</button>
-          <button type="button" (click)="setTrend('monthly')" class="px-3 py-1 text-xs rounded-full" [class.bg-white]="trend() === 'monthly'" [class.shadow-sm]="trend() === 'monthly'" [class.text-slate-900]="trend() === 'monthly'" [class.text-slate-400]="trend() !== 'monthly'">Monthly</button>
-          <button type="button" (click)="setTrend('yearly')" class="px-3 py-1 text-xs rounded-full" [class.bg-white]="trend() === 'yearly'" [class.shadow-sm]="trend() === 'yearly'" [class.text-slate-900]="trend() === 'yearly'" [class.text-slate-400]="trend() !== 'yearly'">Yearly</button>
-        </div>
-      </div>
-      <div class="flex items-end gap-3 h-56 px-1">
-        @for (m of months; track m.label) {
-          <button type="button" class="flex-1 h-full flex flex-col justify-end items-center gap-2 group relative" (mouseenter)="hover.set(m.label)" (mouseleave)="hover.set(null)">
-            @if (hover() === m.label) {
-              <div class="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full w-40 bg-white border border-slate-100 rounded-xl shadow-lg p-3 text-left z-10">
-                <p class="text-[11px] text-slate-400 mb-2">{{ m.label }} 2026</p>
-                <p class="text-xs text-slate-700 flex justify-between"><span>New payers</span><span class="font-semibold">{{ m.neu }}</span></p>
-                <p class="text-xs text-slate-700 flex justify-between mt-1"><span>Returning</span><span class="font-semibold">{{ m.exi }}</span></p>
-              </div>
-            }
-            <div class="w-[70%] flex flex-col-reverse gap-[3px]">
-              @for (i of blocks(m.blocks); track i) {
-                <span class="block h-2 rounded-[2px]" [class.bg-slate-900]="hover() === m.label || m.label === 'Jun'" [class.bg-slate-200]="hover() !== m.label && m.label !== 'Jun'"></span>
-              }
-            </div>
-            <span class="text-[11px] text-slate-400">{{ m.label }}</span>
-          </button>
-        }
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_1px_2px_rgba(16,24,40,0.04)] p-5 flex flex-col">
-      <p class="text-[13px] text-slate-500">Revenue by category</p>
-      <p class="text-[26px] font-semibold tracking-tight text-slate-900 mt-1">UGX 812M</p>
-      <div class="flex items-end gap-3 h-36 mt-6">
-        @for (c of categories; track c.name) {
-          <div class="flex-1 flex flex-col items-center gap-2">
-            <div class="w-full bg-slate-100 rounded-md overflow-hidden flex items-end" style="height: 120px">
-              <div class="w-full bg-slate-900 rounded-md" [style.height.%]="c.h"></div>
-            </div>
-          </div>
-        }
-      </div>
-      <p class="text-[11px] text-slate-400 mt-3">1 Jan — 30 Sep · Tuition, transport, meals, boarding</p>
-      <button type="button" (click)="aiInsight()" class="mt-auto w-full h-11 bg-slate-900 text-white text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-slate-800">
-        <svg class="ic text-amber-300"><use href="#i-sparkle"/></svg>
-        Get AI insight for better analysis
-      </button>
-    </div>
-  </div>
-
-  <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_1px_2px_rgba(16,24,40,0.04)] mt-4">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4">
-      <p class="text-[15px] font-semibold text-slate-900">Recent payments</p>
-      <div class="flex items-center gap-2">
-        <div class="relative flex-1 sm:flex-none">
-          <svg class="ic absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><use href="#i-search"/></svg>
-          <input [ngModel]="txnQuery()" (ngModelChange)="txnQuery.set($event)" name="txnSearch" type="text" placeholder="Search" class="h-9 w-full sm:w-52 text-sm border border-slate-200 rounded-full pl-9 pr-3 bg-slate-50" />
-        </div>
-        <button type="button" (click)="addTxn()" class="h-9 px-4 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800">+ Add payment</button>
-      </div>
-    </div>
-    <table class="w-full text-sm">
-      <thead>
-        <tr class="text-left text-[12px] text-slate-400 border-y border-slate-100">
-          <th class="pl-5 py-3 font-medium w-10"><input type="checkbox" class="rounded border-slate-300" /></th>
-          <th class="py-3 font-medium">ID</th>
-          <th class="py-3 font-medium">Student</th>
-          <th class="py-3 font-medium">Item</th>
-          <th class="py-3 font-medium">Status</th>
-          <th class="py-3 font-medium">Qty</th>
-          <th class="py-3 font-medium">Unit price</th>
-          <th class="py-3 font-medium">Total</th>
-          <th class="pr-5 py-3 font-medium"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (t of filteredTxns(); track t.id) {
-          <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/70">
-            <td class="pl-5 py-3"><input type="checkbox" class="rounded border-slate-300" /></td>
-            <td class="py-3 text-slate-500">{{ t.id }}</td>
-            <td class="py-3">
-              <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold flex items-center justify-center">{{ t.initials }}</span>
-                <span class="font-medium text-slate-800">{{ t.name }}</span>
-              </div>
-            </td>
-            <td class="py-3 text-slate-600">{{ t.product }}</td>
-            <td class="py-3">
-              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium"
-                [class.bg-emerald-50]="t.status === 'Success'" [class.text-emerald-700]="t.status === 'Success'"
-                [class.bg-amber-50]="t.status === 'Pending'" [class.text-amber-700]="t.status === 'Pending'"
-                [class.bg-rose-50]="t.status === 'Refunded'" [class.text-rose-700]="t.status === 'Refunded'">{{ t.status }}</span>
-            </td>
-            <td class="py-3 text-slate-600">{{ t.qty }}</td>
-            <td class="py-3 text-slate-600">{{ t.unit }}</td>
-            <td class="py-3 font-medium text-slate-800">{{ t.total }}</td>
-            <td class="pr-5 py-3 text-right relative">
-              <button type="button" (click)="toggleMenu($event, t.id)" class="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 inline-flex items-center justify-center">
-                <svg class="ic"><use href="#i-more"/></svg>
-              </button>
-              @if (menuFor() === t.id) {
-                <div class="absolute right-5 top-10 w-36 bg-white border border-slate-100 rounded-xl shadow-lg z-10 text-left">
-                  <button type="button" (click)="go('finance'); menuFor.set(null)" class="w-full px-3 py-2 text-xs hover:bg-slate-50">Open in Finance</button>
-                  <button type="button" (click)="notify('Receipt queued for ' + t.name); menuFor.set(null)" class="w-full px-3 py-2 text-xs hover:bg-slate-50">Send receipt</button>
-                </div>
-              }
-            </td>
-          </tr>
-        }
-        @if (!filteredTxns().length) {
-          <tr><td colspan="9" class="py-8 text-center text-sm text-slate-400">No payments match that search.</td></tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="role-view" [class.hidden]="role() !== 'teacher'">
-  <app-stat-cards [items]="teacherKpis()" />
-  <div class="bg-white rounded-2xl border border-slate-100 p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    <div>
-      <p class="text-[15px] font-semibold text-slate-900">Staff clock</p>
-      @if (clock.open(); as open) {
-        <p class="text-sm text-slate-500 mt-1">On campus since <span class="font-medium text-slate-800">{{ open.inAt }}</span></p>
-      } @else {
-        <p class="text-sm text-slate-500 mt-1">Not clocked in yet. Clock in when you arrive, clock out when you leave.</p>
-      }
-      @if (clock.mine().today.length) {
-        <p class="text-xs text-slate-400 mt-2">
-          Today
-          @for (p of clock.mine().today; track p.id) {
-            <span class="ml-2">{{ p.inAt }}–{{ p.outAt || 'now' }}@if (p.hours) { · {{ p.hours }} }</span>
-          }
-        </p>
-      }
-    </div>
-    <div class="flex gap-2 shrink-0">
-      @if (clock.open()) {
-        <button type="button" (click)="punch('out')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800 disabled:opacity-60">Clock out</button>
-      } @else {
-        <button type="button" (click)="punch('in')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full hover:bg-slate-800 disabled:opacity-60">Clock in</button>
-      }
-    </div>
-  </div>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="bg-white rounded-2xl border border-slate-100 p-5 lg:col-span-2">
-      <h3 class="text-[15px] font-semibold text-slate-900 mb-3">Today's classes — Mr. Ssentongo</h3>
-      <ul class="divide-y divide-slate-100 text-sm">
-        <li class="py-3 flex justify-between items-center"><span>08:00 — Primary Five Mathematics</span>@if (marked()) {<span class="text-xs text-emerald-600 flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Done</span>} @else {<button type="button" (click)="markAttendance()" class="text-xs text-slate-700 hover:underline">Mark attendance →</button>}</li>
-        <li class="py-3 flex justify-between items-center"><span>09:40 — Primary Five Science</span><span class="text-xs text-emerald-600 flex items-center gap-1"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Done</span></li>
-        <li class="py-3 flex justify-between items-center"><span>11:20 — Primary Seven English</span><span class="text-xs text-slate-400">Upcoming</span></li>
-        <li class="py-3 flex justify-between items-center"><span>14:00 — Mid-term supervision</span><span class="text-xs text-slate-400">Upcoming</span></li>
-      </ul>
-    </div>
-    <div class="bg-white rounded-2xl border border-slate-100 p-5">
-      <h3 class="text-[15px] font-semibold text-slate-900 mb-3">Marking queue</h3>
-      <div class="space-y-2 text-sm">
-        <div class="flex justify-between"><span>S4A — Mid-term paper</span><span class="font-medium">18/32</span></div>
-        <div class="flex justify-between"><span>P7 — Science test</span><span class="font-medium">6/21</span></div>
-        <div class="flex justify-between"><span>S4B — Homework set 7</span><span class="font-medium">0/29</span></div>
-      </div>
-      <button type="button" class="w-full mt-4 text-xs bg-slate-900 text-white rounded-full py-2" (click)="notify('Opening the marking workspace…')">Continue marking →</button>
-    </div>
-  </div>
-</div>
-
-<div class="role-view" [class.hidden]="role() !== 'accountant'">
-  <app-stat-cards [items]="accountantKpis" />
-  <div class="bg-white rounded-2xl border border-slate-100 p-5 mt-4">
-    <h3 class="text-[15px] font-semibold text-slate-900 mb-3">Payments awaiting approval</h3>
-    <table class="w-full text-sm">
-      <thead><tr class="text-left text-xs text-slate-400 border-b border-slate-100"><th class="pb-2 font-medium">Ref</th><th class="pb-2 font-medium">Type</th><th class="pb-2 font-medium">Amount</th><th class="pb-2 font-medium">Action</th></tr></thead>
-      <tbody class="divide-y divide-slate-50">
-        @for (a of approvals(); track a.id) {
-          <tr>
-            <td class="py-3 font-mono text-xs">{{ a.ref }}</td>
-            <td class="py-3">{{ a.type }}</td>
-            <td class="py-3">{{ a.amount }}</td>
-            <td class="py-3 flex gap-3">
-              <button type="button" class="text-xs text-emerald-700 hover:underline" (click)="decide(a.id, 'Payment ' + a.ref + ' approved')">Approve</button>
-              <button type="button" class="text-xs text-rose-600 hover:underline" (click)="decide(a.id, 'Payment ' + a.ref + ' declined')">Decline</button>
-            </td>
-          </tr>
-        }
-        @if (!approvals().length) {
-          <tr><td colspan="4" class="py-3 text-xs text-slate-400">No payments awaiting approval.</td></tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="role-view" [class.hidden]="role() !== 'parent'">
+@if (isParent()) {
   <app-stat-cards [items]="parentKpis()" />
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="bg-white rounded-2xl border border-slate-100 p-5">
-      <p class="text-xs text-slate-500">Child</p>
+      <p class="text-xs text-slate-500">Your child</p>
       <p class="text-xl font-semibold text-slate-900 mt-1">Nakiwala Faith — Primary Five</p>
       <p class="text-sm text-slate-500 mt-3">Attendance this term: <span class="font-medium text-slate-800">96%</span></p>
-      <p class="text-sm text-slate-500">Latest position: <span class="font-medium text-slate-800">4th of 58</span></p>
+      @if (access.canView('reports')) {
+        <button type="button" (click)="go('reports')" class="mt-3 text-xs text-primary hover:underline">Open report card</button>
+      }
     </div>
     <div class="bg-white rounded-2xl border border-slate-100 p-5">
       <p class="text-xs text-slate-500">Fees balance</p>
       <p class="text-[28px] font-semibold mt-1" [class.text-rose-600]="!paid()" [class.text-emerald-600]="paid()">{{ paid() ? 'UGX 0' : 'UGX 260,000' }}</p>
       <p class="text-xs text-slate-400 mt-1">{{ paid() ? 'Cleared today' : 'Due 20 Sep 2026' }}</p>
-      @if (!paid()) {
+      @if (!paid() && access.canView('finance')) {
         <button type="button" (click)="payNow()" class="mt-3 text-xs bg-slate-900 text-white px-4 py-2 rounded-full">Pay now</button>
       }
     </div>
     <div class="bg-white rounded-2xl border border-slate-100 p-5">
-      <p class="text-xs text-slate-500">Messages from school</p>
-      <p class="text-sm mt-2 text-slate-700">"Mid-term reports released — view Faith's results in the Academics tab."</p>
-      <p class="text-xs text-slate-400 mt-2">Sent yesterday, 4:30pm</p>
+      <p class="text-xs text-slate-500">From school</p>
+      <p class="text-sm mt-2 text-slate-700">Mid-term reports are out. View Faith’s results under Report cards.</p>
+      @if (access.canView('calendar')) {
+        <button type="button" (click)="go('calendar')" class="mt-3 text-xs text-primary hover:underline">Term calendar</button>
+      }
     </div>
   </div>
-</div>
+} @else {
+  @if (kpis().length) {
+    <app-stat-cards [items]="kpis()" />
+  }
+
+  @if (access.can('clock', 'create')) {
+    <div class="bg-white rounded-2xl border border-slate-100 p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <p class="text-[15px] font-semibold text-slate-900">Staff clock</p>
+        @if (clock.open(); as open) {
+          <p class="text-sm text-slate-500 mt-1">On campus since <span class="font-medium text-slate-800">{{ open.inAt }}</span></p>
+        } @else {
+          <p class="text-sm text-slate-500 mt-1">Clock in when you arrive. Clock out when you leave.</p>
+        }
+        @if (clock.mine().today.length) {
+          <p class="text-xs text-slate-400 mt-2">
+            Today
+            @for (p of clock.mine().today; track p.id) {
+              <span class="ml-2">{{ p.inAt }}–{{ p.outAt || 'now' }}@if (p.hours) { · {{ p.hours }} }</span>
+            }
+          </p>
+        }
+      </div>
+      <div class="flex gap-2 shrink-0">
+        @if (clock.open()) {
+          <button type="button" (click)="punch('out')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">Clock out</button>
+        } @else {
+          <button type="button" (click)="punch('in')" [disabled]="clock.busy()" class="h-10 px-5 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">Clock in</button>
+        }
+      </div>
+    </div>
+  }
+
+  @if (shortcuts().length) {
+    <p class="text-[11px] tracking-[0.12em] font-medium text-slate-400 mb-2">YOUR DAY</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      @for (s of shortcuts(); track s.path) {
+        <button type="button" (click)="go(s.path)" class="text-left bg-white border border-slate-100 rounded-2xl p-4 hover:border-primary/40 hover:bg-primary/5">
+          <p class="text-sm font-semibold text-slate-900">{{ s.title }}</p>
+          <p class="text-xs text-slate-500 mt-1">{{ s.detail }}</p>
+        </button>
+      }
+    </div>
+  }
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+    @if (access.canView('admissions')) {
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-[15px] font-semibold text-slate-900">Admissions to move</h2>
+          <button type="button" (click)="go('admissions')" class="text-xs text-primary hover:underline">Open pipeline</button>
+        </div>
+        <ul class="divide-y divide-slate-100 text-sm">
+          @for (a of admissionsQueue(); track a.id) {
+            <li class="py-2.5 flex justify-between gap-3">
+              <span class="min-w-0">
+                <span class="block font-medium text-slate-800 truncate">{{ a.name }}</span>
+                <span class="text-xs text-slate-400">{{ a.cls }}</span>
+              </span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0 self-center">{{ stageLabel(a.stage) }}</span>
+            </li>
+          } @empty {
+            <li class="py-6 text-sm text-slate-400">No applications waiting.</li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (access.canView('attendance')) {
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-[15px] font-semibold text-slate-900">Morning register</h2>
+          @if (access.can('attendance', 'edit')) {
+            <button type="button" (click)="go('attendance')" class="text-xs text-primary hover:underline">Mark roll</button>
+          }
+        </div>
+        <p class="text-sm text-slate-600 mb-3">{{ os.presentCount() }} present or late · {{ os.absentCount() }} absent</p>
+        <ul class="divide-y divide-slate-100 text-sm">
+          @for (r of absents(); track r.adm) {
+            <li class="py-2.5 flex justify-between gap-3">
+              <span>{{ r.name }}<span class="block text-xs text-slate-400">{{ r.adm }} · {{ r.cls }}</span></span>
+              <span class="text-[11px] text-maroon font-medium self-center">Absent</span>
+            </li>
+          } @empty {
+            <li class="py-3 text-sm text-slate-400">No absences on the register.</li>
+          }
+        </ul>
+        @if (access.canView('health') && sickbay().length) {
+          <p class="text-xs font-medium text-slate-500 mt-4 mb-1">Sickbay</p>
+          @for (v of sickbay(); track v.id) {
+            <p class="text-sm text-slate-700">{{ v.name }} — {{ v.reason }}</p>
+          }
+        }
+      </div>
+    }
+
+    @if (access.canView('finance')) {
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-[15px] font-semibold text-slate-900">Fees still due</h2>
+          <button type="button" (click)="go('finance')" class="text-xs text-primary hover:underline">Accounts</button>
+        </div>
+        <ul class="divide-y divide-slate-100 text-sm">
+          @for (s of duePupils(); track s.adm) {
+            <li class="py-2.5 flex justify-between gap-3">
+              <span>{{ s.name }}<span class="block text-xs text-slate-400">{{ s.cls }}</span></span>
+              <span class="text-xs text-slate-700 self-center">{{ s.feeLabel }}</span>
+            </li>
+          } @empty {
+            <li class="py-6 text-sm text-slate-400">No balances on the pupil list.</li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (access.can('finance', 'approve')) {
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <h3 class="text-[15px] font-semibold text-slate-900 mb-3">Payments awaiting approval</h3>
+        <table class="w-full text-sm">
+          <thead><tr class="text-left text-xs text-slate-400 border-b border-slate-100"><th class="pb-2 font-medium">Ref</th><th class="pb-2 font-medium">Type</th><th class="pb-2 font-medium"></th></tr></thead>
+          <tbody class="divide-y divide-slate-50">
+            @for (a of approvals(); track a.id) {
+              <tr>
+                <td class="py-3 font-mono text-xs">{{ a.ref }}</td>
+                <td class="py-3">{{ a.type }}</td>
+                <td class="py-3 text-right">
+                  <button type="button" class="text-xs text-emerald-700 hover:underline mr-2" (click)="decide(a.id, 'Payment ' + a.ref + ' approved')">Approve</button>
+                  <button type="button" class="text-xs text-rose-600 hover:underline" (click)="decide(a.id, 'Payment ' + a.ref + ' declined')">Decline</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="3" class="py-3 text-xs text-slate-400">Nothing waiting.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+    @if (access.canView('academics')) {
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-[15px] font-semibold text-slate-900">Exam papers</h2>
+          <button type="button" (click)="go('academics')" class="text-xs text-primary hover:underline">Timetable & Exams</button>
+        </div>
+        <ul class="divide-y divide-slate-100 text-sm">
+          @for (e of papers(); track e.id) {
+            <li class="py-2.5 flex justify-between gap-3">
+              <span>{{ e.cls }} · {{ e.subject }}<span class="block text-xs text-slate-400">{{ e.kind }} · {{ e.examDate }} {{ e.startTime }} · {{ e.room }}</span></span>
+              <span class="text-[11px] text-slate-500 self-center">{{ e.status }}</span>
+            </li>
+          } @empty {
+            <li class="py-6 text-sm text-slate-400">No papers yet. Create an end-of-term sitting.</li>
+          }
+        </ul>
+      </div>
+    }
+    @if (access.canView('calendar')) {
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-[15px] font-semibold text-slate-900">Term calendar</h2>
+          <button type="button" (click)="go('calendar')" class="text-xs text-primary hover:underline">Full calendar</button>
+        </div>
+        <ul class="divide-y divide-slate-100 text-sm">
+          @for (e of events(); track e.id) {
+            <li class="py-2.5 flex justify-between gap-3">
+              <span>{{ e.title }}<span class="block text-xs text-slate-400">{{ e.type }} · {{ e.audience }}</span></span>
+              <span class="text-xs text-slate-500 self-center">{{ e.date }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+    @if (access.canView('inventory')) {
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-[15px] font-semibold text-slate-900">Stores running low</h2>
+          <button type="button" (click)="go('inventory')" class="text-xs text-primary hover:underline">Inventory</button>
+        </div>
+        <ul class="divide-y divide-slate-100 text-sm">
+          @for (i of lowStock(); track i.id) {
+            <li class="py-2.5 flex justify-between gap-3">
+              <span>{{ i.name }}<span class="block text-xs text-slate-400">{{ i.category }} · {{ i.location }}</span></span>
+              <span class="text-xs text-rose-600 font-medium self-center">{{ i.qty }} left</span>
+            </li>
+          } @empty {
+            <li class="py-6 text-sm text-slate-400">Nothing below 20 units.</li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+
+  @if (access.canView('students')) {
+    <div class="bg-white rounded-2xl border border-slate-100 p-5 mb-4">
+      <h2 class="text-[15px] font-semibold text-slate-900 mb-3">Classes on roll</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        @for (c of classes(); track c.cls) {
+          <button type="button" (click)="go('students')" class="text-left rounded-xl border border-slate-100 px-3 py-3 hover:border-primary/30">
+            <p class="text-xs text-slate-500 truncate">{{ c.cls }}</p>
+            <p class="text-lg font-semibold text-slate-900">{{ c.n }}</p>
+            <p class="text-[11px] text-slate-400">{{ c.rows ? c.here + ' in today' : 'No register row' }}</p>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="bg-white rounded-2xl border border-slate-100 p-4">
+    <button type="button" (click)="newsOpen.set(!newsOpen())" class="w-full flex items-center justify-between text-left">
+      <span class="text-sm font-medium text-slate-800">What’s new · {{ release().date }} · v{{ release().version }}</span>
+      <span class="text-xs text-slate-400">{{ newsOpen() ? 'Hide' : 'Show notes' }}</span>
+    </button>
+    @if (newsOpen()) {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm mt-4">
+        <ul class="space-y-2">
+          @for (item of release().frontend; track item.title) {
+            <li>
+              <p class="font-medium text-slate-800">{{ item.title }}</p>
+              <p class="text-xs text-slate-500 mt-0.5">{{ item.detail }}</p>
+            </li>
+          }
+        </ul>
+        <ul class="space-y-2">
+          @for (item of release().backend; track item.title) {
+            <li>
+              <p class="font-medium text-slate-800">{{ item.title }}</p>
+              <p class="text-xs text-slate-500 mt-0.5">{{ item.detail }}</p>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+}

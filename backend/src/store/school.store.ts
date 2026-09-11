@@ -1,6 +1,20 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DbService } from '../db/db.service.js';
-import { allowed, CLASSES, cleanText, isIsoDate, isPhone, MARKS, SEX, STAGES } from '../util/form-safe.js';
+import {
+  allowed,
+  CLASSES,
+  classesForSitting,
+  cleanText,
+  EXAM_KINDS,
+  EXAM_STATUS,
+  isIsoDate,
+  isPhone,
+  MARKS,
+  SEX,
+  STAGES,
+  SUBJECTS,
+  subjectsForClass,
+} from '../util/form-safe.js';
 
 @Injectable()
 export class SchoolStore {
@@ -161,6 +175,20 @@ export class SchoolStore {
     return this.db.query('SELECT id, name, category, qty, location FROM stock ORDER BY id');
   }
 
+  async addStock(body: Record<string, unknown>) {
+    const name = cleanText(body.name, 80);
+    if (!name) throw new BadRequestException('Item name is required');
+    const qty = Math.floor(Number(body.qty) || 0);
+    if (!Number.isFinite(qty) || qty < 1) throw new BadRequestException('Quantity must be at least 1');
+    const row = await this.db.one(
+      `INSERT INTO stock (name, category, qty, location)
+       VALUES ($1,$2,$3,$4)
+       RETURNING id, name, category, qty, location`,
+      [name, cleanText(body.category, 40) || 'General', qty, cleanText(body.location, 40) || 'Main store'],
+    );
+    return row;
+  }
+
   async issueStock(id: number, qty: number) {
     const n = Number(qty);
     if (!Number.isFinite(n) || n < 1) throw new BadRequestException('Quantity must be at least 1');
@@ -174,6 +202,15 @@ export class SchoolStore {
 
   async visits() {
     return this.db.query('SELECT id, adm, name, reason, action, time, notified FROM visits ORDER BY id DESC');
+  }
+
+  async notifyVisit(id: number) {
+    const row = await this.db.one(
+      'UPDATE visits SET notified = true WHERE id = $1 RETURNING id, adm, name, reason, action, time, notified',
+      [id],
+    );
+    if (!row) throw new NotFoundException('Visit not found');
+    return row;
   }
 
   async addVisit(body: Record<string, unknown>) {
@@ -191,6 +228,139 @@ export class SchoolStore {
 
   async events() {
     return this.db.query('SELECT id, title, date, type, audience FROM events ORDER BY id');
+  }
+
+  async addEvent(body: Record<string, unknown>) {
+    const title = cleanText(body.title, 80);
+    const date = cleanText(body.date, 40);
+    if (!title || !date) throw new BadRequestException('Title and date are required');
+    const row = await this.db.one(
+      `INSERT INTO events (title, date, type, audience)
+       VALUES ($1,$2,$3,$4)
+       RETURNING id, title, date, type, audience`,
+      [title, date, cleanText(body.type, 24) || 'Event', cleanText(body.audience, 40) || 'All'],
+    );
+    return row;
+  }
+
+  async exams() {
+    const rows = await this.db.query(
+      `SELECT id, kind, title, cls, subject, term, year, exam_date, start_time, duration, room, invigilator, status
+       FROM exams ORDER BY exam_date, start_time, cls, subject`,
+    );
+    return rows.map(mapExam);
+  }
+
+  async addExam(body: Record<string, unknown>) {
+    const school = await this.school();
+    const row = await this.insertExam(body, school.term, school.year);
+    return mapExam(row);
+  }
+
+  async addSitting(body: Record<string, unknown>) {
+    const school = await this.school();
+    const kind = cleanText(body.kind, 24) || 'End of term';
+    if (!allowed(kind, EXAM_KINDS)) throw new BadRequestException('Choose End of term, Mid-term or Continuous');
+    const scope = cleanText(body.cls, 40);
+    const classes = classesForSitting(scope);
+    if (!classes.length) throw new BadRequestException('Choose a class, Kindergarten, Primary or Whole school');
+    const start = cleanText(body.examDate || body.startDate, 10);
+    if (!isIsoDate(start, 2024, 2032)) throw new BadRequestException('Start date must be YYYY-MM-DD');
+    const created = [];
+    for (const cls of classes) {
+      const subjects = subjectsForClass(cls);
+      for (let i = 0; i < subjects.length; i++) {
+        const examDate = nextWeekday(start, i);
+        const subject = subjects[i];
+        const row = await this.insertExam(
+          {
+            kind,
+            title: `${cls} ${subject} — ${kind.toLowerCase()}`,
+            cls,
+            subject,
+            examDate,
+            startTime: body.startTime,
+            duration: body.duration,
+            room: body.room,
+            invigilator: body.invigilator,
+            status: 'Scheduled',
+          },
+          school.term,
+          school.year,
+        );
+        created.push(mapExam(row));
+      }
+    }
+    await this.addEvent({
+      title: `${scope} ${kind} — ${school.term}`,
+      date: formatUgDate(start),
+      type: 'Exams',
+      audience: scope,
+    });
+    return created;
+  }
+
+  async setExam(id: number, body: Record<string, unknown>) {
+    const current = await this.db.one('SELECT * FROM exams WHERE id = $1', [id]);
+    if (!current) throw new NotFoundException('Exam not found');
+    const status = cleanText(body.status, 16);
+    if (status && !allowed(status, EXAM_STATUS)) throw new BadRequestException('Unknown exam status');
+    const row = await this.db.one(
+      `UPDATE exams SET
+         status = COALESCE(NULLIF($2,''), status),
+         room = COALESCE(NULLIF($3,''), room),
+         invigilator = COALESCE(NULLIF($4,''), invigilator)
+       WHERE id = $1
+       RETURNING id, kind, title, cls, subject, term, year, exam_date, start_time, duration, room, invigilator, status`,
+      [id, status, cleanText(body.room, 40), cleanText(body.invigilator, 60)],
+    );
+    return mapExam(row!);
+  }
+
+  async markRegister(status: string, cls?: string) {
+    const mark = status.toUpperCase();
+    if (!allowed(mark, MARKS)) throw new BadRequestException('Mark must be P, A, L or E');
+    if (cls && !allowed(cls, CLASSES)) throw new BadRequestException('Choose a valid class');
+    const rows = cls
+      ? await this.db.query('UPDATE attendance SET status = $1 WHERE cls = $2 RETURNING adm, name, cls, status', [mark, cls])
+      : await this.db.query('UPDATE attendance SET status = $1 RETURNING adm, name, cls, status', [mark]);
+    return rows;
+  }
+
+  private async insertExam(body: Record<string, unknown>, term: string, year: string) {
+    const kind = cleanText(body.kind, 24) || 'End of term';
+    const cls = cleanText(body.cls, 40);
+    const subject = cleanText(body.subject, 40);
+    const examDate = cleanText(body.examDate || body.date, 10);
+    if (!allowed(kind, EXAM_KINDS)) throw new BadRequestException('Choose End of term, Mid-term or Continuous');
+    if (!allowed(cls, CLASSES)) throw new BadRequestException('Choose a valid class');
+    if (!allowed(subject, SUBJECTS)) throw new BadRequestException('Choose a valid subject');
+    if (!isIsoDate(examDate, 2024, 2032)) throw new BadRequestException('Exam date must be YYYY-MM-DD');
+    const duration = Number(body.duration ?? 90);
+    if (!Number.isFinite(duration) || duration < 20 || duration > 240) {
+      throw new BadRequestException('Duration must be between 20 and 240 minutes');
+    }
+    const title = cleanText(body.title, 80) || `${cls} ${subject} — ${kind.toLowerCase()}`;
+    const row = await this.db.one(
+      `INSERT INTO exams (kind, title, cls, subject, term, year, exam_date, start_time, duration, room, invigilator, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+       RETURNING id, kind, title, cls, subject, term, year, exam_date, start_time, duration, room, invigilator, status`,
+      [
+        kind,
+        title,
+        cls,
+        subject,
+        cleanText(body.term, 16) || term,
+        cleanText(body.year, 4) || year,
+        examDate,
+        cleanTime(body.startTime),
+        Math.floor(duration),
+        cleanText(body.room, 40) || 'Hall A',
+        cleanText(body.invigilator, 60) || 'TBA',
+        allowed(cleanText(body.status, 16), EXAM_STATUS) ? cleanText(body.status, 16) : 'Scheduled',
+      ],
+    );
+    return row!;
   }
 
   async staff() {
@@ -371,6 +541,48 @@ function mapStudent(r: Record<string, unknown>) {
     fee: r.fee,
     feeLabel: r.fee_label,
   };
+}
+
+function mapExam(r: Record<string, unknown>) {
+  return {
+    id: Number(r.id),
+    kind: String(r.kind ?? ''),
+    title: String(r.title ?? ''),
+    cls: String(r.cls ?? ''),
+    subject: String(r.subject ?? ''),
+    term: String(r.term ?? ''),
+    year: String(r.year ?? ''),
+    examDate: String(r.exam_date ?? ''),
+    startTime: String(r.start_time ?? ''),
+    duration: Number(r.duration),
+    room: String(r.room ?? ''),
+    invigilator: String(r.invigilator ?? ''),
+    status: String(r.status ?? ''),
+  };
+}
+
+function cleanTime(value: unknown) {
+  const raw = String(value ?? '08:00').trim();
+  if (!/^\d{2}:\d{2}$/.test(raw)) return '08:00';
+  return raw;
+}
+
+function nextWeekday(iso: string, offset: number) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  let added = 0;
+  while (added < offset) {
+    dt.setUTCDate(dt.getUTCDate() + 1);
+    const day = dt.getUTCDay();
+    if (day !== 0 && day !== 6) added += 1;
+  }
+  return dt.toISOString().slice(0, 10);
+}
+
+function formatUgDate(iso: string) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${d} ${months[m - 1]} ${y}`;
 }
 
 function mapApplicant(r: Record<string, unknown>) {

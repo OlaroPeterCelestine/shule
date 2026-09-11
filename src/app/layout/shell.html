@@ -50,7 +50,7 @@
           Back
         </button>
       }
-      <p class="hidden md:block text-[13px] text-slate-400 shrink-0">Dashboard <span class="text-slate-300 mx-1">›</span> <span class="text-slate-800 font-medium">{{ page() }}</span></p>
+      <p class="hidden md:block text-[13px] text-slate-400 shrink-0">Little Royals <span class="text-slate-300 mx-1">›</span> <span class="text-slate-800 font-medium">{{ page() }}</span></p>
       @if (isList()) {
         <a [routerLink]="'/' + moduleKey() + '/report'" class="inline-flex h-8 px-3 text-xs border border-slate-200 bg-white rounded-full text-slate-600 hover:text-slate-900 items-center shrink-0">Report</a>
       }
@@ -99,7 +99,7 @@
 
     <main class="px-4 lg:px-8 pb-10 flex-1 fade-in min-w-0">
       <router-outlet />
-      @if (isList() && moduleKey() !== 'students' && moduleKey() !== 'finance' && moduleKey() !== 'attendance' && moduleKey() !== 'reports' && moduleKey() !== 'admissions') {
+      @if (isList() && moduleKey() !== 'dashboard' && moduleKey() !== 'students' && moduleKey() !== 'finance' && moduleKey() !== 'attendance' && moduleKey() !== 'reports' && moduleKey() !== 'admissions' && moduleKey() !== 'academics' && moduleKey() !== 'calendar' && moduleKey() !== 'documents') {
         <div class="mt-6">
           <app-records-block [moduleKey]="moduleKey()" />
         </div>

@@ -1,5 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AccessService } from '../../core/access.service';
+import { ApiService } from '../../core/api.service';
 import { SchoolOsStore } from '../../core/school-os.store';
 import { ModalService } from '../../core/modal.service';
 import { ToastService } from '../../core/toast.service';
@@ -12,8 +14,10 @@ import { StatCards } from '../../shared/stat-cards';
 })
 export class SchoolPage {
   protected os = inject(SchoolOsStore);
+  protected access = inject(AccessService);
   private toast = inject(ToastService);
   private modal = inject(ModalService);
+  private api = inject(ApiService);
   protected readonly tab = signal<'profile' | 'campuses' | 'houses'>('profile');
   protected readonly saving = signal(false);
 
@@ -28,15 +32,26 @@ export class SchoolPage {
     this.os.saveSchool({ [key]: value });
   }
 
-  save() {
+  async save() {
+    if (!this.access.can('school', 'edit')) return;
+    if (this.saving()) return;
     this.saving.set(true);
-    setTimeout(() => {
-      this.saving.set(false);
-      this.toast.show('School profile saved');
-    }, 280);
+    if (this.api.token()) {
+      try {
+        const row = await this.api.patch<Record<string, string>>('/school', this.os.school());
+        this.os.saveSchool(row);
+        this.toast.show('School profile saved');
+      } catch (err) {
+        this.toast.show(err instanceof Error ? err.message : 'Could not save the school profile');
+      }
+    } else {
+      this.toast.show('School profile saved on this device');
+    }
+    this.saving.set(false);
   }
 
   addCampus() {
+    if (!this.access.can('school', 'create')) return;
     this.modal.open({
       title: 'Add campus',
       fields: [
@@ -52,6 +67,7 @@ export class SchoolPage {
   }
 
   addHouse() {
+    if (!this.access.can('school', 'create')) return;
     this.modal.open({
       title: 'Add house',
       fields: [

@@ -1,69 +1,95 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
-    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Documents</h1>
-    <p class="text-sm text-slate-400 mt-1">The server builds the PDF. This page only asks for it and shows it.</p>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Documents & samples</h1>
+    <p class="text-sm text-slate-400 mt-1">Every official letter, card and report Little Royals can print. Open a sample PDF or a paper layout.</p>
   </div>
+  <a routerLink="/reports" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">All report cards →</a>
 </div>
 
 <app-stat-cards [items]="stats()" />
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-  <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-    @for (t of types(); track t.key) {
-      <button type="button" (click)="choose(t.key)" class="text-left bg-white rounded-2xl border p-4 hover:border-slate-300" [class.border-slate-900]="selected() === t.key" [class.border-slate-100]="selected() !== t.key">
-        <p class="text-sm font-semibold text-slate-900">{{ t.title }}</p>
-        <p class="text-xs text-slate-400 mt-1">{{ t.description }}</p>
-      </button>
-    }
-    @if (!types().length) {
-      <p class="text-sm text-slate-400 col-span-2">No templates yet. Start the API so this page can load them.</p>
-    }
-  </div>
-
-  <div class="bg-white rounded-2xl border border-slate-100 p-5 h-fit">
-    <p class="text-xs text-slate-400">Generate</p>
-    <h2 class="text-lg font-semibold text-slate-900 mt-0.5">{{ current()?.title || 'Choose a document' }}</h2>
-    <p class="text-xs text-slate-400 mt-1">{{ current()?.description }}</p>
-
-    @if (current()?.pick === 'student') {
-      <label class="block text-xs text-slate-500 mt-4">Pupil
-        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
-          @for (s of students(); track s.adm) {
-            <option [value]="s.adm">{{ s.name }} · {{ s.adm }}</option>
-          }
-        </select>
-      </label>
-    }
-    @if (current()?.pick === 'staff') {
-      <label class="block text-xs text-slate-500 mt-4">Staff
-        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
-          @for (s of staff(); track s.id) {
-            <option [value]="s.id">{{ s.name }} · {{ s.role }}</option>
-          }
-        </select>
-      </label>
-    }
-    @if (current()?.pick === 'applicant') {
-      <label class="block text-xs text-slate-500 mt-4">Applicant
-        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
-          @for (a of applicants(); track a.id) {
-            <option [value]="a.id">{{ a.name }} · {{ a.cls }}</option>
-          }
-        </select>
-      </label>
-    }
-    @if (current()?.pick === 'visit') {
-      <label class="block text-xs text-slate-500 mt-4">Sickbay visit
-        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
-          @for (v of visits(); track v.id) {
-            <option [value]="v.id">{{ v.name }} · {{ v.reason }}</option>
-          }
-        </select>
-      </label>
-    }
-
-    <button type="button" (click)="generate()" [disabled]="!current() || busy()" class="mt-4 w-full h-10 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">
-      {{ busy() ? 'Building PDF…' : 'View PDF' }}
-    </button>
-  </div>
+<div class="flex flex-wrap gap-2 mb-5">
+  <button type="button" (click)="tab.set('all')" class="h-8 px-3 text-xs rounded-full" [class.bg-slate-900]="tab() === 'all'" [class.text-white]="tab() === 'all'" [class.bg-white]="tab() !== 'all'" [class.border]="tab() !== 'all'" [class.border-slate-200]="tab() !== 'all'">All samples</button>
+  <button type="button" (click)="tab.set('letters')" class="h-8 px-3 text-xs rounded-full" [class.bg-slate-900]="tab() === 'letters'" [class.text-white]="tab() === 'letters'" [class.bg-white]="tab() !== 'letters'" [class.border]="tab() !== 'letters'" [class.border-slate-200]="tab() !== 'letters'">Letters & cards</button>
+  <button type="button" (click)="tab.set('reports')" class="h-8 px-3 text-xs rounded-full" [class.bg-slate-900]="tab() === 'reports'" [class.text-white]="tab() === 'reports'" [class.bg-white]="tab() !== 'reports'" [class.border]="tab() !== 'reports'" [class.border-slate-200]="tab() !== 'reports'">Report cards</button>
 </div>
+
+@if (tab() !== 'reports') {
+  @for (g of groups(); track g.group) {
+    <section class="mb-6">
+      <h2 class="text-[15px] font-semibold text-slate-900 mb-3">{{ g.group }}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+        @for (t of g.items; track t.key) {
+          <article class="bg-white rounded-2xl border border-slate-100 p-4 flex flex-col">
+            <p class="text-[11px] tracking-wide text-slate-400">{{ t.key }}</p>
+            <h3 class="text-sm font-semibold text-slate-900 mt-1">{{ t.title }}</h3>
+            <p class="text-xs text-slate-500 mt-1 flex-1">{{ t.description }}</p>
+            <div class="flex flex-wrap gap-2 mt-4">
+              <button type="button" (click)="openPdf(t)" [disabled]="busyKey() === t.key" class="h-9 px-3 text-xs bg-slate-900 text-white rounded-full disabled:opacity-60">
+                {{ busyKey() === t.key ? 'Opening…' : 'Open sample PDF' }}
+              </button>
+              @if (t.key === 'report-card') {
+                <a routerLink="/reports" class="h-9 px-3 text-xs border border-slate-200 rounded-full inline-flex items-center">All cards</a>
+              } @else if (t.key === 'feedback') {
+                <a routerLink="/feedback" class="h-9 px-3 text-xs border border-slate-200 rounded-full inline-flex items-center">Generate form</a>
+              } @else if (hasLayout(t.key)) {
+                <button type="button" (click)="preview(t.key)" class="h-9 px-3 text-xs border border-slate-200 rounded-full">{{ previewKey() === t.key ? 'Hide layout' : 'See layout' }}</button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+}
+
+@if (previewHtml()) {
+  <section class="mb-6 bg-canvas border border-line rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-[15px] font-semibold text-slate-900">Paper layout sample</h2>
+      <button type="button" (click)="previewKey.set('')" class="text-xs text-slate-500">Close</button>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 p-5 max-w-2xl mx-auto" [innerHTML]="previewHtml()"></div>
+  </section>
+}
+
+@if (tab() !== 'letters') {
+  <section class="mb-4">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-[15px] font-semibold text-slate-900">Report cards — every pupil</h2>
+      <a routerLink="/reports" class="text-xs text-primary hover:underline">Open the report list</a>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-xs text-slate-400">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-medium">Adm.</th>
+            <th class="px-4 py-3 font-medium">Pupil</th>
+            <th class="px-4 py-3 font-medium">Class</th>
+            <th class="px-4 py-3 font-medium">Average</th>
+            <th class="px-4 py-3 font-medium">Grade</th>
+            <th class="px-4 py-3 font-medium"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          @for (c of paged().rows; track c.student.adm) {
+            <tr>
+              <td class="px-4 py-3 font-mono text-xs text-slate-500">{{ c.student.adm }}</td>
+              <td class="px-4 py-3 font-medium text-slate-900">{{ c.student.name }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ c.student.cls }}</td>
+              <td class="px-4 py-3">{{ c.average }}</td>
+              <td class="px-4 py-3">{{ c.grade }}</td>
+              <td class="px-4 py-3 text-right whitespace-nowrap">
+                <a [routerLink]="['/students', c.student.adm, 'card']" class="text-xs text-slate-700 hover:underline mr-2">Open card</a>
+                <button type="button" (click)="openCardPdf(c.student.adm, c.student.name)" class="text-xs text-slate-700 hover:underline">
+                  {{ busyKey() === 'card-' + c.student.adm ? 'Opening…' : 'PDF' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <app-pager [total]="cards().length" [page]="paged().current" (pageChange)="page.set($event)" />
+    </div>
+  </section>
+}

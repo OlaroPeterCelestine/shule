@@ -3,7 +3,9 @@
     <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Inventory & stores</h1>
     <p class="text-sm text-slate-400 mt-1">Stationery, uniforms, lab kit, sports and electronics</p>
   </div>
-  <button type="button" (click)="addItem()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ Stock in</button>
+  @if (access.can('inventory', 'create')) {
+    <button type="button" (click)="addItem()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ Stock in</button>
+  }
 </div>
 
 <app-stat-cards [items]="stats()" />
@@ -14,15 +16,20 @@
       <th class="px-4 py-3 font-medium">Item</th><th class="px-4 py-3 font-medium">Category</th><th class="px-4 py-3 font-medium">Qty</th><th class="px-4 py-3 font-medium">Location</th><th class="px-4 py-3 font-medium"></th>
     </tr></thead>
     <tbody class="divide-y divide-slate-50">
-      @for (i of os.stock(); track i.id) {
+      @for (i of paged().rows; track i.id) {
         <tr>
           <td class="px-4 py-3 font-medium text-slate-900">{{ i.name }}</td>
           <td class="px-4 py-3 text-slate-600">{{ i.category }}</td>
           <td class="px-4 py-3" [class.text-rose-600]="i.qty < 20">{{ i.qty }}</td>
           <td class="px-4 py-3 text-slate-600">{{ i.location }}</td>
-          <td class="px-4 py-3 text-right"><button type="button" (click)="issue(i.id, i.name)" class="text-xs text-slate-700 hover:underline">Issue</button></td>
+          <td class="px-4 py-3 text-right">
+            @if (access.can('inventory', 'edit')) {
+              <button type="button" (click)="issue(i.id, i.name)" class="text-xs text-slate-700 hover:underline">Issue</button>
+            }
+          </td>
         </tr>
       }
     </tbody>
   </table>
+  <app-pager [total]="os.stock().length" [page]="paged().current" (pageChange)="page.set($event)" />
 </div>

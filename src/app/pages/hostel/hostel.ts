@@ -17,8 +17,8 @@ export class HostelPage {
     { student: 'Byaruhanga T.', room: "St. Peter's — A03", event: 'Checked out — home visit', time: 'Today, 7:10am', in: false },
   ]);
   protected readonly stats = computed(() => [
-    { label: 'Boarders', value: '312', change: '3 blocks', bars: [7, 8, 8, 9, 9, 9, 10] },
-    { label: 'Rooms', value: '96', change: 'Occupancy 84%', bars: [6, 7, 7, 8, 8, 8, 8] },
+    { label: 'Boarders', value: '28', change: 'P4–P7 only', bars: [7, 8, 8, 9, 9, 9, 10] },
+    { label: 'Rooms', value: '12', change: 'Junior hostel', bars: [6, 7, 7, 8, 8, 8, 8] },
     { label: 'Checked in', value: String(this.events().filter((e) => e.in).length), change: 'Latest movements', bars: [5, 6, 5, 6, 7, 6, 7] },
     { label: 'Out on visit', value: String(this.events().filter((e) => !e.in).length), change: 'Home leave', bars: [2, 2, 3, 2, 3, 2, 2] },
   ]);

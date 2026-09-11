@@ -55,7 +55,7 @@ export function openApiSpec() {
         get: {
           security: [],
           summary: 'Readiness check for Flutter',
-          responses: { 200: { description: '{ ok, name, version, time }' } },
+          responses: { 200: { description: '{ ok, name, version, time, kafka }' } },
         },
       },
       '/releases': {
@@ -128,7 +128,17 @@ export function openApiSpec() {
       '/inventory': { get: { summary: 'Stock', responses: { 200: { description: 'Array' } } } },
       '/inventory/{id}': { patch: { summary: 'Issue stock', parameters: [param('id')], responses: { 200: { description: 'Item' } } } },
       '/health': { get: { summary: 'Sickbay visits', responses: { 200: { description: 'Array' } } }, post: { summary: 'Log visit', responses: { 200: { description: 'Visit' } } } },
-      '/calendar': { get: { summary: 'Events', responses: { 200: { description: 'Array' } } } },
+      '/calendar': {
+        get: { summary: 'Events', responses: { 200: { description: 'Array' } } },
+        post: { summary: 'Add calendar event', responses: { 200: { description: 'Event' } } },
+      },
+      '/exams': {
+        get: { summary: 'Exam papers', responses: { 200: { description: 'Array' } } },
+        post: { summary: 'Schedule one paper', responses: { 200: { description: 'Exam' } } },
+      },
+      '/exams/sitting': { post: { summary: 'Create end-of-term / mid-term sitting', responses: { 200: { description: 'Exam array' } } } },
+      '/exams/{id}': { patch: { summary: 'Update exam status or room', parameters: [param('id')], responses: { 200: { description: 'Exam' } } } },
+      '/attendance/bulk': { post: { summary: 'Mark a class or the whole register', responses: { 200: { description: 'Array' } } } },
       '/staff': { get: { summary: 'Staff directory', responses: { 200: { description: 'Array' } } } },
       '/clock/me': { get: { summary: 'My clock punches', responses: { 200: { description: '{ open, today, recent }' } } } },
       '/clock/today': { get: { summary: 'Campus clock board', responses: { 200: { description: 'Array' } } } },

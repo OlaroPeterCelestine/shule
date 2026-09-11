@@ -1,42 +1,84 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api.service';
 import { PdfViewerService } from '../../core/pdf-viewer.service';
+import { reportsFor } from '../../core/report-cards';
+import { StudentsStore } from '../../core/students.store';
 import { ToastService } from '../../core/toast.service';
+import { paginate } from '../../core/page';
+import { Pager } from '../../shared/pager';
 import { StatCards } from '../../shared/stat-cards';
+import { DOC_TEMPLATES } from './doc-templates';
 
 export interface DocType {
   key: string;
   title: string;
   description: string;
   pick: 'student' | 'staff' | 'applicant' | 'visit' | 'none';
+  group: string;
 }
+
+const FALLBACK: DocType[] = [
+  { key: 'report-card', title: 'Report card', description: 'End-of-term pupil progress report', pick: 'student', group: 'Reports' },
+  { key: 'fee-statement', title: 'Fee statement', description: 'Balance and payment status', pick: 'student', group: 'Money' },
+  { key: 'student-id', title: 'Student ID card', description: 'Admission number, class and validity', pick: 'student', group: 'Pupils' },
+  { key: 'admission-letter', title: 'Admission letter', description: 'Offer of a place for an applicant', pick: 'applicant', group: 'Pupils' },
+  { key: 'transfer-certificate', title: 'Transfer certificate', description: 'Release letter when a pupil leaves', pick: 'student', group: 'Pupils' },
+  { key: 'completion-certificate', title: 'Completion certificate', description: 'Issued at the end of Primary Seven', pick: 'student', group: 'Pupils' },
+  { key: 'sick-leave', title: 'Sickbay / sick leave note', description: 'Nurse note for a pupil sent home or resting', pick: 'visit', group: 'Campus' },
+  { key: 'staff-leave', title: 'Staff leave letter', description: 'Approved leave letter for a staff member', pick: 'staff', group: 'Staff' },
+  { key: 'payslip', title: 'Staff payslip', description: 'Latest payroll line', pick: 'staff', group: 'Staff' },
+  { key: 'visitor-badge', title: 'Visitor badge', description: 'Day pass for a campus visitor', pick: 'none', group: 'Campus' },
+  { key: 'feedback', title: 'Feedback form', description: 'Parent, teacher or visitor form you can print blank or filled', pick: 'none', group: 'Campus' },
+];
+
+const SAMPLE_HTML: Record<string, string> = {
+  'student-id': DOC_TEMPLATES['Student ID card'],
+  'admission-letter': DOC_TEMPLATES['Admission letter'],
+  'transfer-certificate': DOC_TEMPLATES['Transfer certificate'],
+  'completion-certificate': DOC_TEMPLATES['Completion certificate'],
+  payslip: DOC_TEMPLATES['Staff payslip'],
+  'visitor-badge': DOC_TEMPLATES['Visitor badge'],
+  feedback: DOC_TEMPLATES['Feedback form'],
+};
 
 @Component({
   selector: 'app-documents',
-  imports: [FormsModule, StatCards],
+  imports: [RouterLink, StatCards, Pager],
   templateUrl: './documents.html',
 })
 export class DocumentsPage {
   private api = inject(ApiService);
   private pdf = inject(PdfViewerService);
   private toast = inject(ToastService);
+  private pupils = inject(StudentsStore);
 
-  protected readonly types = signal<DocType[]>([]);
+  protected readonly types = signal<DocType[]>(FALLBACK);
   protected readonly students = signal<{ adm: string; name: string; cls: string }[]>([]);
   protected readonly staff = signal<{ id: string; name: string; role: string }[]>([]);
   protected readonly applicants = signal<{ id: number; name: string; cls: string }[]>([]);
   protected readonly visits = signal<{ id: number; name: string; reason: string; adm: string }[]>([]);
-  protected readonly selected = signal('');
-  protected readonly pickId = signal('');
-  protected readonly busy = signal(false);
+  protected readonly live = signal(false);
+  protected readonly busyKey = signal('');
+  protected readonly previewKey = signal('');
+  protected readonly tab = signal<'all' | 'letters' | 'reports'>('all');
+  protected readonly page = signal(1);
 
-  protected readonly current = computed(() => this.types().find((t) => t.key === this.selected()) ?? null);
+  protected readonly cards = computed(() => reportsFor(this.pupils.students()));
+  protected readonly paged = computed(() => paginate(this.cards(), this.page()));
+  protected readonly groups = computed(() => {
+    const list = this.types();
+    const order = ['Reports', 'Pupils', 'Money', 'Staff', 'Campus'];
+    return order
+      .map((group) => ({ group, items: list.filter((t) => t.group === group) }))
+      .filter((g) => g.items.length);
+  });
+  protected readonly previewHtml = computed(() => SAMPLE_HTML[this.previewKey()] || '');
   protected readonly stats = computed(() => [
-    { label: 'Templates', value: String(this.types().length), change: 'Generated on the server', bars: [4, 5, 5, 6, 6, 6, 6] },
-    { label: 'Pupils', value: String(this.students().length), change: 'Ready for letters', bars: [5, 6, 6, 7, 8, 8, 9] },
-    { label: 'Sickbay notes', value: String(this.visits().length), change: 'From health visits', bars: [2, 3, 3, 4, 4, 5, 5] },
-    { label: 'Staff letters', value: String(this.staff().length), change: 'Leave & payslips', bars: [6, 6, 7, 7, 7, 8, 8] },
+    { label: 'Official PDFs', value: String(this.types().length), change: this.live() ? 'From the API' : 'Sample list', bars: [4, 5, 5, 6, 6, 6, 6] },
+    { label: 'Report cards', value: String(this.cards().length), change: 'One per pupil', bars: [5, 6, 6, 7, 8, 8, 9] },
+    { label: 'Paper layouts', value: String(Object.keys(SAMPLE_HTML).length), change: 'On-screen samples', bars: [2, 3, 3, 4, 4, 5, 5] },
+    { label: 'Staff letters', value: String(this.staff().length || 4), change: 'Leave & payslips', bars: [6, 6, 7, 7, 7, 8, 8] },
   ]);
 
   constructor() {
@@ -44,51 +86,70 @@ export class DocumentsPage {
   }
 
   async load() {
+    if (!this.api.token()) {
+      this.students.set(this.pupils.students());
+      return;
+    }
     try {
       const [types, students, staff, applicants, visits] = await Promise.all([
-        this.api.get<DocType[]>('/documents'),
+        this.api.get<Omit<DocType, 'group'>[]>('/documents'),
         this.api.get<{ adm: string; name: string; cls: string }[]>('/students'),
         this.api.get<{ id: string; name: string; role: string }[]>('/staff'),
         this.api.get<{ id: number; name: string; cls: string }[]>('/admissions'),
         this.api.get<{ id: number; name: string; reason: string; adm: string }[]>('/health'),
       ]);
-      this.types.set(types);
+      if (Array.isArray(types) && types.length) {
+        this.types.set(types.map((t) => ({ ...t, group: FALLBACK.find((f) => f.key === t.key)?.group || 'Campus' })));
+      }
       this.students.set(students);
       this.staff.set(staff);
       this.applicants.set(applicants);
       this.visits.set(visits);
-      if (!this.selected() && types[0]) this.choose(types[0].key);
+      this.live.set(true);
     } catch {
-      this.toast.show('Start the backend to generate PDFs');
+      this.students.set(this.pupils.students());
     }
   }
 
-  choose(key: string) {
-    this.selected.set(key);
-    const type = this.types().find((t) => t.key === key);
-    if (type?.pick === 'student') this.pickId.set(this.students()[0]?.adm ?? '');
-    else if (type?.pick === 'staff') this.pickId.set(String(this.staff()[0]?.id ?? ''));
-    else if (type?.pick === 'applicant') this.pickId.set(String(this.applicants()[0]?.id ?? ''));
-    else if (type?.pick === 'visit') this.pickId.set(String(this.visits()[0]?.id ?? ''));
-    else this.pickId.set('');
+  hasLayout(key: string) {
+    return Boolean(SAMPLE_HTML[key]);
   }
 
-  async generate() {
-    const type = this.current();
-    if (!type) return;
-    const params = new URLSearchParams();
-    if (type.pick === 'student') params.set('adm', this.pickId());
-    if (type.pick === 'staff') params.set('staff', this.pickId());
-    if (type.pick === 'applicant') params.set('applicant', this.pickId());
-    if (type.pick === 'visit') params.set('visit', this.pickId());
-    const q = params.toString();
-    this.busy.set(true);
+  preview(key: string) {
+    this.previewKey.set(this.previewKey() === key ? '' : key);
+  }
+
+  async openPdf(type: DocType) {
+    const q = this.sampleQuery(type);
+    this.busyKey.set(type.key);
     try {
-      await this.pdf.open(type.title, '/documents/' + type.key + '/pdf' + (q ? '?' + q : ''));
+      await this.pdf.open(type.title, '/documents/' + type.key + '/pdf' + q);
     } catch (err) {
-      this.toast.show(err instanceof Error ? err.message : 'Could not generate that PDF');
+      this.toast.show(err instanceof Error ? err.message : 'Start the API to open the official PDF');
+      if (SAMPLE_HTML[type.key]) this.previewKey.set(type.key);
     } finally {
-      this.busy.set(false);
+      this.busyKey.set('');
     }
+  }
+
+  async openCardPdf(adm: string, name: string) {
+    this.busyKey.set('card-' + adm);
+    try {
+      await this.pdf.open('Report card — ' + name, '/documents/report-card/pdf?adm=' + encodeURIComponent(adm));
+    } catch (err) {
+      this.toast.show(err instanceof Error ? err.message : 'Could not generate that report card');
+    } finally {
+      this.busyKey.set('');
+    }
+  }
+
+  private sampleQuery(type: DocType) {
+    const params = new URLSearchParams();
+    if (type.pick === 'student') params.set('adm', this.students()[0]?.adm || this.pupils.students()[0]?.adm || '');
+    if (type.pick === 'staff') params.set('staff', String(this.staff()[0]?.id ?? 'LR-ST-014'));
+    if (type.pick === 'applicant') params.set('applicant', String(this.applicants()[0]?.id ?? '1'));
+    if (type.pick === 'visit') params.set('visit', String(this.visits()[0]?.id ?? '1'));
+    const q = params.toString();
+    return q ? '?' + q : '';
   }
 }

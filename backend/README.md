@@ -60,7 +60,7 @@ Writes follow the permission matrix. Admin always can. Other roles (including cu
 
 ## School routes
 
-`GET/PATCH /school` · `GET/POST /students` · `GET/POST/PATCH /admissions` · `GET/PATCH /attendance/:adm` · `GET /finance` · `GET/PATCH /inventory/:id` · `GET/POST /health` · `GET /calendar` · `GET /staff` · `GET /clock/me` · `GET /clock/today` · `POST /clock/in` · `POST /clock/out` · `GET /perms` · `GET /changelog` · `GET /reports` · `GET /reports/cards`
+`GET/PATCH /school` · `GET/POST /students` · `GET/POST/PATCH /admissions` · `GET/PATCH /attendance/:adm` · `POST /attendance/bulk` · `GET /finance` · `GET/PATCH /inventory/:id` · `GET/POST /health` · `GET/POST /calendar` · `GET/POST /exams` · `POST /exams/sitting` · `PATCH /exams/:id` · `GET /staff` · `GET /clock/me` · `GET /clock/today` · `POST /clock/in` · `POST /clock/out` · `GET /perms` · `GET /changelog` · `GET /reports` · `GET /reports/cards`
 
 Sign-in, enrolments, application moves, attendance, sickbay, stock issues, school profile edits, teacher clock in/out, and PDF generation are written to `change_log` and shown on Permissions.
 

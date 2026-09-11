@@ -1,63 +1,133 @@
 <h1 class="font-display text-2xl text-ink mb-1">Timetable & Exams</h1>
-        <p class="text-sm text-slate2/60 mb-5">Primary Five · Term 2, Week 8</p>
-        <app-stat-cards [items]="stats()" />
+<p class="text-sm text-slate2/60 mb-5">{{ os.school().name }} · {{ os.school().term }}, {{ os.school().year }} · {{ os.school().motto }}</p>
+<app-stat-cards [items]="stats()" />
 
-        <div class="bg-white border border-line rounded-sm overflow-hidden mb-6">
-          <table class="w-full text-xs text-center">
-            <thead class="bg-canvas"><tr><th class="py-2 px-2 text-left font-normal text-slate2/60">Time</th><th class="py-2 font-normal">Mon</th><th class="py-2 font-normal">Tue</th><th class="py-2 font-normal">Wed</th><th class="py-2 font-normal">Thu</th><th class="py-2 font-normal">Fri</th></tr></thead>
-            <tbody class="divide-y divide-line">
-              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">08:00</td><td>English</td><td>Math</td><td class="bg-gold/10 font-medium">Science</td><td>English</td><td>SST</td></tr>
-              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">09:40</td><td>Math</td><td>Science</td><td>Literacy</td><td>RE</td><td>Math</td></tr>
-              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">11:20</td><td>Break</td><td>Break</td><td>Break</td><td>Break</td><td>Break</td></tr>
-              <tr><td class="py-2 px-2 text-left font-mono text-slate2/50">11:40</td><td>Art</td><td>English</td><td>PE</td><td>Science</td><td>Literacy</td></tr>
-            </tbody>
-          </table>
-        </div>
+<div class="bg-white border border-line rounded-sm p-5 mb-5">
+  <div class="flex items-center justify-between gap-3 mb-3">
+    <div>
+      <h3 class="font-display text-lg text-ink">Create exam sitting</h3>
+      <p class="text-xs text-slate2/50">Schedules one paper per subject on weekdays, starting from the date you pick. Kindergarten uses learning areas; primary uses UNEB subjects.</p>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+    <label class="block">
+      <span class="text-xs text-slate2/50">Kind</span>
+      <select class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().kind" (ngModelChange)="patchSitting('kind', $event)">
+        @for (k of kinds; track k) { <option [value]="k">{{ k }}</option> }
+      </select>
+    </label>
+    <label class="block">
+      <span class="text-xs text-slate2/50">Class / section</span>
+      <select class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().cls" (ngModelChange)="patchSitting('cls', $event)">
+        @for (c of scopes; track c) { <option [value]="c">{{ c }}</option> }
+      </select>
+    </label>
+    <label class="block">
+      <span class="text-xs text-slate2/50">First paper</span>
+      <input type="date" class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().startDate" (ngModelChange)="patchSitting('startDate', $event)" />
+    </label>
+    <label class="block">
+      <span class="text-xs text-slate2/50">Start time</span>
+      <input type="time" class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().startTime" (ngModelChange)="patchSitting('startTime', $event)" />
+    </label>
+    <label class="block">
+      <span class="text-xs text-slate2/50">Minutes</span>
+      <input class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().duration" (ngModelChange)="patchSitting('duration', $event)" />
+    </label>
+    <label class="block">
+      <span class="text-xs text-slate2/50">Room</span>
+      <input class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().room" (ngModelChange)="patchSitting('room', $event)" />
+    </label>
+    <label class="block">
+      <span class="text-xs text-slate2/50">Invigilator</span>
+      <input class="w-full border border-line rounded-sm px-3 py-2 mt-1" [ngModel]="sitting().invigilator" (ngModelChange)="patchSitting('invigilator', $event)" />
+    </label>
+    <div class="flex items-end">
+      <button type="button" class="w-full text-sm bg-ink text-white rounded-sm px-3 py-2 disabled:opacity-50" [disabled]="saving() || !access.can('academics', 'create')" (click)="createSitting()">
+        {{ saving() ? 'Scheduling…' : 'Create sitting' }}
+      </button>
+    </div>
+  </div>
+</div>
 
-        <div class="grid grid-cols-2 gap-5">
-          <div class="bg-white border border-line rounded-sm p-5">
-            <h3 class="font-display text-lg text-ink mb-3">Exam calendar</h3>
-            <ul class="text-sm space-y-2.5">
-              <li class="flex justify-between"><span>P5 mid-term — Mathematics</span><span class="text-slate2/50 text-xs">Today, 8:00</span></li>
-              <li class="flex justify-between"><span>P5 mid-term — Science</span><span class="text-slate2/50 text-xs">10 Sep, 8:00</span></li>
-              <li class="flex justify-between"><span>P1–P3 end-of-term begins</span><span class="text-slate2/50 text-xs">22 Sep</span></li>
-            </ul>
-            @if (clash()) {
-              <p class="text-xs text-gold mt-3 bg-gold/10 rounded-sm px-2 py-1.5 flex items-start gap-1.5"><svg class="ic w-3.5 h-3.5 mt-0.5 shrink-0"><use href="#i-alert"/></svg> Timetable check: P5 Science clashes with P5 Art on 10 Sep.</p>
-              <button type="button" class="mt-2 text-xs text-primary border border-primary/30 rounded-sm py-1.5 px-3 hover:bg-primary/5" (click)="resolveClash()">Resolve clash →</button>
+<div class="bg-white border border-line rounded-sm overflow-hidden mb-5">
+  <div class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-line">
+    <h3 class="font-display text-lg text-ink">Exam papers</h3>
+    <div class="flex flex-wrap gap-2">
+      <select class="border border-line rounded-sm px-3 py-1.5 text-xs bg-white" [ngModel]="filter()" (ngModelChange)="setFilter($event)">
+        <option value="">All classes</option>
+        @for (c of classes; track c) { <option [value]="c">{{ c }}</option> }
+      </select>
+      @if (access.can('academics', 'create')) {
+        <button type="button" (click)="addPaper()" class="text-xs bg-ink text-white rounded-sm px-3 py-1.5">+ One paper</button>
+      }
+    </div>
+  </div>
+  <table class="w-full text-sm">
+    <thead class="text-xs text-slate2/50 text-left border-b border-line bg-canvas">
+      <tr>
+        <th class="px-4 py-2 font-normal">Date</th>
+        <th class="px-4 py-2 font-normal">Class</th>
+        <th class="px-4 py-2 font-normal">Paper</th>
+        <th class="px-4 py-2 font-normal">Kind</th>
+        <th class="px-4 py-2 font-normal">Room</th>
+        <th class="px-4 py-2 font-normal">Status</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-line">
+      @for (e of paged().rows; track e.id) {
+        <tr>
+          <td class="px-4 py-2 text-slate2/70 whitespace-nowrap">{{ e.examDate }} · {{ e.startTime }}</td>
+          <td class="px-4 py-2">{{ e.cls }}</td>
+          <td class="px-4 py-2 font-medium text-ink">{{ e.subject }}<span class="block text-xs text-slate2/50">{{ e.duration }} min · {{ e.invigilator }}</span></td>
+          <td class="px-4 py-2"><span class="text-[11px] px-2 py-0.5 rounded-full bg-gold/10 text-ink">{{ e.kind }}</span></td>
+          <td class="px-4 py-2">{{ e.room }}</td>
+          <td class="px-4 py-2">
+            @if (access.can('academics', 'edit')) {
+              <select class="border border-line rounded-sm px-2 py-1 text-xs bg-white" [ngModel]="e.status" (ngModelChange)="setStatus(e, $event)">
+                <option>Scheduled</option>
+                <option>Running</option>
+                <option>Marked</option>
+                <option>Published</option>
+              </select>
             } @else {
-              <p class="text-xs text-primary mt-3">Clash resolved — P5 Art moved to 11 Sep.</p>
+              {{ e.status }}
             }
-          </div>
-          <div class="bg-white border border-line rounded-sm p-5">
-            <h3 class="font-display text-lg text-ink mb-3">Attendance — today</h3>
-            <div class="flex items-center gap-4">
-              <div class="w-24 h-24 rounded-full" style="background: conic-gradient(#0E7C61 0% 94%, #E1E5EA 94% 100%)"></div>
-              <div class="text-sm">
-                <p><span class="font-medium text-ink">1,209</span> present</p>
-                <p><span class="font-medium text-maroon">62</span> absent, explained</p>
-                <p><span class="font-medium text-maroon">13</span> absent, unexplained</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6" class="px-4 py-6 text-sm text-slate2/50">No papers yet. Create an end-of-term sitting above.</td></tr>
+      }
+    </tbody>
+  </table>
+  <app-pager [total]="papers().length" [page]="paged().current" (pageChange)="page.set($event)" />
+</div>
 
-        <div class="bg-white border border-line rounded-sm p-5 mt-5">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-display text-lg text-ink">Exam rooms & seating</h3>
-            <button type="button" (click)="addRoom()" class="text-xs bg-ink text-white rounded-sm px-3 py-1.5">+ Room</button>
-          </div>
-          <table class="w-full text-sm">
-            <thead class="text-xs text-slate2/50 text-left border-b border-line"><tr><th class="pb-2 font-normal">Room</th><th class="pb-2 font-normal">Paper</th><th class="pb-2 font-normal">Seated</th><th class="pb-2 font-normal">Invigilator</th></tr></thead>
-            <tbody class="divide-y divide-line">
-              @for (r of os.examRooms(); track r.id) {
-                <tr>
-                  <td class="py-2">{{ r.room }}</td>
-                  <td class="py-2">{{ r.exam }}</td>
-                  <td class="py-2">{{ r.seated }} / {{ r.capacity }}</td>
-                  <td class="py-2">{{ r.invigilator }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+  <div class="bg-white border border-line rounded-sm p-5">
+    <h3 class="font-display text-lg text-ink mb-3">Attendance — today</h3>
+    <p class="text-sm text-slate2/60 mb-2">Live from the morning register (Baby–P7).</p>
+    <p><span class="font-medium text-ink">{{ os.presentCount() }}</span> present or late</p>
+    <p><span class="font-medium text-maroon">{{ os.absentCount() }}</span> absent</p>
+  </div>
+  <div class="bg-white border border-line rounded-sm p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-display text-lg text-ink">Exam rooms</h3>
+      @if (access.can('academics', 'create')) {
+        <button type="button" (click)="addRoom()" class="text-xs bg-ink text-white rounded-sm px-3 py-1.5">+ Room</button>
+      }
+    </div>
+    <table class="w-full text-sm">
+      <thead class="text-xs text-slate2/50 text-left border-b border-line"><tr><th class="pb-2 font-normal">Room</th><th class="pb-2 font-normal">Paper</th><th class="pb-2 font-normal">Invigilator</th></tr></thead>
+      <tbody class="divide-y divide-line">
+        @for (r of os.examRooms(); track r.id) {
+          <tr>
+            <td class="py-2">{{ r.room }}</td>
+            <td class="py-2">{{ r.exam }}</td>
+            <td class="py-2">{{ r.invigilator }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

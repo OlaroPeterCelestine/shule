@@ -2,11 +2,13 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { SchoolOsStore } from '../../core/school-os.store';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
+import { paginate } from '../../core/page';
+import { Pager } from '../../shared/pager';
 import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-assessments',
-  imports: [StatCards],
+  imports: [StatCards, Pager],
   templateUrl: './assessments.html',
 })
 export class AssessmentsPage {
@@ -14,12 +16,14 @@ export class AssessmentsPage {
   private toast = inject(ToastService);
   private modal = inject(ModalService);
 
+  protected readonly page = signal(1);
   protected readonly tab = signal('ca');
   protected readonly generated = signal<string | null>(null);
   protected readonly online = signal([
     { title: 'P5 Science — Plants quiz', meta: '20 min · Opens 10 Sep' },
     { title: 'P7 Math — Fractions MCQ', meta: '30 min · Opens 12 Sep' },
   ]);
+  protected readonly pagedQuestions = computed(() => paginate(this.os.questions(), this.page()));
   protected readonly stats = computed(() => [
     { label: 'CA items', value: '3', change: 'This term', bars: [3, 4, 4, 5, 5, 6, 5] },
     { label: 'Question bank', value: String(this.os.questions().length), change: 'Reusable items', bars: [6, 7, 7, 8, 8, 9, 10] },

@@ -46,6 +46,7 @@ export const routes: Routes = [
       moduleRoutes('visitors', () => import('./pages/visitors/visitors'), 'VisitorsPage'),
       moduleRoutes('comms', () => import('./pages/comms/comms'), 'CommsPage'),
       moduleRoutes('meetings', () => import('./pages/meetings/meetings'), 'MeetingsPage'),
+      moduleRoutes('feedback', () => import('./pages/feedback/feedback'), 'FeedbackPage'),
       moduleRoutes('welfare', () => import('./pages/welfare/welfare'), 'WelfarePage'),
       moduleRoutes('lifecycle', () => import('./pages/lifecycle/lifecycle'), 'LifecyclePage'),
       moduleRoutes('documents', () => import('./pages/documents/documents'), 'DocumentsPage'),

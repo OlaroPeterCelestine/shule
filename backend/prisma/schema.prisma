@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String
+  name      String
+  role      String
+  label     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Role {
+  key       String   @id
+  label     String
+  locked    Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("roles")
+}
+
+model School {
+  id      Int    @id @default(1)
+  name    String
+  motto   String @default("")
+  address String @default("")
+  phone   String @default("")
+  email   String @default("")
+  website String @default("")
+  year    String @default("2026")
+  term    String @default("Term 2")
+
+  @@map("school")
+}
+
+model Student {
+  adm           String  @id
+  firstName     String  @map("first_name")
+  lastName      String  @map("last_name")
+  name          String
+  cls           String
+  gender        String  @default("")
+  dob           DateTime? @db.Date
+  guardian      String  @default("")
+  guardianPhone String  @map("guardian_phone") @default("")
+  attendance    String  @default("—")
+  fee           String  @default("due")
+  feeLabel      String  @map("fee_label") @default("Not yet invoiced")
+
+  @@map("students")
+}
+
+model Applicant {
+  id          BigInt @id @default(autoincrement())
+  adm         String?
+  firstName   String @map("first_name")
+  lastName    String @map("last_name")
+  name        String
+  cls         String
+  stage       String @default("applied")
+  meta        String @default("")
+  lin         String @default("")
+  fatherName  String @map("father_name") @default("")
+  motherName  String @map("mother_name") @default("")
+  fatherPhone String @map("father_phone") @default("")
+  motherPhone String @map("mother_phone") @default("")
+
+  @@map("applicants")
+}
+
+model Attendance {
+  adm    String @id
+  name   String
+  cls    String
+  status String @default("P")
+
+  @@map("attendance")
+}
+
+model Invoice {
+  id         String  @id
+  student    String
+  studentAdm String? @map("student_adm")
+  total      Int     @default(0)
+  paid       Int     @default(0)
+  balance    Int     @default(0)
+  status     String
+
+  @@map("invoices")
+}
+
+model Stock {
+  id       Int    @id @default(autoincrement())
+  name     String
+  category String
+  qty      Int    @default(0)
+  location String @default("")
+
+  @@map("stock")
+}
+
+model Visit {
+  id       BigInt  @id @default(autoincrement())
+  adm      String
+  name     String
+  reason   String
+  action   String
+  time     String
+  notified Boolean @default(false)
+
+  @@map("visits")
+}
+
+model Event {
+  id       Int    @id @default(autoincrement())
+  title    String
+  date     String
+  type     String
+  audience String
+
+  @@map("events")
+}
+
+model Exam {
+  id          Int    @id @default(autoincrement())
+  kind        String
+  title       String
+  cls         String
+  subject     String
+  term        String
+  year        String
+  examDate    String @map("exam_date")
+  startTime   String @map("start_time") @default("08:00")
+  duration    Int    @default(90)
+  room        String @default("")
+  invigilator String @default("")
+  status      String @default("Scheduled")
+
+  @@map("exams")
+}
+
+model Staff {
+  id     String @id
+  name   String
+  role   String
+  dept   String
+  status String
+
+  @@map("staff")
+}
+
+model Perm {
+  id         Int     @id @default(autoincrement())
+  role       String
+  module     String
+  canView    Boolean @default(false) @map("can_view")
+  canCreate  Boolean @default(false) @map("can_create")
+  canEdit    Boolean @default(false) @map("can_edit")
+  canApprove Boolean @default(false) @map("can_approve")
+
+  @@unique([role, module])
+  @@map("perms")
+}
+
+model ChangeLog {
+  id        BigInt   @id @default(autoincrement())
+  who       String
+  action    String
+  module    String
+  detail    String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("change_log")
+}
+
+model StaffClock {
+  id       BigInt    @id @default(autoincrement())
+  email    String
+  who      String
+  role     String
+  clockIn  DateTime  @default(now()) @map("clock_in")
+  clockOut DateTime? @map("clock_out")
+
+  @@map("staff_clock")
+}

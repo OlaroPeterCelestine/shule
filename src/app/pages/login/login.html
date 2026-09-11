@@ -14,8 +14,8 @@
         </div>
       </div>
 
-      <p class="font-display text-3xl leading-snug mb-2">One place to run<br/>the whole school.</p>
-      <p class="text-sm text-white/55 mb-8 max-w-xs">Admissions, academics, fees, staff and communication — all connected to a single student record.</p>
+      <p class="font-display text-3xl leading-snug mb-2">Kindergarten and<br/>primary, in one place.</p>
+      <p class="text-sm text-white/55 mb-8 max-w-xs">Baby class through Primary Seven at Seguku — admissions, roll call, fees and sickbay on one pupil record.</p>
 
       <div class="grid grid-cols-2 gap-3 max-w-md">
         <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
@@ -23,15 +23,15 @@
             <svg class="ic-lg text-gold"><use href="#i-cap"/></svg>
             <span class="text-[10px] text-primary flex items-center gap-0.5"><svg class="ic w-3 h-3"><use href="#i-trend-up"/></svg> 34</span>
           </div>
-          <p class="font-display text-2xl leading-none">1,284</p>
-          <p class="text-[11px] text-white/45 mt-1">Students enrolled</p>
+          <p class="font-display text-2xl leading-none">186</p>
+          <p class="text-[11px] text-white/45 mt-1">Pupils on roll</p>
         </div>
         <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
           <div class="flex items-center justify-between mb-2">
             <svg class="ic-lg text-gold"><use href="#i-coin"/></svg>
             <span class="text-[10px] text-white/40">76%</span>
           </div>
-          <p class="font-display text-2xl leading-none">812M</p>
+          <p class="font-display text-2xl leading-none">142M</p>
           <p class="text-[11px] text-white/45 mt-1">Fees collected, UGX</p>
         </div>
         <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
@@ -45,16 +45,16 @@
         <div class="rounded-md border border-white/10 p-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);">
           <div class="flex items-center justify-between mb-2">
             <svg class="ic-lg text-gold"><use href="#i-users"/></svg>
-            <span class="text-[10px] text-white/40">86</span>
+            <span class="text-[10px] text-white/40">24</span>
           </div>
-          <p class="font-display text-2xl leading-none">14</p>
-          <p class="text-[11px] text-white/45 mt-1">Classes, all campuses</p>
+          <p class="font-display text-2xl leading-none">10</p>
+          <p class="text-[11px] text-white/45 mt-1">Baby–Top · P1–P7</p>
         </div>
       </div>
     </div>
 
     <div class="relative text-xs text-white/35 flex items-center gap-4">
-      <span class="flex items-center gap-1.5"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Multi-campus</span>
+      <span class="flex items-center gap-1.5"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Baby to P7</span>
       <span class="flex items-center gap-1.5"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Role-based access</span>
       <span class="flex items-center gap-1.5"><svg class="ic w-3.5 h-3.5"><use href="#i-check"/></svg> Full audit trail</span>
     </div>
@@ -89,6 +89,14 @@
         <button type="button" class="demo-role-btn flex items-center gap-2 border border-line rounded-sm px-3 py-2 text-left hover:border-primary hover:bg-primary/5" (click)="demo('parent')">
           <svg class="ic text-primary"><use href="#i-heart-pulse"/></svg>
           <span><span class="block text-xs font-medium text-ink">Parent</span><span class="block text-[10px] text-slate2/45">R. Nakiwala</span></span>
+        </button>
+        <button type="button" class="demo-role-btn flex items-center gap-2 border border-line rounded-sm px-3 py-2 text-left hover:border-primary hover:bg-primary/5" (click)="demo('nurse')">
+          <svg class="ic text-primary"><use href="#i-heart-pulse"/></svg>
+          <span><span class="block text-xs font-medium text-ink">Nurse</span><span class="block text-[10px] text-slate2/45">Sickbay only</span></span>
+        </button>
+        <button type="button" class="demo-role-btn flex items-center gap-2 border border-line rounded-sm px-3 py-2 text-left hover:border-primary hover:bg-primary/5" (click)="demo('registrar')">
+          <svg class="ic text-primary"><use href="#i-clipboard"/></svg>
+          <span><span class="block text-xs font-medium text-ink">Registrar</span><span class="block text-[10px] text-slate2/45">Admissions</span></span>
         </button>
       </div>
 

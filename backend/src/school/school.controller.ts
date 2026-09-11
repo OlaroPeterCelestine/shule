@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } fro
 import { AuthGuard } from '../auth/auth.guard.js';
 import { RolesGuard } from '../auth/roles.guard.js';
 import { DbService } from '../db/db.service.js';
+import { KafkaService } from '../kafka/kafka.service.js';
 import { RbacService } from '../rbac/rbac.service.js';
 import { SchoolStore } from '../store/school.store.js';
 
@@ -14,7 +15,12 @@ export class SchoolController {
     private readonly store: SchoolStore,
     private readonly db: DbService,
     private readonly rbac: RbacService,
+    private readonly kafka: KafkaService,
   ) {}
+
+  private emit(type: string, detail: string, payload?: unknown) {
+    void this.kafka.publish(type, { detail, payload });
+  }
 
   @Get('changelog')
   changelog() {
@@ -30,6 +36,7 @@ export class SchoolController {
   async saveSchool(@Body() body: Record<string, string>, @Req() req: Authed) {
     const row = await this.store.saveSchool(body);
     await this.db.logChange(req.user?.name || 'Staff', 'Updated school profile', 'School', row.name);
+    this.emit('school.updated', row.name, row);
     return row;
   }
 
@@ -48,6 +55,7 @@ export class SchoolController {
     const row = await this.store.addStudent(body);
     if (!row) throw new Error('Could not enrol pupil');
     await this.db.logChange(req.user?.name || 'Staff', 'Enrolled pupil', 'Students', row.name + ' · ' + row.adm);
+    this.emit('student.enrolled', row.name + ' · ' + row.adm, row);
     return row;
   }
 
@@ -65,6 +73,7 @@ export class SchoolController {
   async addApplicant(@Body() body: Record<string, string>, @Req() req: Authed) {
     const row = await this.store.addApplicant(body);
     await this.db.logChange(req.user?.name || 'Staff', 'Added application', 'Admissions', row.name + ' · ' + row.adm);
+    this.emit('admission.added', row.name + ' · ' + row.adm, row);
     return row;
   }
 
@@ -76,6 +85,7 @@ export class SchoolController {
   ) {
     const row = await this.store.moveApplicant(Number(id), body.stage ?? 'applied', body.meta ?? '');
     await this.db.logChange(req.user?.name || 'Staff', 'Moved application', 'Admissions', row.name + ' → ' + row.stage);
+    this.emit('admission.moved', row.name + ' → ' + row.stage, row);
     return row;
   }
 
@@ -88,7 +98,17 @@ export class SchoolController {
   async mark(@Param('adm') adm: string, @Body() body: { status?: string }, @Req() req: Authed) {
     const row = await this.store.setMark(adm, body.status ?? 'P');
     await this.db.logChange(req.user?.name || 'Staff', 'Marked attendance', 'Attendance', row.name + ' · ' + row.status);
+    this.emit('attendance.marked', row.name + ' · ' + row.status, row);
     return row;
+  }
+
+  @Post('attendance/bulk')
+  async markBulk(@Body() body: { status?: string; cls?: string }, @Req() req: Authed) {
+    const rows = await this.store.markRegister(body.status ?? 'P', body.cls);
+    const who = body.cls || 'All classes';
+    await this.db.logChange(req.user?.name || 'Staff', 'Marked attendance', 'Attendance', who + ' · ' + (body.status ?? 'P') + ' · ' + rows.length);
+    this.emit('attendance.bulk', who + ' · ' + (body.status ?? 'P') + ' · ' + rows.length, { count: rows.length, cls: body.cls, status: body.status });
+    return rows;
   }
 
   @Get('finance')
@@ -106,10 +126,19 @@ export class SchoolController {
     return this.store.stock();
   }
 
+  @Post('inventory')
+  async addStock(@Body() body: Record<string, string | number>, @Req() req: Authed) {
+    const row = await this.store.addStock(body);
+    await this.db.logChange(req.user?.name || 'Staff', 'Stocked item', 'Inventory', row!.name + ' · ' + row!.qty);
+    this.emit('inventory.added', row!.name, row);
+    return row;
+  }
+
   @Patch('inventory/:id')
   async issueStock(@Param('id') id: string, @Body() body: { qty?: number }, @Req() req: Authed) {
     const row = await this.store.issueStock(Number(id), Number(body.qty ?? 1));
     await this.db.logChange(req.user?.name || 'Staff', 'Issued stock', 'Inventory', row.name + ' · −' + Number(body.qty ?? 1));
+    this.emit('inventory.issued', row.name + ' · −' + Number(body.qty ?? 1), row);
     return row;
   }
 
@@ -121,13 +150,64 @@ export class SchoolController {
   @Post('health')
   async addVisit(@Body() body: Record<string, string>, @Req() req: Authed) {
     const row = await this.store.addVisit(body);
-    await this.db.logChange(req.user?.name || 'Staff', 'Logged sickbay visit', 'Health', row.name + ' · ' + row.reason);
+    await this.db.logChange(req.user?.name || 'Staff', 'Logged sickbay visit', 'Health', row!.name + ' · ' + row!.reason);
+    this.emit('health.visit', row!.name + ' · ' + row!.reason, row);
+    return row;
+  }
+
+  @Patch('health/:id')
+  async notifyVisit(@Param('id') id: string, @Req() req: Authed) {
+    const row = await this.store.notifyVisit(Number(id));
+    await this.db.logChange(req.user?.name || 'Staff', 'Notified parent', 'Health', row.name);
+    this.emit('health.notified', row.name, row);
     return row;
   }
 
   @Get('calendar')
   calendar() {
     return this.store.events();
+  }
+
+  @Post('calendar')
+  async addEvent(@Body() body: Record<string, string>, @Req() req: Authed) {
+    const row = await this.store.addEvent(body);
+    await this.db.logChange(req.user?.name || 'Staff', 'Added calendar event', 'Calendar', row!.title);
+    this.emit('calendar.added', row!.title, row);
+    return row;
+  }
+
+  @Get('exams')
+  exams() {
+    return this.store.exams();
+  }
+
+  @Post('exams')
+  async addExam(@Body() body: Record<string, string>, @Req() req: Authed) {
+    const row = await this.store.addExam(body);
+    await this.db.logChange(req.user?.name || 'Staff', 'Scheduled exam', 'Academics', String(row.title));
+    this.emit('exam.scheduled', String(row.title), row);
+    return row;
+  }
+
+  @Post('exams/sitting')
+  async addSitting(@Body() body: Record<string, string>, @Req() req: Authed) {
+    const rows = await this.store.addSitting(body);
+    await this.db.logChange(
+      req.user?.name || 'Staff',
+      'Created exam sitting',
+      'Academics',
+      (body.kind || 'End of term') + ' · ' + (body.cls || '') + ' · ' + rows.length + ' papers',
+    );
+    this.emit('exam.sitting', (body.kind || 'End of term') + ' · ' + rows.length + ' papers', { count: rows.length, cls: body.cls });
+    return rows;
+  }
+
+  @Patch('exams/:id')
+  async setExam(@Param('id') id: string, @Body() body: Record<string, string>, @Req() req: Authed) {
+    const row = await this.store.setExam(Number(id), body);
+    await this.db.logChange(req.user?.name || 'Staff', 'Updated exam', 'Academics', row.title + ' · ' + row.status);
+    this.emit('exam.updated', row.title + ' · ' + row.status, row);
+    return row;
   }
 
   @Get('staff')

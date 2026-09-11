@@ -47,8 +47,8 @@ import { ModalService } from '../core/modal.service';
             }
           </div>
           <div class="px-5 py-4 border-t border-line flex justify-end gap-2">
-            <button type="button" (click)="modal.close()" class="text-sm border border-line rounded-sm px-4 py-2 hover:bg-canvas">Cancel</button>
-            <button type="submit" class="text-sm bg-ink text-white rounded-sm px-4 py-2 hover:bg-inkdeep">{{ opts.confirmLabel || 'Confirm' }}</button>
+            <button type="button" (click)="modal.close()" [disabled]="modal.busy()" class="text-sm border border-line rounded-sm px-4 py-2 hover:bg-canvas disabled:opacity-50">Cancel</button>
+            <button type="submit" [disabled]="modal.busy()" class="text-sm bg-ink text-white rounded-sm px-4 py-2 hover:bg-inkdeep disabled:opacity-60">{{ modal.busy() ? 'Saving…' : (opts.confirmLabel || 'Confirm') }}</button>
           </div>
           </form>
         </div>

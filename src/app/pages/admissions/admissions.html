@@ -1,13 +1,15 @@
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <div>
     <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Admissions</h1>
-    <p class="text-sm text-slate-400 mt-1">Official application form — add a child from the side drawer</p>
+    <p class="text-sm text-slate-400 mt-1">Apply for Baby, Middle, Top or Primary One–Seven</p>
   </div>
   <div class="flex flex-wrap gap-2">
     <button type="button" (click)="previewOpen.set(true)" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full">View paper scan</button>
-    <button type="button" (click)="openAdd()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full flex items-center gap-1.5">
-      <svg class="ic text-white"><use href="#i-plus"/></svg> New admission
-    </button>
+    @if (access.can('admissions', 'create')) {
+      <button type="button" (click)="openAdd()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full flex items-center gap-1.5">
+        <svg class="ic text-white"><use href="#i-plus"/></svg> New admission
+      </button>
+    }
   </div>
 </div>
 

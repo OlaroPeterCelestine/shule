@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
-import { SchoolOsStore, type Applicant } from './school-os.store';
+import { SchoolOsStore, type Applicant, type ExamSitting, type SchoolEvent, type SickVisit, type StockItem } from './school-os.store';
 import { StudentsStore } from './students.store';
 import type { ActivityDef, PermRow, RoleDef, Student } from './models';
 
@@ -13,7 +13,7 @@ export class OsSyncService {
   async load(): Promise<boolean> {
     if (!this.api.token()) return false;
     try {
-      const [school, students, applicants, register, perms, roles, activities] = await Promise.all([
+      const [school, students, applicants, register, perms, roles, activities, events, exams, visits, stock] = await Promise.all([
         this.api.get<Record<string, string>>('/school'),
         this.api.get<Student[]>('/students'),
         this.api.get<Applicant[]>('/admissions'),
@@ -21,6 +21,10 @@ export class OsSyncService {
         this.api.get<PermRow[]>('/perms'),
         this.api.get<RoleDef[]>('/roles'),
         this.api.get<ActivityDef[]>('/activities'),
+        this.api.get<SchoolEvent[]>('/calendar'),
+        this.api.get<ExamSitting[]>('/exams'),
+        this.api.get<SickVisit[]>('/health'),
+        this.api.get<StockItem[]>('/inventory'),
       ]);
       if (school) this.os.saveSchool(school);
       if (Array.isArray(students) && students.length) this.students.replace(students.map(withStudentDefaults));
@@ -29,6 +33,10 @@ export class OsSyncService {
       if (Array.isArray(perms) && perms.length) this.os.replacePerms(perms);
       if (Array.isArray(roles) && roles.length) this.os.replaceRoles(roles);
       if (Array.isArray(activities) && activities.length) this.os.replaceActivities(activities);
+      if (Array.isArray(events) && events.length) this.os.replaceEvents(events);
+      if (Array.isArray(exams) && exams.length) this.os.replaceExams(exams);
+      if (Array.isArray(visits)) this.os.replaceVisits(visits);
+      if (Array.isArray(stock)) this.os.replaceStock(stock);
       return true;
     } catch {
       return false;

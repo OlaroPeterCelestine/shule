@@ -120,6 +120,25 @@ CREATE TABLE IF NOT EXISTS events (
   audience text NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS exams (
+  id          serial PRIMARY KEY,
+  kind        text NOT NULL,
+  title       text NOT NULL,
+  cls         text NOT NULL,
+  subject     text NOT NULL,
+  term        text NOT NULL,
+  year        text NOT NULL,
+  exam_date   text NOT NULL,
+  start_time  text NOT NULL DEFAULT '08:00',
+  duration    integer NOT NULL DEFAULT 90,
+  room        text NOT NULL DEFAULT '',
+  invigilator text NOT NULL DEFAULT '',
+  status      text NOT NULL DEFAULT 'Scheduled'
+);
+CREATE INDEX IF NOT EXISTS exams_cls_idx ON exams (cls);
+CREATE INDEX IF NOT EXISTS exams_kind_idx ON exams (kind);
+CREATE INDEX IF NOT EXISTS exams_date_idx ON exams (exam_date);
+
 CREATE TABLE IF NOT EXISTS staff (
   id     text PRIMARY KEY,
   name   text NOT NULL,

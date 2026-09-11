@@ -1,22 +1,26 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
+import { paginate } from '../../core/page';
+import { Pager } from '../../shared/pager';
 import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-visitors',
-  imports: [StatCards],
+  imports: [StatCards, Pager],
   templateUrl: './visitors.html',
 })
 export class VisitorsPage {
   private toast = inject(ToastService);
   private modal = inject(ModalService);
 
+  protected readonly page = signal(1);
   protected readonly visitors = signal([
     { id: 1, name: 'John Mukasa', purpose: 'Textbook delivery', host: 'Librarian', badge: 'V-0231', status: 'On campus' },
     { id: 2, name: 'Rose Nakiwala', purpose: 'Parent meeting', host: 'Class Teacher, Primary Five', badge: 'V-0232', status: 'On campus' },
     { id: 3, name: 'Umeme Technician', purpose: 'Meter inspection', host: "Bursar's office", badge: 'V-0230', status: 'Checked out' },
   ]);
+  protected readonly paged = computed(() => paginate(this.visitors(), this.page()));
   protected readonly stats = computed(() => {
     const on = this.visitors().filter((v) => v.status === 'On campus').length;
     return [

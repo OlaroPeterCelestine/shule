@@ -6,7 +6,9 @@
     </div>
     <p class="text-sm text-slate-400 mt-1">Nurse visits attach to the same student record — not a separate file</p>
   </div>
-  <button type="button" (click)="logVisit()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ Log visit</button>
+  @if (access.can('health', 'create')) {
+    <button type="button" (click)="logVisit()" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full shrink-0">+ Log visit</button>
+  }
 </div>
 
 <app-stat-cards [items]="stats()" />
@@ -17,7 +19,7 @@
       <th class="px-4 py-3 font-medium">Student</th><th class="px-4 py-3 font-medium">Reason</th><th class="px-4 py-3 font-medium">Action</th><th class="px-4 py-3 font-medium">Time</th><th class="px-4 py-3 font-medium">Parent</th><th class="px-4 py-3 font-medium"></th>
     </tr></thead>
     <tbody class="divide-y divide-slate-50">
-      @for (v of os.visits(); track v.id) {
+      @for (v of paged().rows; track v.id) {
         <tr>
           <td class="px-4 py-3"><p class="font-medium text-slate-900">{{ v.name }}</p><p class="font-mono text-[11px] text-slate-400">{{ v.adm }}</p></td>
           <td class="px-4 py-3 text-slate-700">{{ v.reason }}</td>
@@ -27,7 +29,11 @@
             @if (v.notified) {
               <span class="text-xs text-emerald-600">Notified</span>
             } @else {
-              <button type="button" (click)="notify(v.id, v.name)" class="text-xs text-slate-700 hover:underline">Notify parent</button>
+              @if (access.can('health', 'edit')) {
+                <button type="button" (click)="notify(v.id, v.name)" class="text-xs text-slate-700 hover:underline">Notify parent</button>
+              } @else {
+                <span class="text-xs text-slate-400">Not yet</span>
+              }
             }
           </td>
           <td class="px-4 py-3">
@@ -37,4 +43,5 @@
       }
     </tbody>
   </table>
+  <app-pager [total]="os.visits().length" [page]="paged().current" (pageChange)="page.set($event)" />
 </div>

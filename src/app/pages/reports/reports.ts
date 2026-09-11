@@ -1,15 +1,17 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { isKindergarten, reportsFor } from '../../core/report-cards';
 import { StudentsStore } from '../../core/students.store';
 import { DownloadService } from '../../core/download.service';
 import { PdfViewerService } from '../../core/pdf-viewer.service';
+import { paginate } from '../../core/page';
 import { ToastService } from '../../core/toast.service';
+import { Pager } from '../../shared/pager';
 import { StatCards } from '../../shared/stat-cards';
 
 @Component({
   selector: 'app-reports',
-  imports: [StatCards],
+  imports: [StatCards, Pager],
   templateUrl: './reports.html',
 })
 export class ReportsPage {
@@ -19,7 +21,9 @@ export class ReportsPage {
   private toast = inject(ToastService);
   private router = inject(Router);
 
+  protected readonly page = signal(1);
   protected readonly cards = computed(() => reportsFor(this.students.students()));
+  protected readonly paged = computed(() => paginate(this.cards(), this.page()));
   protected readonly stats = computed(() => {
     const all = this.students.students();
     const kg = all.filter((s) => isKindergarten(s.cls)).length;

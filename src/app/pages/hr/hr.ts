@@ -23,7 +23,7 @@ export class HrPage {
   protected readonly onCampus = computed(() => this.clock.today().filter((p) => p.open).length);
 
   protected readonly stats = computed(() => [
-    { label: 'Employees', value: '86', change: 'Across all campuses', bars: [6, 7, 7, 8, 8, 9, 9] },
+    { label: 'Staff', value: '24', change: 'Seguku campus', bars: [6, 7, 7, 8, 8, 9, 9] },
     { label: 'On campus', value: String(this.onCampus()), change: 'Clocked in now', bars: [4, 5, 5, 6, 7, 7, 8] },
     { label: 'Pending leave', value: String(this.leaves().length), change: 'Awaiting approval', bars: [8, 7, 6, 5, 6, 4, 3] },
     { label: 'Contracts due', value: '1', change: 'Renewal this term', bars: [1, 1, 2, 1, 2, 1, 1] },

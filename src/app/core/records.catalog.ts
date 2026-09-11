@@ -127,8 +127,8 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
     fields: fields(['title', 'Campaign'], ['channel', 'Channel'], ['audience', 'Audience'], ['delivered', 'Delivered'], ['status', 'Status'], ['sent', 'Sent at']),
     rows: [
       r('c1', 'Fee reminder — Primary Seven', 'Sent', { title: 'Fee reminder — Primary Seven', channel: 'SMS', audience: 'P7 parents', delivered: '56 / 58', status: 'Sent', sent: '8 Sep, 7:40am' }),
-      r('c2', 'Mid-term reports released', 'Sent', { title: 'Mid-term reports released', channel: 'Email', audience: '1,284 parents', delivered: '1,271 / 1,284', status: 'Sent', sent: '5 Sep, 4:10pm' }),
-      r('c3', 'Sports day — transport update', 'Sent', { title: 'Sports day — transport update', channel: 'Push', audience: '312 van parents', delivered: '308 / 312', status: 'Sent', sent: '3 Sep, 6:00pm' }),
+      r('c2', 'Mid-term reports released', 'Sent', { title: 'Mid-term reports released', channel: 'Email', audience: '186 parents', delivered: '181 / 186', status: 'Sent', sent: '5 Sep, 4:10pm' }),
+      r('c3', 'Sports day — van update', 'Sent', { title: 'Sports day — van update', channel: 'Push', audience: '62 van parents', delivered: '60 / 62', status: 'Sent', sent: '3 Sep, 6:00pm' }),
       r('c4', 'Parents’ day invitation', 'Draft', { title: 'Parents’ day invitation', channel: 'SMS + Email', audience: 'All parents', delivered: '—', status: 'Draft', sent: 'Not yet' }),
     ],
   },
@@ -251,6 +251,19 @@ export const MODULE_DEFS: Record<string, ModuleDef> = {
       r('v2', 'Chemtech Ltd', 'Checked out', { name: 'Chemtech Ltd', host: 'Lab store', purpose: 'Delivery', in: '09:15', status: 'Checked out', id: 'Delivery note' }),
       r('v3', 'UNEB officer', 'Expected', { name: 'UNEB officer', host: 'Headteacher', purpose: 'Inspection', in: '—', status: 'Expected', id: 'Letter' }),
       r('v4', 'Kalema P.', 'On site', { name: 'Kalema P.', host: 'Transport desk', purpose: 'Spare keys', in: '10:05', status: 'On site', id: 'Staff card' }),
+    ],
+  },
+  feedback: {
+    key: 'feedback',
+    title: 'Feedback',
+    singular: 'Form',
+    subtitle: 'Parent, teacher and visitor forms',
+    columns: cols(['name', 'Form'], ['audience', 'Audience'], ['when', 'Occasion'], ['status', 'Status']),
+    fields: fields(['name', 'Form'], ['audience', 'Audience'], ['when', 'Occasion'], ['status', 'Status']),
+    rows: [
+      r('fb1', 'Parent / guardian form', 'Ready', { name: 'Parent / guardian form', audience: 'Parents', when: 'Parents’ day', status: 'Ready' }),
+      r('fb2', 'Teacher form', 'Ready', { name: 'Teacher form', audience: 'Staff', when: 'Staff meeting', status: 'Ready' }),
+      r('fb3', 'Visitor form', 'Ready', { name: 'Visitor form', audience: 'Guests', when: 'Campus visit', status: 'Ready' }),
     ],
   },
   meetings: {

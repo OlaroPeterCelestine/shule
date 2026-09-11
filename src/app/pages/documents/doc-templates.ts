@@ -60,6 +60,23 @@ export const DOC_TEMPLATES: Record<string, string> = {
           </tbody>
         </table>
       </div>`,
+  'Feedback form': `
+      <div class="text-sm leading-relaxed">
+        <div class="flex items-center gap-3 mb-4"><img src="logo.png" class="w-10 h-10 rounded-full object-contain" /><div><p class="font-display text-ink">Little Royals Kindergarten &amp; Primary School</p><p class="text-xs text-slate2/50">Parent / guardian feedback form</p></div></div>
+        <p class="text-xs text-slate2/50 mb-3">Occasion: Parents’ day &nbsp;·&nbsp; Date: 11 Sep 2026 &nbsp;·&nbsp; Class: Primary Five</p>
+        <p class="text-xs text-slate2/60 mb-4">Tick 1 (poor) to 5 (excellent). Leave circles empty when printing a blank pack.</p>
+        <ol class="space-y-2 text-xs list-decimal pl-4">
+          <li>Teaching and learning in class <span class="text-slate2/40">○ 1 ○ 2 ○ 3 ○ 4 ○ 5</span></li>
+          <li>How the school talks to parents <span class="text-slate2/40">○ 1 ○ 2 ○ 3 ○ 4 ○ 5</span></li>
+          <li>Safety on campus and on the van <span class="text-slate2/40">○ 1 ○ 2 ○ 3 ○ 4 ○ 5</span></li>
+          <li>Cleanliness and care of the grounds <span class="text-slate2/40">○ 1 ○ 2 ○ 3 ○ 4 ○ 5</span></li>
+          <li>Value for the fees you pay <span class="text-slate2/40">○ 1 ○ 2 ○ 3 ○ 4 ○ 5</span></li>
+          <li>I would recommend Little Royals <span class="text-slate2/40">○ 1 ○ 2 ○ 3 ○ 4 ○ 5</span></li>
+        </ol>
+        <p class="text-xs text-slate2/50 mt-4 mb-1">Comments</p>
+        <div class="h-16 border border-line rounded-sm"></div>
+        <div class="mt-6 flex justify-between text-xs"><span>_____________________<br>Parent / guardian</span><span>_____________________<br>Date</span></div>
+      </div>`,
   'Visitor badge': `
       <div class="w-56 mx-auto border-2 rounded-lg overflow-hidden" style="border-color:#8A2E3B">
         <div class="text-white text-center py-2" style="background:#8A2E3B">

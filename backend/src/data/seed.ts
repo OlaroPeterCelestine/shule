@@ -84,6 +84,12 @@ export const VISITS = [
   { id: 2, adm: 'LR-0894', name: 'Okello Derrick', reason: 'Headache', action: 'Paracetamol, observation', time: 'Today, 11:15am', notified: false },
 ];
 
+export const EXAMS = [
+  { kind: 'Mid-term', title: 'Primary Five Mathematics — mid-term', cls: 'Primary Five', subject: 'Mathematics', examDate: '2026-09-15', startTime: '08:00', duration: 90, room: 'Hall A', invigilator: 'B. Ssentongo', status: 'Scheduled' },
+  { kind: 'Mid-term', title: 'Primary Five Science — mid-term', cls: 'Primary Five', subject: 'Science', examDate: '2026-09-16', startTime: '08:00', duration: 90, room: 'Hall A', invigilator: 'J. Namutebi', status: 'Scheduled' },
+  { kind: 'End of term', title: 'Primary Seven English — end of term', cls: 'Primary Seven', subject: 'English', examDate: '2026-11-02', startTime: '08:00', duration: 120, room: 'Hall A', invigilator: 'S. Achieng', status: 'Scheduled' },
+];
+
 export const EVENTS = [
   { id: 1, title: 'Mid-term tests', date: '15–19 Sep', type: 'Exams', audience: 'P1–P7' },
   { id: 2, title: 'Parents’ day', date: '26 Sep', type: 'PTM', audience: 'All parents' },

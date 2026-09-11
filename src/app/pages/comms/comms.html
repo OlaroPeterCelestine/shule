@@ -1,5 +1,5 @@
 <h1 class="font-display text-2xl text-ink mb-1">Communication</h1>
-        <p class="text-sm text-slate2/60 mb-5">Bulk SMS, email and announcements</p>
+        <p class="text-sm text-slate2/60 mb-5">SMS and email to Baby–P7 parents</p>
         <app-stat-cards [items]="stats()" />
         <div class="grid grid-cols-3 gap-5">
           <div class="col-span-2 bg-white border border-line rounded-sm p-5">
@@ -12,7 +12,7 @@
               </div>
               <div>
                 <label class="text-xs text-slate2/60">Audience</label>
-                <select name="audience" [ngModel]="audience()" (ngModelChange)="audience.set($event)" class="w-full border border-line rounded-sm px-3 py-2 mt-1 bg-white"><option>All parents</option><option>Primary Five parents</option><option>Fee balance &gt; 400,000</option><option>Staff</option></select>
+                <select name="audience" [ngModel]="audience()" (ngModelChange)="audience.set($event)" class="w-full border border-line rounded-sm px-3 py-2 mt-1 bg-white"><option>All parents</option><option>Kindergarten parents</option><option>Primary Five parents</option><option>Fee balance &gt; 400,000</option><option>Staff</option></select>
               </div>
               <div>
                 <label class="text-xs text-slate2/60">Message</label>

@@ -5,7 +5,10 @@
           <div class="bg-white border border-line rounded-sm p-5">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-display text-lg text-ink">Upcoming PTM — Sat 12 Sep</h3>
-              <button type="button" (click)="newPtm()" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">+ New PTM</button>
+              <div class="flex gap-2">
+                <a routerLink="/feedback" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">Feedback form</a>
+                <button type="button" (click)="newPtm()" class="text-xs text-primary border border-primary/30 rounded-sm px-3 py-1.5 hover:bg-primary/5">+ New PTM</button>
+              </div>
             </div>
             <table class="w-full text-sm">
               <thead class="text-xs text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Slot</th><th class="pb-2 font-normal">Teacher</th><th class="pb-2 font-normal">Booked by</th></tr></thead>

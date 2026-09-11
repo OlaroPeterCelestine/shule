@@ -1,8 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import jwt from 'jsonwebtoken';
 import { DbService } from '../db/db.service.js';
 import { DEMO_ACCOUNTS, type Role, type SessionUser } from '../data/seed.js';
 import { isRoleKey, roleKey } from '../rbac/activities.js';
+import { RbacService } from '../rbac/rbac.service.js';
 import { isEmail } from '../util/form-safe.js';
+
+function jwtSecret() {
+  return process.env.JWT_SECRET || 'littleroyals-dev';
+}
 
 function tokenHours() {
   const n = Number(process.env.AUTH_TOKEN_HOURS || 12);
@@ -15,7 +21,10 @@ interface TokenUser extends SessionUser {
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly db: DbService) {}
+  constructor(
+    private readonly db: DbService,
+    private readonly rbac: RbacService,
+  ) {}
 
   async login(email: string, password: string) {
     const clean = String(email ?? '').trim().toLowerCase();
@@ -65,39 +74,43 @@ export class AuthService {
 
   fromToken(token?: string): SessionUser {
     if (!token) throw new UnauthorizedException('Sign in required');
-    let payload: TokenUser;
     try {
-      payload = JSON.parse(Buffer.from(token, 'base64url').toString('utf8')) as TokenUser;
+      const payload = jwt.verify(token, jwtSecret()) as TokenUser;
+      return this.asUser(payload);
+    } catch {
+      /* older demo tokens were base64url JSON */
+    }
+    try {
+      const payload = JSON.parse(Buffer.from(token, 'base64url').toString('utf8')) as TokenUser;
+      if (payload.exp && payload.exp < Date.now()) throw new UnauthorizedException('Session expired');
+      return this.asUser(payload);
     } catch {
       throw new UnauthorizedException('Invalid session');
     }
-    if (!payload?.email || !payload.role || !payload.exp) {
-      throw new UnauthorizedException('Invalid session');
-    }
-    if (payload.exp < Date.now()) throw new UnauthorizedException('Session expired');
-    if (!isRoleKey(String(payload.role))) {
-      throw new UnauthorizedException('Invalid session');
-    }
-    return {
-      name: payload.name,
-      email: payload.email,
-      role: payload.role,
-      label: payload.label,
-    };
   }
 
-  private session(user: SessionUser) {
+  private asUser(payload: TokenUser): SessionUser {
+    if (!payload?.email || !payload.role) throw new UnauthorizedException('Invalid session');
+    if (!isRoleKey(String(payload.role))) throw new UnauthorizedException('Invalid session');
+    return { name: payload.name, email: payload.email, role: payload.role, label: payload.label };
+  }
+
+  async whoami(user: SessionUser) {
+    return { user, perms: await this.rbac.forRole(user.role) };
+  }
+
+  private async session(user: SessionUser) {
     return {
       token: this.encodeToken(user),
       tokenType: 'Bearer' as const,
       expiresIn: tokenHours() * 60 * 60,
       user,
+      perms: await this.rbac.forRole(user.role),
     };
   }
 
   private encodeToken(user: SessionUser) {
-    const payload: TokenUser = { ...user, exp: Date.now() + tokenHours() * 60 * 60 * 1000 };
-    return Buffer.from(JSON.stringify(payload)).toString('base64url');
+    return jwt.sign({ ...user }, jwtSecret(), { expiresIn: tokenHours() * 60 * 60 });
   }
 }
 

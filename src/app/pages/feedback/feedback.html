@@ -1,0 +1,103 @@
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Feedback forms</h1>
+    <p class="text-sm text-slate-400 mt-1">Generate a parent, teacher or visitor form. Print a blank pack, or fill scores first and they print on the PDF.</p>
+  </div>
+  <a routerLink="/documents" class="h-10 px-4 text-sm border border-slate-200 bg-white rounded-full inline-flex items-center">Documents →</a>
+</div>
+
+<app-stat-cards [items]="stats()" />
+
+<div class="flex flex-wrap gap-2 mb-5">
+  @for (k of kinds; track k.key) {
+    <button type="button" (click)="setKind(k.key)" class="h-9 px-3 text-xs rounded-full border text-left"
+      [class.bg-slate-900]="kind() === k.key" [class.text-white]="kind() === k.key"
+      [class.bg-white]="kind() !== k.key" [class.text-slate-700]="kind() !== k.key" [class.border-slate-200]="true">
+      {{ k.title }}
+    </button>
+  }
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-4">
+  <section class="bg-white rounded-2xl border border-slate-100 p-5">
+    <h2 class="text-[15px] font-semibold text-slate-900 mb-1">{{ kinds.find(k => k.key === kind())?.title }}</h2>
+    <p class="text-xs text-slate-400 mb-4">{{ kinds.find(k => k.key === kind())?.detail }} · rate 1 poor to 5 excellent. Click a score again to clear it.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+      <label class="block text-xs text-slate-500">
+        Occasion
+        <select class="mt-1 w-full h-10 px-3 text-sm text-slate-800 border border-slate-200 rounded-xl bg-white" [value]="event()" (change)="event.set($any($event.target).value)">
+          @for (e of events(); track e) {
+            <option [value]="e">{{ e }}</option>
+          }
+        </select>
+      </label>
+      <label class="block text-xs text-slate-500">
+        {{ kind() === 'parent' ? 'Parent / guardian' : kind() === 'teacher' ? 'Teacher name' : 'Visitor name' }}
+        <input class="mt-1 w-full h-10 px-3 text-sm text-slate-800 border border-slate-200 rounded-xl" [value]="name()" (input)="name.set($any($event.target).value)" placeholder="Leave blank for a print pack" />
+      </label>
+      @if (kind() === 'parent') {
+        <label class="block text-xs text-slate-500">
+          Pupil (optional)
+          <select class="mt-1 w-full h-10 px-3 text-sm text-slate-800 border border-slate-200 rounded-xl bg-white" [value]="adm()" (change)="pickPupil($any($event.target).value)">
+            <option value="">Any class / blank form</option>
+            @for (s of students(); track s.adm) {
+              <option [value]="s.adm">{{ s.name }} · {{ s.cls }}</option>
+            }
+          </select>
+        </label>
+        <label class="block text-xs text-slate-500">
+          Class
+          <input class="mt-1 w-full h-10 px-3 text-sm text-slate-800 border border-slate-200 rounded-xl" [value]="cls()" (input)="cls.set($any($event.target).value)" placeholder="e.g. Primary Five" />
+        </label>
+      }
+    </div>
+
+    <ol class="space-y-3 mb-4">
+      @for (q of questions(); track q; let i = $index) {
+        <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+          <p class="text-sm text-slate-800 flex-1">{{ i + 1 }}. {{ q }}</p>
+          <div class="flex gap-1 shrink-0">
+            @for (n of [1, 2, 3, 4, 5]; track n) {
+              <button type="button" (click)="setScore(i, n)" class="w-8 h-8 text-xs rounded-full border"
+                [class.bg-emerald-700]="scores()[i] === n" [class.text-white]="scores()[i] === n"
+                [class.border-emerald-700]="scores()[i] === n"
+                [class.border-slate-200]="scores()[i] !== n" [class.text-slate-600]="scores()[i] !== n">{{ n }}</button>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+
+    <label class="block text-xs text-slate-500 mb-4">
+      Comments
+      <textarea class="mt-1 w-full min-h-[88px] px-3 py-2 text-sm text-slate-800 border border-slate-200 rounded-xl" [value]="note()" (input)="note.set($any($event.target).value)" placeholder="Optional. Printed on the filled PDF."></textarea>
+    </label>
+
+    <div class="flex flex-wrap gap-2">
+      <button type="button" (click)="generate(false)" [disabled]="busy() !== ''" class="h-10 px-4 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">
+        {{ busy() === 'fill' ? 'Opening…' : 'Generate PDF' }}
+      </button>
+      <button type="button" (click)="generate(true)" [disabled]="busy() !== ''" class="h-10 px-4 text-sm border border-slate-200 rounded-full disabled:opacity-60">
+        {{ busy() === 'blank' ? 'Opening…' : 'Print blank pack' }}
+      </button>
+    </div>
+  </section>
+
+  <aside class="space-y-4">
+    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+      <h3 class="text-[15px] font-semibold text-slate-900 mb-2">How it prints</h3>
+      <ul class="text-sm text-slate-600 space-y-2">
+        <li>Official PDF from the API, same header as report cards and letters.</li>
+        <li><span class="font-medium text-slate-800">Generate PDF</span> includes the name, pupil, scores and comments you set.</li>
+        <li><span class="font-medium text-slate-800">Print blank pack</span> leaves circles empty for Parents’ day tables.</li>
+        <li>Each generate is written to the change log under Documents.</li>
+      </ul>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+      <h3 class="text-[15px] font-semibold text-slate-900 mb-2">Also on Documents</h3>
+      <p class="text-sm text-slate-600 mb-3">The same form is listed with letters and visitor badges if you only need a sample.</p>
+      <a routerLink="/meetings" class="text-xs text-primary hover:underline">Open Meetings for PTM slots →</a>
+    </div>
+  </aside>
+</div>

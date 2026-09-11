@@ -9,6 +9,11 @@ export interface PdfQuery {
   visit?: string;
   applicant?: string;
   name?: string;
+  kind?: string;
+  event?: string;
+  cls?: string;
+  scores?: string;
+  note?: string;
   download?: string;
 }
 
@@ -25,7 +30,7 @@ export class PdfService {
     if (!type) throw new NotFoundException('Unknown document');
     const school = (await this.store.school()) as Record<string, string>;
     const buffer = await this.render(key, school, query);
-    const who = slug(query.adm || query.staff || query.visit || query.applicant || query.name || 'document');
+    const who = slug(query.kind || query.adm || query.staff || query.visit || query.applicant || query.name || 'document');
     return { buffer, filename: `little-royals-${key}-${who}.pdf`, title: type.title };
   }
 
@@ -51,6 +56,8 @@ export class PdfService {
         return this.payslip(school, await this.requireStaff(q.staff));
       case 'visitor-badge':
         return this.visitor(school, q.name || 'Campus visitor');
+      case 'feedback':
+        return this.feedback(school, q, await this.optionalStudent(q.adm));
       default:
         throw new BadRequestException('Cannot generate that document');
     }
@@ -61,6 +68,12 @@ export class PdfService {
     const row = await this.store.student(adm);
     if (!row) throw new NotFoundException('Student not found');
     return row as StudentRow;
+  }
+
+  private async optionalStudent(adm?: string) {
+    if (!adm) return null;
+    const row = await this.store.student(adm);
+    return row ? (row as StudentRow) : null;
   }
 
   private async requireStaff(id?: string) {
@@ -233,6 +246,38 @@ export class PdfService {
       doc.moveDown(0.8).text(school.address, { align: 'center' });
     }, { size: [360, 240], margin: 24 });
   }
+
+  private feedback(school: Record<string, string>, q: PdfQuery, pupil: StudentRow | null) {
+    const form = feedbackForm(q.kind);
+    const scores = parseScores(q.scores, form.questions.length);
+    const occasion = (q.event || form.occasion).trim();
+    const respondent = (q.name || '').trim();
+    const cls = (q.cls || pupil?.cls || '').trim();
+    const pupilName = (pupil?.name || '').trim();
+    const note = (q.note || '').trim().slice(0, 600);
+    return draw(school, form.title, (doc) => {
+      doc.fontSize(10).font('Helvetica').fillColor('#475569').text(form.intro);
+      kv(doc, [
+        ['Occasion', occasion],
+        ['Date', today()],
+        ['Term', `${school.term}, ${school.year}`],
+        [form.who, respondent || ''],
+        ...(form.asksPupil
+          ? ([
+              ['Pupil', pupilName],
+              ['Class', cls],
+              ['Admission no.', pupil?.adm || ''],
+            ] as [string, string][])
+          : []),
+      ]);
+      doc.moveDown(0.6).font('Helvetica-Bold').fillColor('#14213D').fontSize(11).text('Please rate 1 (poor) to 5 (excellent)');
+      doc.font('Helvetica').fontSize(10).fillColor('#0f172a');
+      form.questions.forEach((question, i) => ratingRow(doc, i + 1, question, scores[i]));
+      doc.moveDown(0.7).font('Helvetica-Bold').fontSize(11).text('Comments');
+      commentBox(doc, note);
+      sign(doc, [form.sign, 'Date']);
+    });
+  }
 }
 
 interface StudentRow {
@@ -309,6 +354,102 @@ function table(doc: PDFKit.PDFDocument, headers: string[], rows: string[][]) {
   doc.font('Helvetica');
   for (const row of rows) doc.text(row.map((c) => String(c).padEnd(18)).join('  '));
   doc.fontSize(11);
+}
+
+function feedbackForm(kind?: string) {
+  const key = String(kind || 'parent').toLowerCase();
+  if (key === 'teacher') {
+    return {
+      title: 'Teacher feedback form',
+      who: 'Teacher name',
+      sign: 'Teacher',
+      occasion: 'Staff meeting',
+      asksPupil: false,
+      intro: 'Help us improve how Little Royals supports teaching. Tick one score for each line, or leave the circles blank if this is a print pack.',
+      questions: [
+        'Support from school leadership',
+        'Class size and teaching resources',
+        'Time for planning and marking',
+        'Partnership with parents',
+        'Professional development this term',
+        'I would recommend teaching here',
+      ],
+    };
+  }
+  if (key === 'visitor') {
+    return {
+      title: 'Visitor feedback form',
+      who: 'Visitor name',
+      sign: 'Visitor',
+      occasion: 'Campus visit',
+      asksPupil: false,
+      intro: 'Thank you for visiting Little Royals. Tick one score for each line so we can improve how guests are received.',
+      questions: [
+        'Welcome at the gate',
+        'How easy it was to find who you came to see',
+        'Cleanliness of the campus',
+        'Courtesy of staff',
+        'How safe you felt on site',
+        'I would visit again or recommend the school',
+      ],
+    };
+  }
+  return {
+    title: 'Parent / guardian feedback form',
+    who: 'Parent / guardian',
+    sign: 'Parent / guardian',
+    occasion: 'Parents’ day',
+    asksPupil: true,
+    intro: 'We use this form after Parents’ day, PTM and open days. Tick one score for each line. Leave circles empty if you are printing a blank pack.',
+    questions: [
+      'Teaching and learning in class',
+      'How the school talks to parents',
+      'Safety on campus and on the van',
+      'Cleanliness and care of the grounds',
+      'Value for the fees you pay',
+      'I would recommend Little Royals',
+    ],
+  };
+}
+
+function parseScores(raw: string | undefined, count: number) {
+  const parts = String(raw || '')
+    .split(',')
+    .map((n) => Number(n.trim()));
+  return Array.from({ length: count }, (_, i) => {
+    const n = parts[i];
+    return n >= 1 && n <= 5 ? n : 0;
+  });
+}
+
+function ratingRow(doc: PDFKit.PDFDocument, n: number, question: string, score: number) {
+  const left = doc.page.margins.left;
+  const right = doc.page.width - doc.page.margins.right;
+  const y = doc.y + 8;
+  doc.fontSize(10).fillColor('#0f172a').text(`${n}.  ${question}`, left, y, { width: right - left - 170 });
+  const textBottom = doc.y;
+  const cy = y + 6;
+  for (let i = 1; i <= 5; i++) {
+    const cx = right - 150 + (i - 1) * 30;
+    doc.circle(cx, cy, 8);
+    if (score === i) doc.fillAndStroke('#0E7C61', '#0E7C61');
+    else doc.stroke('#94a3b8');
+    doc.fillColor(score === i ? '#ffffff' : '#64748b').fontSize(8).text(String(i), cx - 3, cy - 3);
+  }
+  doc.y = Math.max(textBottom, cy + 12);
+  doc.fillColor('#0f172a').strokeColor('#94a3b8');
+}
+
+function commentBox(doc: PDFKit.PDFDocument, note: string) {
+  const left = doc.page.margins.left;
+  const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const top = doc.y + 6;
+  const height = 72;
+  doc.rect(left, top, width, height).stroke('#e2e8f0');
+  if (note) {
+    doc.font('Helvetica').fontSize(10).fillColor('#0f172a').text(note, left + 8, top + 8, { width: width - 16, height: height - 16 });
+  }
+  doc.y = top + height + 4;
 }
 
 function sign(doc: PDFKit.PDFDocument, labels: string[]) {

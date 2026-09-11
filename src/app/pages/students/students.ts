@@ -1,13 +1,16 @@
 import { Component, computed, effect, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AccessService } from '../../core/access.service';
 import { ApiService } from '../../core/api.service';
 import { allowed, cleanText, isEmail, isIsoDate, isPhone } from '../../core/form-safe';
 import { SearchService } from '../../core/search.service';
 import { StudentsStore } from '../../core/students.store';
 import { SchoolOsStore } from '../../core/school-os.store';
+import { paginate } from '../../core/page';
 import { ToastService } from '../../core/toast.service';
 import type { Student } from '../../core/models';
+import { Pager } from '../../shared/pager';
 import { StatCards } from '../../shared/stat-cards';
 
 export interface StudentForm {
@@ -58,12 +61,13 @@ const HOSTELS = ['', "St. Mary's Block (Girls)", "St. Peter's Block (Boys)", 'Ju
 
 @Component({
   selector: 'app-students',
-  imports: [FormsModule, StatCards],
+  imports: [FormsModule, StatCards, Pager],
   templateUrl: './students.html',
 })
 export class StudentsPage {
   private store = inject(StudentsStore);
   protected os = inject(SchoolOsStore);
+  protected access = inject(AccessService);
   private api = inject(ApiService);
   private toast = inject(ToastService);
   private search = inject(SearchService);
@@ -72,6 +76,7 @@ export class StudentsPage {
   protected readonly q = signal(this.search.query());
   protected readonly classFilter = signal('');
   protected readonly feeFilter = signal('');
+  protected readonly page = signal(1);
   protected readonly panelOpen = signal(false);
   protected readonly selected = signal<Student | null>(null);
   protected readonly pane = signal('overview');
@@ -115,6 +120,22 @@ export class StudentsPage {
       return matchesQ && (!cls || s.cls === cls) && (!fee || s.fee === fee);
     });
   });
+  protected readonly paged = computed(() => paginate(this.filtered(), this.page()));
+
+  setQ(value: string) {
+    this.q.set(value);
+    this.page.set(1);
+  }
+
+  setClass(value: string) {
+    this.classFilter.set(value);
+    this.page.set(1);
+  }
+
+  setFee(value: string) {
+    this.feeFilter.set(value);
+    this.page.set(1);
+  }
 
   set<K extends keyof StudentForm>(key: K, value: StudentForm[K]) {
     this.form.update((f) => ({ ...f, [key]: value }));
@@ -143,6 +164,7 @@ export class StudentsPage {
   }
 
   openAdd() {
+    if (!this.access.can('students', 'create')) return;
     this.form.set({ ...EMPTY, admissionDate: today() });
     this.errors.set({});
     this.drawerOpen.set(true);
@@ -167,7 +189,7 @@ export class StudentsPage {
     this.openAdd();
   }
 
-  submit() {
+  async submit() {
     if (this.saving()) return;
     const raw = this.form();
     const f: StudentForm = {
@@ -251,11 +273,20 @@ export class StudentsPage {
       feeLabel: 'Not yet invoiced',
       notes: f.notes,
     };
-    this.store.add(student);
     if (this.api.token()) {
-      void this.api.post('/students', student).catch(() => undefined);
+      try {
+        const saved = await this.api.post<Student>('/students', student);
+        this.store.add(saved);
+        this.created.set(saved);
+      } catch (err) {
+        this.saving.set(false);
+        this.toast.show(err instanceof Error ? err.message : 'Could not enrol that pupil');
+        return;
+      }
+    } else {
+      this.store.add(student);
+      this.created.set(student);
     }
-    this.created.set(student);
     this.saving.set(false);
     this.drawerOpen.set(false);
     this.successOpen.set(true);
