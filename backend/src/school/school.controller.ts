@@ -1,111 +1,141 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard.js';
 import { RolesGuard } from '../auth/roles.guard.js';
+import { DbService } from '../db/db.service.js';
 import { SchoolStore } from '../store/school.store.js';
+
+type Authed = { user?: { name?: string } };
 
 @Controller()
 @UseGuards(AuthGuard, RolesGuard)
 export class SchoolController {
-  constructor(private readonly store: SchoolStore) {}
+  constructor(
+    private readonly store: SchoolStore,
+    private readonly db: DbService,
+  ) {}
+
+  @Get('changelog')
+  changelog() {
+    return this.db.changes();
+  }
 
   @Get('school')
   school() {
-    return this.store.school;
+    return this.store.school();
   }
 
   @Patch('school')
-  saveSchool(@Body() body: Record<string, string>) {
-    return this.store.saveSchool(body);
+  async saveSchool(@Body() body: Record<string, string>, @Req() req: Authed) {
+    const row = await this.store.saveSchool(body);
+    await this.db.logChange(req.user?.name || 'Staff', 'Updated school profile', 'School', row.name);
+    return row;
   }
 
   @Get('students')
   students() {
-    return this.store.students;
+    return this.store.students();
   }
 
   @Get('students/:adm')
   student(@Param('adm') adm: string) {
-    return this.store.students.find((s) => s.adm === adm) ?? null;
+    return this.store.student(adm);
   }
 
   @Post('students')
-  addStudent(@Body() body: Record<string, string>) {
-    return this.store.addStudent(body);
+  async addStudent(@Body() body: Record<string, string>, @Req() req: Authed) {
+    const row = await this.store.addStudent(body);
+    if (!row) throw new Error('Could not enrol pupil');
+    await this.db.logChange(req.user?.name || 'Staff', 'Enrolled pupil', 'Students', row.name + ' · ' + row.adm);
+    return row;
   }
 
   @Get('admissions')
   admissions() {
-    return this.store.applicants;
+    return this.store.applicants();
   }
 
   @Get('admissions/:id')
   applicant(@Param('id') id: string) {
-    return this.store.applicants.find((a) => String(a.id) === id) ?? null;
+    return this.store.applicant(id);
   }
 
   @Post('admissions')
-  addApplicant(@Body() body: Record<string, string>) {
-    return this.store.addApplicant(body);
+  async addApplicant(@Body() body: Record<string, string>, @Req() req: Authed) {
+    const row = await this.store.addApplicant(body);
+    await this.db.logChange(req.user?.name || 'Staff', 'Added application', 'Admissions', row.name + ' · ' + row.adm);
+    return row;
   }
 
   @Patch('admissions/:id')
-  moveApplicant(@Param('id') id: string, @Body() body: { stage?: string; meta?: string; adm?: string }) {
-    return this.store.moveApplicant(Number(id), body.stage ?? 'applied', body.meta ?? '');
+  async moveApplicant(
+    @Param('id') id: string,
+    @Body() body: { stage?: string; meta?: string; adm?: string },
+    @Req() req: Authed,
+  ) {
+    const row = await this.store.moveApplicant(Number(id), body.stage ?? 'applied', body.meta ?? '');
+    await this.db.logChange(req.user?.name || 'Staff', 'Moved application', 'Admissions', row.name + ' → ' + row.stage);
+    return row;
   }
 
   @Get('attendance')
   attendance() {
-    return this.store.register;
+    return this.store.register();
   }
 
   @Patch('attendance/:adm')
-  mark(@Param('adm') adm: string, @Body() body: { status?: string }) {
-    return this.store.setMark(adm, body.status ?? 'P');
+  async mark(@Param('adm') adm: string, @Body() body: { status?: string }, @Req() req: Authed) {
+    const row = await this.store.setMark(adm, body.status ?? 'P');
+    await this.db.logChange(req.user?.name || 'Staff', 'Marked attendance', 'Attendance', row.name + ' · ' + row.status);
+    return row;
   }
 
   @Get('finance')
   finance() {
-    return this.store.invoices;
+    return this.store.invoices();
   }
 
   @Get('finance/:id')
   invoice(@Param('id') id: string) {
-    return this.store.invoices.find((i) => i.id === id) ?? null;
+    return this.store.invoice(id);
   }
 
   @Get('inventory')
   inventory() {
-    return this.store.stock;
+    return this.store.stock();
   }
 
   @Patch('inventory/:id')
-  issueStock(@Param('id') id: string, @Body() body: { qty?: number }) {
-    return this.store.issueStock(Number(id), Number(body.qty ?? 1));
+  async issueStock(@Param('id') id: string, @Body() body: { qty?: number }, @Req() req: Authed) {
+    const row = await this.store.issueStock(Number(id), Number(body.qty ?? 1));
+    await this.db.logChange(req.user?.name || 'Staff', 'Issued stock', 'Inventory', row.name + ' · −' + Number(body.qty ?? 1));
+    return row;
   }
 
   @Get('health')
   health() {
-    return this.store.visits;
+    return this.store.visits();
   }
 
   @Post('health')
-  addVisit(@Body() body: Record<string, string>) {
-    return this.store.addVisit(body);
+  async addVisit(@Body() body: Record<string, string>, @Req() req: Authed) {
+    const row = await this.store.addVisit(body);
+    await this.db.logChange(req.user?.name || 'Staff', 'Logged sickbay visit', 'Health', row.name + ' · ' + row.reason);
+    return row;
   }
 
   @Get('calendar')
   calendar() {
-    return this.store.events;
+    return this.store.events();
   }
 
   @Get('staff')
   staff() {
-    return this.store.staff;
+    return this.store.staff();
   }
 
   @Get('perms')
   perms() {
-    return this.store.perms;
+    return this.store.perms();
   }
 
   @Get('reports')

@@ -35,7 +35,9 @@
           <td class="px-4 py-3 text-slate-700">{{ c.average }}</td>
           <td class="px-4 py-3 text-slate-700">{{ c.grade }}</td>
           <td class="px-4 py-3 text-slate-600">{{ c.position }}</td>
-          <td class="px-4 py-3 text-xs text-slate-700 whitespace-nowrap">Open card</td>
+          <td class="px-4 py-3 text-xs text-slate-700 whitespace-nowrap">
+            Open card · <button type="button" class="hover:text-slate-900" (click)="openPdf(c.student.adm, c.student.name, $event)">PDF</button>
+          </td>
         </tr>
       }
     </tbody>

@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { isKindergarten, reportsFor } from '../../core/report-cards';
 import { StudentsStore } from '../../core/students.store';
 import { DownloadService } from '../../core/download.service';
+import { PdfViewerService } from '../../core/pdf-viewer.service';
+import { ToastService } from '../../core/toast.service';
 import { StatCards } from '../../shared/stat-cards';
 
 @Component({
@@ -13,6 +15,8 @@ import { StatCards } from '../../shared/stat-cards';
 export class ReportsPage {
   private students = inject(StudentsStore);
   private download = inject(DownloadService);
+  private pdf = inject(PdfViewerService);
+  private toast = inject(ToastService);
   private router = inject(Router);
 
   protected readonly cards = computed(() => reportsFor(this.students.students()));
@@ -29,6 +33,15 @@ export class ReportsPage {
 
   open(adm: string) {
     this.router.navigate(['/students', adm, 'card']);
+  }
+
+  async openPdf(adm: string, name: string, ev: Event) {
+    ev.stopPropagation();
+    try {
+      await this.pdf.open('Report card — ' + name, '/documents/report-card/pdf?adm=' + encodeURIComponent(adm));
+    } catch (err) {
+      this.toast.show(err instanceof Error ? err.message : 'Could not generate the report card');
+    }
   }
 
   genBatch() {

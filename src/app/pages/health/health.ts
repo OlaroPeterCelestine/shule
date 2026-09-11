@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { PdfViewerService } from '../../core/pdf-viewer.service';
 import { SchoolOsStore } from '../../core/school-os.store';
 import { StudentsStore } from '../../core/students.store';
 import { ModalService } from '../../core/modal.service';
@@ -15,6 +16,7 @@ export class HealthPage {
   private students = inject(StudentsStore);
   private modal = inject(ModalService);
   private toast = inject(ToastService);
+  private pdf = inject(PdfViewerService);
 
   protected readonly stats = computed(() => [
     { label: 'Visits today', value: String(this.os.visits().length), change: 'Sickbay log', bars: [3, 4, 3, 5, 4, 5, 4] },
@@ -46,5 +48,13 @@ export class HealthPage {
   notify(id: number, name: string) {
     this.os.notifyParent(id);
     this.toast.show('Parent notified about ' + name);
+  }
+
+  async sickNote(id: number, name: string) {
+    try {
+      await this.pdf.open('Sick leave — ' + name, '/documents/sick-leave/pdf?visit=' + id);
+    } catch (err) {
+      this.toast.show(err instanceof Error ? err.message : 'Could not generate the sick note');
+    }
   }
 }

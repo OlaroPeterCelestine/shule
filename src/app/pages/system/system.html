@@ -1,16 +1,25 @@
 <h1 class="font-display text-2xl text-ink mb-1">Permissions</h1>
-        <p class="text-sm text-slate2/60 mb-5">Roles, module access, audit log and integrations. Toggle View to show or hide a module on the sidebar.</p>
-        <app-stat-cards [items]="stats" />
+        <p class="text-sm text-slate2/60 mb-5">Roles, module access, change log and integrations. Toggle View to show or hide a module on the sidebar.</p>
+        <app-stat-cards [items]="stats()" />
         <div class="grid grid-cols-2 gap-5">
           <div class="bg-white border border-line rounded-sm p-5">
-            <h3 class="font-display text-lg text-ink mb-3">Audit log</h3>
+            <h3 class="font-display text-lg text-ink mb-3">Change log</h3>
             <table class="w-full text-xs">
               <thead class="text-slate2/50 border-b border-line text-left"><tr><th class="pb-2 font-normal">Event</th><th class="pb-2 font-normal">User</th><th class="pb-2 font-normal">Time</th></tr></thead>
               <tbody class="divide-y divide-line">
-                <tr><td class="py-2">Fee waiver applied — Namutebi R.</td><td class="py-2">G. Nakato</td><td class="py-2 font-mono">09:12</td></tr>
-                <tr><td class="py-2">P5 Mathematics results published</td><td class="py-2">B. Ssentongo</td><td class="py-2 font-mono">08:47</td></tr>
-                <tr><td class="py-2">Permission changed — Accountant role</td><td class="py-2">G. Nakato</td><td class="py-2 font-mono">Yesterday</td></tr>
-                <tr><td class="py-2">Student record deleted — duplicate entry</td><td class="py-2">G. Nakato</td><td class="py-2 font-mono">2 Sep</td></tr>
+                @for (row of changes(); track row.id) {
+                  <tr>
+                    <td class="py-2">
+                      <p>{{ row.action }}</p>
+                      <p class="text-slate2/45">{{ row.module }}@if (row.detail) { · {{ row.detail }} }</p>
+                    </td>
+                    <td class="py-2">{{ row.who }}</td>
+                    <td class="py-2 font-mono whitespace-nowrap">{{ row.when }}</td>
+                  </tr>
+                }
+                @if (!changes().length) {
+                  <tr><td class="py-3 text-slate2/50" colspan="3">No events yet. Sign in with the API running to start the log.</td></tr>
+                }
               </tbody>
             </table>
           </div>

@@ -1,11 +1,21 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiService } from '../../core/api.service';
 import { ToastService } from '../../core/toast.service';
 import { ModalService } from '../../core/modal.service';
 import { DownloadService } from '../../core/download.service';
 import { StudentsStore } from '../../core/students.store';
 import { SchoolOsStore } from '../../core/school-os.store';
 import { StatCards } from '../../shared/stat-cards';
+
+export interface ChangeRow {
+  id: number;
+  who: string;
+  action: string;
+  module: string;
+  detail: string;
+  when: string;
+}
 
 @Component({
   selector: 'app-system',
@@ -18,14 +28,20 @@ export class SystemPage {
   private download = inject(DownloadService);
   private students = inject(StudentsStore);
   private router = inject(Router);
+  private api = inject(ApiService);
   protected os = inject(SchoolOsStore);
+  protected readonly changes = signal<ChangeRow[]>([]);
 
-  protected readonly stats = [
+  constructor() {
+    void this.api.get<ChangeRow[]>('/changelog').then((rows) => this.changes.set(rows)).catch(() => undefined);
+  }
+
+  protected readonly stats = computed(() => [
     { label: 'Users', value: '142', change: 'Staff & parents', bars: [6, 7, 7, 8, 8, 9, 9] },
     { label: 'Roles', value: '12', change: 'Fine-grained RBAC', bars: [4, 4, 5, 5, 6, 6, 7] },
-    { label: 'Audit events', value: '4', change: 'Shown on this page', bars: [3, 4, 3, 5, 4, 5, 4] },
+    { label: 'Change log', value: String(this.changes().length), change: 'Live from the API', bars: [3, 4, 3, 5, 4, 5, 4] },
     { label: 'Last backup', value: '04:00', change: 'Nightly job', bars: [8, 8, 9, 8, 9, 9, 10] },
-  ];
+  ]);
 
   toggle(role: string, module: string, key: 'view' | 'create' | 'edit' | 'approve') {
     this.os.togglePerm(role, module, key);

@@ -1,41 +1,69 @@
-<h1 class="font-display text-2xl text-ink mb-1">Documents & Certificates</h1>
-        <p class="text-sm text-slate2/60 mb-5">Generate official documents straight from student and staff records</p>
-        <app-stat-cards [items]="stats" />
-        <div class="grid grid-cols-3 gap-4">
-          <div class="doc-card bg-white border border-line rounded-sm p-4">
-            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
-            <p class="font-medium text-ink text-sm">Student ID card</p>
-            <p class="text-xs text-slate2/50 mt-1 mb-3">Photo, admission no., class, QR code</p>
-            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Student ID card')">Generate</button>
-          </div>
-          <div class="doc-card bg-white border border-line rounded-sm p-4">
-            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
-            <p class="font-medium text-ink text-sm">Admission letter</p>
-            <p class="text-xs text-slate2/50 mt-1 mb-3">Offer confirmation for new students</p>
-            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Admission letter')">Generate</button>
-          </div>
-          <div class="doc-card bg-white border border-line rounded-sm p-4">
-            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
-            <p class="font-medium text-ink text-sm">Transfer certificate</p>
-            <p class="text-xs text-slate2/50 mt-1 mb-3">For students leaving the school</p>
-            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Transfer certificate')">Generate</button>
-          </div>
-          <div class="doc-card bg-white border border-line rounded-sm p-4">
-            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
-            <p class="font-medium text-ink text-sm">Completion certificate</p>
-            <p class="text-xs text-slate2/50 mt-1 mb-3">Issued at graduation</p>
-            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Completion certificate')">Generate</button>
-          </div>
-          <div class="doc-card bg-white border border-line rounded-sm p-4">
-            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
-            <p class="font-medium text-ink text-sm">Staff payslip</p>
-            <p class="text-xs text-slate2/50 mt-1 mb-3">Latest payroll run</p>
-            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Staff payslip')">Generate</button>
-          </div>
-          <div class="doc-card bg-white border border-line rounded-sm p-4">
-            <svg class="ic-lg text-primary mb-2"><use href="#i-file"/></svg>
-            <p class="font-medium text-ink text-sm">Visitor badge</p>
-            <p class="text-xs text-slate2/50 mt-1 mb-3">Printable check-in badge</p>
-            <button type="button" class="gen-doc-btn w-full text-xs border border-line rounded-sm py-1.5 hover:bg-canvas" (click)="genDoc('Visitor badge')">Generate</button>
-          </div>
-        </div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+  <div>
+    <h1 class="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900">Documents</h1>
+    <p class="text-sm text-slate-400 mt-1">The server builds the PDF. This page only asks for it and shows it.</p>
+  </div>
+</div>
+
+<app-stat-cards [items]="stats()" />
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+    @for (t of types(); track t.key) {
+      <button type="button" (click)="choose(t.key)" class="text-left bg-white rounded-2xl border p-4 hover:border-slate-300" [class.border-slate-900]="selected() === t.key" [class.border-slate-100]="selected() !== t.key">
+        <p class="text-sm font-semibold text-slate-900">{{ t.title }}</p>
+        <p class="text-xs text-slate-400 mt-1">{{ t.description }}</p>
+      </button>
+    }
+    @if (!types().length) {
+      <p class="text-sm text-slate-400 col-span-2">No templates yet. Start the API so this page can load them.</p>
+    }
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-100 p-5 h-fit">
+    <p class="text-xs text-slate-400">Generate</p>
+    <h2 class="text-lg font-semibold text-slate-900 mt-0.5">{{ current()?.title || 'Choose a document' }}</h2>
+    <p class="text-xs text-slate-400 mt-1">{{ current()?.description }}</p>
+
+    @if (current()?.pick === 'student') {
+      <label class="block text-xs text-slate-500 mt-4">Pupil
+        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
+          @for (s of students(); track s.adm) {
+            <option [value]="s.adm">{{ s.name }} · {{ s.adm }}</option>
+          }
+        </select>
+      </label>
+    }
+    @if (current()?.pick === 'staff') {
+      <label class="block text-xs text-slate-500 mt-4">Staff
+        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
+          @for (s of staff(); track s.id) {
+            <option [value]="s.id">{{ s.name }} · {{ s.role }}</option>
+          }
+        </select>
+      </label>
+    }
+    @if (current()?.pick === 'applicant') {
+      <label class="block text-xs text-slate-500 mt-4">Applicant
+        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
+          @for (a of applicants(); track a.id) {
+            <option [value]="a.id">{{ a.name }} · {{ a.cls }}</option>
+          }
+        </select>
+      </label>
+    }
+    @if (current()?.pick === 'visit') {
+      <label class="block text-xs text-slate-500 mt-4">Sickbay visit
+        <select class="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" [ngModel]="pickId()" (ngModelChange)="pickId.set($event)">
+          @for (v of visits(); track v.id) {
+            <option [value]="v.id">{{ v.name }} · {{ v.reason }}</option>
+          }
+        </select>
+      </label>
+    }
+
+    <button type="button" (click)="generate()" [disabled]="!current() || busy()" class="mt-4 w-full h-10 text-sm bg-slate-900 text-white rounded-full disabled:opacity-60">
+      {{ busy() ? 'Building PDF…' : 'View PDF' }}
+    </button>
+  </div>
+</div>

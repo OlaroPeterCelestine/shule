@@ -19,4 +19,6 @@ npm install
 npm run start:dev
 ```
 
-API: [http://localhost:3000/api](http://localhost:3000/api). The Angular dev server proxies `/api` to it. See `backend/README.md`.
+API: [http://localhost:3000/api](http://localhost:3000/api). Copy `backend/.env.example` to `backend/.env` and run Postgres (`littleroyals` database). The Angular dev server proxies `/api` to the API. See `backend/README.md`.
+
+What shipped and when is in [CHANGELOG.md](CHANGELOG.md). Sign-ins, enrolments and generated PDFs also appear on **Permissions → Change log**.

@@ -1,8 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { DbService } from '../db/db.service.js';
 import { DEMO_ACCOUNTS, type Role, type SessionUser } from '../data/seed.js';
 import { isEmail } from '../util/form-safe.js';
 
-const TOKEN_HOURS = 12;
+function tokenHours() {
+  const n = Number(process.env.AUTH_TOKEN_HOURS || 12);
+  return Number.isFinite(n) && n > 0 ? n : 12;
+}
 
 interface TokenUser extends SessionUser {
   exp: number;
@@ -10,7 +14,9 @@ interface TokenUser extends SessionUser {
 
 @Injectable()
 export class AuthService {
-  login(email: string, password: string) {
+  constructor(private readonly db: DbService) {}
+
+  async login(email: string, password: string) {
     const clean = String(email ?? '').trim().toLowerCase();
     if (!isEmail(clean) || !password) {
       throw new UnauthorizedException('Email and password are required');
@@ -18,18 +24,33 @@ export class AuthService {
     if (String(password).length < 4) {
       throw new UnauthorizedException('Password must be at least 4 characters');
     }
-    const matched = Object.values(DEMO_ACCOUNTS).find((a) => a.email.toLowerCase() === clean);
-    const user: SessionUser = matched ?? {
+    const row = await this.db.one<SessionUser>(
+      'SELECT name, email, role, label FROM users WHERE lower(email) = $1',
+      [clean],
+    );
+    const user = row ?? {
       name: titleCase(clean.split('@')[0].replace(/[._]/g, ' ')),
       email: clean,
-      role: 'admin',
+      role: 'admin' as const,
       label: 'Admin',
     };
+    if (!row) {
+      await this.db
+        .query(
+          'INSERT INTO users (email, name, role, label) SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM users WHERE lower(email) = $1)',
+          [user.email, user.name, user.role, user.label],
+        )
+        .catch(() => undefined);
+    }
     return { token: this.encodeToken(user), user };
   }
 
-  demo(role: Role) {
-    const user = DEMO_ACCOUNTS[role];
+  async demo(role: Role) {
+    const row = await this.db.one<SessionUser>(
+      'SELECT name, email, role, label FROM users WHERE role = $1 ORDER BY id LIMIT 1',
+      [role],
+    );
+    const user = row ?? DEMO_ACCOUNTS[role];
     if (!user) throw new UnauthorizedException('Unknown demo role');
     return { token: this.encodeToken(user), user };
   }
@@ -58,7 +79,7 @@ export class AuthService {
   }
 
   private encodeToken(user: SessionUser) {
-    const payload: TokenUser = { ...user, exp: Date.now() + TOKEN_HOURS * 60 * 60 * 1000 };
+    const payload: TokenUser = { ...user, exp: Date.now() + tokenHours() * 60 * 60 * 1000 };
     return Buffer.from(JSON.stringify(payload)).toString('base64url');
   }
 }

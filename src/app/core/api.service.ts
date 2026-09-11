@@ -34,6 +34,19 @@ export class ApiService {
     return this.request<T>(path, { method: 'PATCH', body });
   }
 
+  async blob(path: string): Promise<Blob> {
+    const headers: Record<string, string> = { Accept: 'application/pdf' };
+    const token = this.token();
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const res = await fetch(this.base + path, { headers });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      const message = (data as { message?: string | string[] }).message;
+      throw new Error(Array.isArray(message) ? message.join(', ') : message || 'Could not generate the PDF');
+    }
+    return res.blob();
+  }
+
   private async request<T>(path: string, opts: { method: string; body?: unknown }): Promise<T> {
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (opts.body !== undefined) headers['Content-Type'] = 'application/json';

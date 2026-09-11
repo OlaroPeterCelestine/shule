@@ -7,5 +7,6 @@ import { SchoolController } from './school.controller.js';
   imports: [AuthModule],
   controllers: [SchoolController],
   providers: [SchoolStore],
+  exports: [SchoolStore],
 })
 export class SchoolModule {}
